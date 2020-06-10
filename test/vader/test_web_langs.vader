@@ -1,0 +1,127 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Execute(Turn on verbatim mode);
+  call vader#log('===== Switching to verbatim license mode =====')
+  let g:cpywrite_verbatim_mode = 1
+
+Then(Assert that verbatim mode is now on);
+  AssertEqual 1, g:cpywrite_verbatim_mode
+
+" Tc #1
+Execute(Prepend a license verbatim to a CSS file);
+  new! verbatim.css
+	b verbatim.css
+	CPYwrite MIT
+
+Then(CSS file header quotes the entire MIT license text);
+  AssertEqual ' * verbatim.css', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+	AssertEqual ' * verbatim.css', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * Permission is hereby granted, free of charge, to any person obtaining a copy', getline(6)
+  AssertEqual ' * The above copyright notice and this permission notice (including the next', getline(13)
+  AssertEqual ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(17)
+	AssertEqual ' */', getline(23)
+
+Execute(Turn off verbatim mode);
+  call vader#log('===== Switching off verbatim mode =====')
+  let g:cpywrite_verbatim_mode = 0
+
+Then(Assert that verbatim mode is now off);
+  AssertEqual 0, g:cpywrite_verbatim_mode
+
+" Tc #2
+Execute(Prepend a header-less license to a CSS file);
+  new! brief.css
+	b brief.css
+  CPYwrite Beerware
+
+Then(CSS file header has brief license mention);
+  AssertEqual ' * brief.css', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * Licensed under the terms of the Beerware license', getline(6)
+  AssertEqual ' */', getline(7)
+
+" Tc #3
+Execute(Set default license to MPL-2.0);
+  call vader#log('===== Setting default license =====')
+  let g:cpywrite_default_license = 'MPL-2.0'
+
+Then(Assert that default license was set);
+  AssertEqual 'MPL-2.0', g:cpywrite_default_license
+
+Execute(Prepend the default license header to a TypeScript file);
+  new! standard.ts
+	b standard.ts
+	CPYwrite
+
+Then(TypeScript file header quotes the MPL-2.0 license);
+  AssertEqual ' * standard.ts', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL', getline(6)
+  AssertEqual ' */', getline(8)
+
+" Tc #4
+Execute(Prepend a header-less license to a TypeScript file);
+  new! brief.ts
+	b brief.ts
+  CPYwrite Fair
+
+Then(TypeScript file header has brief license mention);
+  AssertEqual ' * brief.ts', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * Licensed under the terms of the Fair license', getline(6)
+  AssertEqual ' */', getline(7)
+
+" Tc #5
+Execute(Prepend a standard license header to HTML);
+  new! standard.htm
+	b standard.htm
+	CPYwrite GFDL-1.1-or-later
+
+Then(HTML comment block quotes the GFDL-1.1-or-later);
+  AssertEqual ' standard.htm', getline(2)
+	AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' GNU Free Documentation License, Version 1.1 or any later version', getline(6)
+  AssertEqual '-->', getline(11)
+
+" Tc #6
+Execute(Prepend a header-less license to HTML);
+  new! brief.html
+	b brief.html
+  CPYwrite Xerox
+
+Then(HTML comment block has brief license mention);
+  AssertEqual ' brief.html', getline(2)
+	AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' Licensed under the terms of the Xerox license', getline(6)
+  AssertEqual '-->', getline(7)
+
+" Tc #7
+Execute(Prepend a standard license header to a SASS file);
+  new! standard.scss
+	b standard.scss
+	CPYwrite BitTorrent-1.0
+
+Then(SASS file header quotes the BitTorrent-1.0 license);
+  AssertEqual '// standard.scss', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '// The contents of this file are subject to the BitTorrent Open Source License Version 1.0 (the License).', getline(6)
+  AssertEqual '//', getline(13)
+
+" Tc #8
+Execute(Prepend a header-less license to a SASS file);
+  new! brief.scss
+	b brief.scss
+  CPYwrite Afmparse
+
+Then(SASS file header has brief license mention);
+  AssertEqual '// brief.scss', getline(2)
+	AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '// Licensed under the terms of the Afmparse license', getline(6)
+  AssertEqual '//', getline(7)

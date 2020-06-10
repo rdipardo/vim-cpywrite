@@ -1,0 +1,152 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Execute(Set default license to BSD-2-Clause);
+  call vader#log('===== Setting default license =====')
+  let g:cpywrite_default_license = 'BSD-2-Clause'
+
+Then(Assert that default license was set);
+  AssertEqual 'BSD-2-Clause', g:cpywrite_default_license
+
+Execute(Turn on verbatim mode);
+  call vader#log('===== Switching to verbatim license mode =====')
+  let g:cpywrite_verbatim_mode = 6
+
+Then(Assert that verbatim mode is now on);
+  AssertEqual 6, g:cpywrite_verbatim_mode
+
+" Tc #1
+Execute(Prepend a license verbatim to a Scheme file);
+  new! verbatim.ss
+  b verbatim.ss
+  silent exe "norm \<Plug>(cpywrite)"
+
+Then(Scheme file header quotes the entire BSD-2-Clause license);
+  AssertEqual ';; verbatim.ss', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ';; 1. Redistributions of source code must retain the above copyright notice,', getline(9)
+  AssertEqual ';; 2. Redistributions in binary form must reproduce the above copyright notice,', getline(12)
+  AssertEqual ';; USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.', getline(25)
+  AssertEqual 2, len(getline(26)), 'Allow no trailing spaces'
+
+" Tc #2
+Execute(Prepend a license verbatim to an F-sharp file);
+  new! verbatim.fsi
+  b verbatim.fsi
+  CPYwrite 0BSD
+
+Then(F-sharp file quotes the entire BSD 0-Clause license);
+  AssertEqual '// verbatim.fsi', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '// Copyright (C) 2006 by Rob Landley <rob@landley.net>', getline(6)
+  AssertEqual '// Permission to use, copy, modify, and/or distribute this software for any purpose', getline(8)
+  AssertEqual '// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH', getline(11)
+  AssertEqual 2, len(getline(18)), 'Allow no trailing spaces'
+
+Execute(Turn off verbatim mode);
+  call vader#log('===== Switching off verbatim mode =====')
+  let g:cpywrite_verbatim_mode = 0
+
+Then(Assert that verbatim mode is now off);
+  AssertEqual 0, g:cpywrite_verbatim_mode
+
+" Tc #3
+Execute(Prepend a standard license header to a Common Lisp file);
+  new! standard.cl
+  b standard.cl
+  CPYwrite GFDL-1.2-or-later
+
+Then(Common Lisp file header quotes the GFDL-1.2-or-later);
+  AssertEqual ';; standard.cl', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ';; distribute and/or modify this document under the terms of the GNU', getline(5)
+  AssertEqual ';; Free Documentation License, Version 1.2 or any later version published', getline(6)
+
+" Tc #4
+Execute(Prepend a header-less license to a Lisp file);
+  new! brief.lsp
+  b brief.lsp
+  CPYwrite BSD-2-Clause-FreeBSD
+
+Then(Lisp file header has brief license mention);
+  AssertEqual ';; brief.lsp', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ';; Licensed under the terms of the BSD-2-Clause-FreeBSD license', getline(6)
+  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+" Tc #5
+Execute(Prepend a standard license header to a Clojure file);
+  new! standard.clj
+  b standard.clj
+  CPYwrite ECL-2.0
+
+Then(Clojure file header quotes the ECL-2.0);
+  AssertEqual ';; standard.clj', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ';; Educational Community License, Version 2.0 (the "License"); you may', getline(5)
+  AssertEqual 2, len(getline(16)), 'Allow no trailing spaces'
+
+" Tc #6
+Execute(Prepend a header-less license to a ClojureScript file);
+  new! brief.cljs
+  b brief.cljs
+  CPYwrite CATOSL-1.1
+
+Then(ClojureScript file header has brief license mention);
+  AssertEqual ';; brief.cljs', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ';; Licensed under the terms of the CATOSL-1.1 license', getline(6)
+  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+" Tc #7
+Execute(Prepend a standard license header to an OCaml file);
+  new! standard.ml
+  b standard.ml
+  CPYwrite GFDL-1.3-or-later
+
+Then(OCaml file header quotes the GFDL-1.3-or-later);
+  AssertEqual ' standard.ml', getline(2)
+  AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' distribute and/or modify this document under the terms of the GNU', getline(5)
+  AssertEqual ' Free Documentation License, Version 1.3 or any later version published', getline(6)
+  AssertEqual '*)', getline(10)
+
+" Tc #8
+Execute(Prepend a header-less license to an OCaml file);
+  new! brief.mli
+  b brief.mli
+  CPYwrite DOC
+
+Then(OCaml file header has brief license mention);
+  AssertEqual ' brief.mli', getline(2)
+  AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' Licensed under the terms of the DOC license', getline(6)
+  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+" Tc #9
+Execute(Prepend a standard license header to a Haskell file);
+  new! standard.hs
+  b standard.hs
+  CPYwrite AFL-2.1
+
+Then(Haskell file header quotes the AFL-2.1);
+  AssertEqual '-- standard.hs', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '-- Licensed under the Academic Free License version 2.1', getline(6)
+  AssertEqual '--', getline(7)
+
+" Tc #10
+Execute(Prepend a header-less license to a Haskell file);
+  new! brief.lhs
+  b brief.lhs
+  CPYwrite Eurosym
+
+Then(Haskell file header has brief license mention);
+  AssertEqual '-- brief.lhs', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '-- Licensed under the terms of the Eurosym license', getline(6)
+  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'

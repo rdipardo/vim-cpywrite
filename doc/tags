@@ -1,0 +1,12 @@
+:CPYwrite	cpywrite.txt	/*:CPYwrite*
+<Plug>(cpywrite)	cpywrite.txt	/*<Plug>(cpywrite)*
+LH	cpywrite.txt	/*LH*
+cpywrite-commands	cpywrite.txt	/*cpywrite-commands*
+cpywrite-introduction	cpywrite.txt	/*cpywrite-introduction*
+cpywrite-keymaps	cpywrite.txt	/*cpywrite-keymaps*
+cpywrite-options	cpywrite.txt	/*cpywrite-options*
+cpywrite-requirements	cpywrite.txt	/*cpywrite-requirements*
+cpywrite.txt	cpywrite.txt	/*cpywrite.txt*
+g:cpywrite_default_license	cpywrite.txt	/*g:cpywrite_default_license*
+g:cpywrite_verbatim_mode	cpywrite.txt	/*g:cpywrite_verbatim_mode*
+g:cpywrite_version	cpywrite.txt	/*g:cpywrite_version*

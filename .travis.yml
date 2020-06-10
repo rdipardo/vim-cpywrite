@@ -1,0 +1,29 @@
+dist: xenial
+
+language: python
+
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+  - 3.7
+  - 3.8
+
+before_install:
+  - sudo apt-get -y install vim
+  - pip install --upgrade pip
+
+addons:
+  apt:
+    update: true
+
+install:
+  - pip install -r test/requirements.txt
+  - git clone https://github.com/junegunn/vader.vim.git
+  - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
+
+script:
+  - pytest -v
+  - nvim -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+  - VIM= vim -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null

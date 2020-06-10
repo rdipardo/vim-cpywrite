@@ -1,0 +1,83 @@
+*cpywrite.txt*  Generate copyright headers for any open source license
+
+Maintainer: Robert Di Pardo <dipardo.r@gmail.com>
+URL:        https://github.com/rdipardo/vim-cpywrite
+License:    MIT
+
+=============================================================================
+INTRODUCTION                                         *cpywrite-introduction*
+
+Pass a license identifier to the |:CPYwrite| command and it will insert the
+standard header, if available, at the top of the current buffer.
+
+When |g:cpywrite_verbatim_mode| is off, licenses with no standard header will
+be identified below your author line. Turn on |g:cpywrite_verbatim_mode| to
+use the full license text instead.
+
+This plugin learns your name and email by invoking `git`; it falls back to
+your OS user and host names.
+
+=============================================================================
+REQUIREMENTS                                         *cpywrite-requirements*
+
+* Vim compiled with any one of the |+python|, |+python3|, |+python/dyn| or
+  |+python3/dyn| options
+
+* Neovim with the `pynvim` module in your $PYTHONPATH:
+
+    https://github.com/neovim/pynvim
+
+  Enter |:help| |provider-python| in your command prompt for more information.
+
+* The `requests` module in your $PYTHONPATH:
+
+    https://pypi.org/project/requests
+
+=============================================================================
+OPTIONS                                                   *cpywrite-options*
+
+                                                *g:cpywrite_default_license*
+        `string` (default: 'GPL-3.0-or-later')
+
+Set this to the SPDX identifier of your favourite license. Press <tab> after
+the |:CPYwrite| command to see the list.
+
+                                                  *g:cpywrite_verbatim_mode*
+        `number` (default: 0)
+
+When set to a "truthy" value, the full license text will be requested (whether
+or not a standard header exists). You should only choose this when the license
+is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause,
+etc.)
+
+When set to 0, only standard headers are requested. Licenses with no standard
+header will be briefly mentioned below your copyright line.
+
+                                                        *g:cpywrite_version*
+        `string` (set at runtime)
+
+The current version number of this plugin.
+
+=============================================================================
+COMMANDS                                                 *cpywrite-commands*
+
+                                                                 *:CPYwrite*
+        :CPYwrite [{spdx_short_name}]
+
+Optionally takes the name of a SPDX license identifier (without quotes). Use
+<tab> for name completion.
+
+When called with no argument, this commmand behaves exactly like
+|<Plug>(cpywrite)|.
+
+                                                           *<Plug>(cpywrite)*
+Quick action command for fetching the default license assigned to
+|g:cpywrite_default_license|.
+
+=============================================================================
+KEYMAPS                                                   *cpywrite-keymaps*
+
+                                                                        *LH*
+        {Normal}LH
+
+Default mapping of the |<Plug>(cpywrite)| command.
