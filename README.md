@@ -1,10 +1,10 @@
 # vim-cpywrite
 
+[![Build Status][travis-badge]][travis-builds]
+
 Generate copyright headers for any open source license
 
-|    |
-|:--:|
-|<img src=".github/nvim_043_scheme.gif" alt="nvim-043-linux_demo" width="600"/>|
+<img src=".github/nvim_043_scheme.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
@@ -38,6 +38,65 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 * neovim with the [**pynvim**](https://github.com/neovim/pynvim) module in your `$PYTHONPATH`. Start `nvim` and enter `:help provider-python` for more information
 
 
+## Installation
+
+If [**requests**](https://pypi.org/project/requests/) and (optionally) **pynvim** are not already in your `$PYTHONPATH`, install them:
+
+    pip install --user -U requests
+    pip install --user -U pynvim
+
+#### As a vim package
+
+If you have vim 8+, you can directly copy the plugin source tree to your [native package directory][vim-8-pkg-docs]. Learn more by typing `:help packages` into your `vim` command prompt. You should also read about [DIY plugin management](https://shapeshed.com/vim-packages).
+
+Users of older vim versions can simulate native package loading with [vim-pathogen](https://github.com/tpope/vim-pathogen#native-vim-package-management).
+
+* Under `~/.vim` create the following directory tree: `pack/plugins/start`
+
+> According to the [vim help topic][vim-8-pkg-docs] and [this tutorial][vim-pack-man], you can use any valid directory name in place of `plugins`,  but let's keep things simple!
+
+* Clone the source: `git clone https://github.com/rdipardo/vim-cpywrite ~/.vim/pack/plugins/start/vim-cpywrite`
+
+#### As a remote plugin
+
+**Using [plug.vim](https://github.com/junegunn/vim-plug)**
+
+Edit your `~/.vimrc`, `~/.vim/vimrc`, or `~/.config/nvim/init.vim`:
+
+```vim
+call plug#begin()
+"or:
+"call plug#begin('~/path/to/your/plugin/directory/')
+
+Plug 'rdipardo/vim-cpywrite'
+
+call plug#end()
+```
+
+**Using [Vundle](https://github.com/VundleVim/Vundle.vim)**
+
+Install Vundle:
+
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+or
+
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.config/nvim/bundle/Vundle.vim
+
+Edit your `~/.vimrc`, `~/.vim/vimrc`, or `~/.config/nvim/init.vim`:
+
+```vim
+set rtp+=~/.vim/bundle/Vundle.vim
+"or:
+"set rtp+=~/.config/nvim/bundle/Vundle.vim
+
+call vundle#begin()
+
+Plugin 'rdipardo/vim-cpywrite'
+
+call vundle#end()
+```
+
 ## Projects like this one
 
 * [vim-licenses][vim-lic-2.0], formerly [licenses][vim-lic-1.0]
@@ -48,7 +107,14 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 ## TODO
 
 - Provide a batch mode for licensing all tracked files in a working tree
-- Expand the list of supported programming languages
+- Expand the list of [supported programming languages][lang-list]
+
+
+## Improve this README
+Consider opening a PR with an updated [installation guide][#installation] if any of the following applies to you:
+
+* installation fails
+* installation succeeds with a plugin manager not mentioned here
 
 
 ## License
@@ -60,6 +126,11 @@ MIT
 [vim-lic-1.0]: https://github.com/vim-scripts/Licenses
 [lic2vim]: https://www.vim.org/scripts/script.php?script_id=5349
 [licl]: https://www.vim.org/scripts/script.php?script_id=4064
+[vim-8-pkg-docs]: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
+[vim-pack-man]: https://shapeshed.com/vim-packages/#how-it-works
+[lang-list]: https://github.com/rdipardo/vim-cpywrite/blob/6efd4e6c20be32a3c8876e77a1dd7b2736f30d3d/rplugin/pythonx/cpywrite/generator.py#L250
+[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=master
+[travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
 
 <!--
  vim:ft=markdown:et:tw=78:
