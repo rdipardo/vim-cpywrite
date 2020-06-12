@@ -68,7 +68,7 @@ class Generator(object):
             """
             Wrap text if the raw header has no break after author's email, as
             some license formats require, e.g the ECL, all of the GFDLs. Fix up
-            copyright format and insert punctuation.
+            copyright format and insert punctuation
             """
             year = str(datetime.now())[:4]
             text = re.sub(r'\)%s' % year,
@@ -199,7 +199,7 @@ def _get_language_meta(filename):
 
 def _get_source_author():
     """
-    Retrieve author details from local git configuration.
+    Retrieve author details from local git configuration
     """
     author = \
         environ.get('USERNAME', 'unknown') \
@@ -317,7 +317,7 @@ _SCRIPT_HEADERS = {
     'bash': '#!/usr/bin/env bash',
     'perl': '#!/usr/bin/env perl',
     'php': '<?php',
-    'python': '#!/usr/bin/env python%s\n# -*- coding: utf-8 -*-'
+    'python': '#!/usr/bin/env python%s\n# -*- coding: utf-8 -*-\n'
               % sys.version_info[0],
     'ruby': '# frozen_string_literal: true\n',
 }

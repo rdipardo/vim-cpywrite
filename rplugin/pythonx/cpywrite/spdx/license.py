@@ -33,6 +33,10 @@ class License(object):
         header = ''
 
         if self.spdx_code:
+            # https://bugs.python.org/issue11033
+            # ElementTree still has this problem in python 2.7.13 and
+            # probably later versions, too
+            strict_ascii = lambda c: ord(c) > 0 and ord(c) < 128
             xml_resource = 'https://raw.githubusercontent.com/' \
                            'spdx/license-list-XML/master/src/%s.xml'
             resource = quote(xml_resource % self.spdx_code, safe='/:')
@@ -42,14 +46,10 @@ class License(object):
             try:
                 response = requests.get(resource)
 
-                # https://bugs.python.org/issue11033
-                # ElementTree still has this problem in python 2.7.13 and
-                # probably later versions, too
-                strict_ascii = lambda c: ord(c) > 0 and ord(c) < 128
-                safe_xml = ''.join(list(filter(strict_ascii, response.text)))
-
                 if response.status_code == 200:
                     try:
+                        safe_xml = \
+                            ''.join(list(filter(strict_ascii, response.text)))
                         license_data = parser.fromstring(safe_xml)
                     except (parser.ParseError, TypeError, IOError):
                         print("Got invalid licence data from %s." % (resource),
@@ -69,9 +69,8 @@ class License(object):
                 p_tag = ('{http://www.spdx.org/license}p')
                 alt_tag = ('{http://www.spdx.org/license}alt')
                 opt_tag = ('{http://www.spdx.org/license}optional')
-                std_header = license_data.findall(header_tag)
 
-                for node in std_header:
+                for node in license_data.findall(header_tag):
                     for child in node.iter():
                         content = ''
 
@@ -124,7 +123,7 @@ class License(object):
         return header
 
     def license_text(self):
-        """Return the full text this License"""
+        """Return the full text of this License"""
         license_text = ''
 
         if self.spdx_code:
@@ -146,8 +145,13 @@ class License(object):
                     requests.exceptions.ConnectionError):
                 print("Error requesting %s." % (resource), file=stderr)
 
-        # try to keep subclauses left-aligned
-        return sub(r'\n{2}\s*\-', '\n\n     -', license_text).splitlines()
+        # try to keep sub-clauses left-aligned;
+        # always put copyright notice on a new line
+        return sub(r'\n{2}\s*\-',
+                   '\n\n     -',
+                   sub(r'(?!$) ([cC]opyright(\s+\([cC]\))?\s+[\<\[\s][yearxYEARX]+)',
+                       '\n\nCopyright (c) <year>',
+                       license_text)).splitlines()
 
     def __repr__(self):
         """Return a debug string representing this License"""

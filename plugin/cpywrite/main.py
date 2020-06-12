@@ -47,7 +47,7 @@ def _write_header(writer, curr_buffer):
             to_trim = 0
 
             for idx, _ in enumerate(curr_buffer):
-                # replace shebang lines and encoding directives, if any
+                # replace shebang lines and encoding declarations, if any
                 if curr_buffer[idx].startswith("#!", 0) or \
                         match(r"^#.+(coding).+$", curr_buffer[idx]):
                     to_trim += 1
