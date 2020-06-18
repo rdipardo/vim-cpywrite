@@ -5,19 +5,19 @@ Execute(Test that plugin was loaded);
   call vader#log('===== Pre-test environment check =====')
   Assert exists('g:loaded_cpywrite')
 
-Execute(Set default license to BSD-2-Clause);
-  call vader#log('===== Setting default license =====')
-  let g:cpywrite_default_license = 'BSD-2-Clause'
+Execute(Use :CPYwriteDefaultLicense to set default license);
+  call vader#log('===== Calling :CPYwriteDefaultLicense =====')
+  CPYwriteDefaultLicense BSD-2-Clause
 
-Then(Assert that default license was set);
+Then(Assert that :CPYwriteDefaultLicense changes default license);
   AssertEqual 'BSD-2-Clause', g:cpywrite_default_license
 
-Execute(Turn on verbatim mode);
-  call vader#log('===== Switching to verbatim license mode =====')
-  let g:cpywrite_verbatim_mode = 6
+Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
+  call vader#log('===== Callng :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 6, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite_verbatim_mode
 
 " Tc #1
 Execute(Prepend a license verbatim to a Scheme file);
@@ -47,18 +47,25 @@ Then(F-sharp file quotes the entire BSD 0-Clause license);
   AssertEqual '// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH', getline(11)
   AssertEqual 2, len(getline(18)), 'Allow no trailing spaces'
 
-Execute(Turn off verbatim mode);
-  call vader#log('===== Switching off verbatim mode =====')
-  let g:cpywrite_verbatim_mode = 0
+Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
 
-Then(Assert that verbatim mode is now off);
+Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
   AssertEqual 0, g:cpywrite_verbatim_mode
 
+Execute(Use :CPYwriteDefaultLicense to set default license);
+  call vader#log('===== Calling :CPYwriteDefaultLicense =====')
+  CPYwriteDefaultLicense GFDL-1.2-or-later
+
+Then(Assert that :CPYwriteDefaultLicense changes default license);
+  AssertEqual 'GFDL-1.2-or-later', g:cpywrite_default_license
+
 " Tc #3
-Execute(Prepend a standard license header to a Common Lisp file);
+Execute(Prepend the default license header to a Common Lisp file);
   new! standard.cl
   b standard.cl
-  CPYwrite GFDL-1.2-or-later
+  norm LH
 
 Then(Common Lisp file header quotes the GFDL-1.2-or-later);
   AssertEqual ';; standard.cl', getline(2)

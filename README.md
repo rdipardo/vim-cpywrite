@@ -2,30 +2,37 @@
 
 [![Build Status][travis-badge]][travis-builds]
 
+---
+### This branch is for development purposes
+#### End users are advised to checkout a release package from [master](https://github.com/rdipardo/vim-cpywrite)
+---
+
 Generate copyright headers for any open source license
 
-<img src=".github/nvim_043_scheme.gif" alt="nvim-043-linux-demo" width="800"/>
+<img src=".github/img/nvim_043_ver_011.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
 Mostly written in CPython, this (neo)vim plugin fetches the license of your choice directly from the [SPDX License List](https://github.com/spdx/license-list-xml). If the XML response contains a standard header, it's inserted at the top of the current buffer with your copyright info.
 
-When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode`  option [below](#quick-reference).)
+When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode` option [below](#quick-reference).)
 
 This plugin learns your name and email by invoking `git`. If that fails, the copyright line will contain your OS user and host names.
 
 
 ## Highlights
 
-- Python bindings compatible with python 2.7 or 3.4+, depending on your platform and (neo)vim version, of course
+- Python bindings compatible with python 2.7.x or 3.4+, depending on your platform and (neo)vim version, of course
 - Choose from 380 licenses (press `<tab>` after the `:CPYwrite` command for suggestions)
-- No dependencies on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses!
+- No dependency on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses!
 
 
 ## Quick Reference
 |   |   |
 |:--|:--|
 |`:CPYwrite [{spdx_short_name}]`|Fetches the license identified by `spdx_short_name` (without quotes) -- uses the current value of `g:cpywrite_default_license` when no argument is given -- supports `<tab>` completion |
+|`:CPYwriteDefaultLicense [{spdx_short_name}]`|Sets `g:cpywrite_default_license` to the option license identified by `spdx_short_name` (without quotes) -- prints the default licence id when called with no argument -- supports `<tab>` completion|
+|`:CPYwriteToggleMode`|Switches `g:cpywrite_verbatim_mode` on or off|
 |`<Plug>(cpywrite)`|Does the same as calling `:CPYwrite` with no argument|
 |`{Normal}LH`|Maps to `<Plug>(cpywrite)`|
 |`g:cpywrite_verbatim_mode`|When set to a "truthy" value, the full license text will be requested -- only choose this when the license is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)|
@@ -111,7 +118,7 @@ call vundle#end()
 
 
 ## Improve this README
-Consider opening a PR with an updated [installation guide][#installation] if any of the following applies to you:
+Consider opening a PR with an updated [installation guide](#installation) if any of the following applies to you:
 
 * installation fails
 * installation succeeds with a plugin manager not mentioned here
@@ -119,7 +126,7 @@ Consider opening a PR with an updated [installation guide][#installation] if any
 
 ## License
 
-MIT
+Distributed under the terms of the MIT license
 
 
 [vim-lic-2.0]: https://github.com/antoyo/vim-licenses
@@ -128,8 +135,8 @@ MIT
 [licl]: https://www.vim.org/scripts/script.php?script_id=4064
 [vim-8-pkg-docs]: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 [vim-pack-man]: https://shapeshed.com/vim-packages/#how-it-works
-[lang-list]: https://github.com/rdipardo/vim-cpywrite/blob/6efd4e6c20be32a3c8876e77a1dd7b2736f30d3d/rplugin/pythonx/cpywrite/generator.py#L250
-[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=master
+[lang-list]: rplugin/pythonx/cpywrite/generator.py#L255
+[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=pre-release
 [travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
 
 <!--

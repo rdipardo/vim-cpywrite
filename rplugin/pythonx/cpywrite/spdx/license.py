@@ -7,6 +7,7 @@ from __future__ import print_function, unicode_literals
 import xml.etree.ElementTree as parser
 from re import sub
 from sys import stderr
+from textwrap import TextWrapper
 import requests
 
 try:
@@ -28,125 +29,147 @@ class License(object):
             raise ValueError("No such license '%s' on the SPDX index!"
                              % (code))
 
+    @property
+    def header_line_width(self):
+        """Return the max allowed width of a line of header text"""
+        return 76
+
+    @property
     def header(self):
         """Return the standard header text, if any, of this License"""
-        header = ''
+        if not self.spdx_code:
+            return ''
 
-        if self.spdx_code:
-            # https://bugs.python.org/issue11033
-            # ElementTree still has this problem in python 2.7.13 and
-            # probably later versions, too
-            strict_ascii = lambda c: ord(c) > 0 and ord(c) < 128
-            xml_resource = 'https://raw.githubusercontent.com/' \
-                           'spdx/license-list-XML/master/src/%s.xml'
-            resource = quote(xml_resource % self.spdx_code, safe='/:')
-            license_data = None
-            header_text = []
+        # https://bugs.python.org/issue11033
+        # ElementTree still has this problem in python 2.7.13 and
+        # probably later versions, too
+        strict_ascii = lambda c: ord(c) > 0 and ord(c) < 128
+        xml_resource = 'https://raw.githubusercontent.com/' \
+                       'spdx/license-list-XML/master/src/%s.xml'
+        resource = quote(xml_resource % self.spdx_code, safe='/:')
+        license_data = None
+        header_text = []
 
-            try:
-                response = requests.get(resource)
+        try:
+            response = requests.get(resource)
 
-                if response.status_code == 200:
-                    try:
-                        safe_xml = \
-                            ''.join(list(filter(strict_ascii, response.text)))
-                        license_data = parser.fromstring(safe_xml)
-                    except (parser.ParseError, TypeError, IOError):
-                        print("Got invalid licence data from %s." % (resource),
-                              file=stderr)
-                else:
-                    print("Unexpected response [%d] from %s.\n"
-                          % (response.status_code, resource),
+            if response.status_code == 200:
+                try:
+                    safe_xml = \
+                        ''.join(list(filter(strict_ascii, response.text)))
+                    license_data = parser.fromstring(safe_xml)
+                except (parser.ParseError, TypeError, IOError):
+                    print("Got invalid licence data from %s." % (resource),
                           file=stderr)
+            else:
+                print("Unexpected response [%d] from %s.\n"
+                      % (response.status_code, resource),
+                      file=stderr)
 
-            except (requests.exceptions.MissingSchema,
-                    requests.exceptions.ConnectionError):
-                print("Error requesting %s." % (resource), file=stderr)
+        except (requests.exceptions.MissingSchema,
+                requests.exceptions.ConnectionError):
+            print("Error requesting %s." % (resource), file=stderr)
 
-            if license_data is not None:
-                header_tag = \
-                    './/{http://www.spdx.org/license}standardLicenseHeader'
-                p_tag = ('{http://www.spdx.org/license}p')
-                alt_tag = ('{http://www.spdx.org/license}alt')
-                opt_tag = ('{http://www.spdx.org/license}optional')
+        if license_data is None:
+            return ''
 
-                for node in license_data.findall(header_tag):
-                    for child in node.iter():
-                        content = ''
+        header_tag = \
+            './/{http://www.spdx.org/license}standardLicenseHeader'
+        p_tag = ('{http://www.spdx.org/license}p')
+        alt_tag = ('{http://www.spdx.org/license}alt')
+        opt_tag = ('{http://www.spdx.org/license}optional')
 
-                        if child.attrib.get('name') == 'copyright':
-                            content = child.text
-                            if self.spdx_code.startswith('GFDL') and \
-                               child.tail and \
-                               any(filter(strict_ascii, child.tail)):
-                                content += child.tail.strip() + ' '
-                        elif child.attrib.get('name') == 'version':
-                            content = child.text
-                            if child.tail and \
-                               any(filter(strict_ascii, child.tail)):
-                                content += child.tail or ''
-                        elif self.spdx_code.startswith('GFDL') and \
-                            (child.attrib.get('name') == 'invariantSections' or \
-                             child.attrib.get('name') == 'frontCoverTexts' or \
-                             child.attrib.get('name') == 'backCoverTexts'):
-                            content = child.text
-                            if child.tail and \
-                               any(filter(strict_ascii, child.tail)):
-                                content += child.tail.strip() + ' '
-                        elif child.tag == opt_tag and \
-                                child.attrib.get('spacing') == 'after':
-                            content = ', ' + child.tail.strip()
-                        else:
-                            content = child.text if (child.text and \
-                                        child.tag != alt_tag and \
-                                        child.tag != opt_tag and \
-                                        any(filter(str.isalpha, child.text))) \
-                                       else (child.tail or '')
+        for node in license_data.findall(header_tag):
+            for child in node.iter():
+                content = ''
 
-                        line = sub(r'\n\s+', '\n', content.lstrip())
+                if child.attrib.get('name') == 'copyright':
+                    content = child.text
+                    if self.spdx_code.startswith('GFDL') and \
+                       child.tail and \
+                       any(filter(strict_ascii, child.tail)):
+                        content += child.tail.strip() + ' '
+                elif child.attrib.get('name') == 'version':
+                    content = child.text
+                    if child.tail and \
+                       any(filter(strict_ascii, child.tail)):
+                        content += child.tail or ''
+                elif self.spdx_code.startswith('GFDL') and \
+                    (child.attrib.get('name') == 'invariantSections' or \
+                     child.attrib.get('name') == 'frontCoverTexts' or \
+                     child.attrib.get('name') == 'backCoverTexts'):
+                    content = child.text
+                    if child.tail and \
+                       any(filter(strict_ascii, child.tail)):
+                        content += child.tail.strip() + ' '
+                elif child.tag == opt_tag and \
+                        child.attrib.get('spacing') == 'after':
+                    content = ', ' + child.tail.strip()
+                else:
+                    content = child.text if (child.text and \
+                                child.tag != alt_tag and \
+                                child.tag != opt_tag and \
+                                any(list(filter(str.isalpha, child.text)))) \
+                               else (child.tail or '')
 
-                        if child.tag == p_tag:
-                            header_text.append('\n\n' + line)
-                        else:
-                            header_text.append(line)
+                line = sub(r'\n\s+', '\n', content.lstrip())
 
-                # don't break before URLs; but, if a line starts with a URL,
-                # indent it
-                header = sub(r'\nhttp',
-                             ' http',
-                             sub(r'\n{2}http',
-                                 '\n\n    http',
-                                 sub(r'\n{3,}',
-                                     '\n\n',
-                                     ''.join(header_text))))[1:].splitlines()
+                if list(filter(lambda l: len(l) > self.header_line_width,
+                               line.splitlines())):
+                    wrapper = TextWrapper(drop_whitespace=False,
+                                          width=self.header_line_width)
+                    line = '\n'.join(map(lambda l: l.lstrip(),
+                                         wrapper.wrap(line)))
 
-        return header
+                if child.tag == p_tag:
+                    header_text.append('\n\n' + line)
+                else:
+                    header_text.append(line)
 
+        # - don't break before URLs; but . . .
+        # - if a line starts with a URL, indent it
+        # - remove extra space before URLs;
+        # - keep authorship on same line as copyright;
+        # - remove extra lines between paragraphs
+        return sub(r'\nhttp',
+                   ' http',
+                   sub(r'\n{2}http',
+                       '\n\n    http',
+                       sub(r'(?!\n)\s{2,}http',
+                           ' http',
+                           sub(r'[cC]opyright(\s+\([cC]\))?\s*\n',
+                               'Copyright (c) ',
+                               sub(r'\n{3,}',
+                                   '\n\n',
+                                   ''.join(header_text))))))[1:].splitlines()
+
+    @property
     def license_text(self):
         """Return the full text of this License"""
+        if not self.spdx_code:
+            return ''
+
+        text_resource = 'https://raw.githubusercontent.com/' \
+                       'spdx/license-list-data/master/text/%s.txt'
+        resource = quote(text_resource % self.spdx_code, safe='/,:')
         license_text = ''
 
-        if self.spdx_code:
-            text_resource = 'https://raw.githubusercontent.com/' \
-                           'spdx/license-list-data/master/text/%s.txt'
-            resource = quote(text_resource % self.spdx_code, safe='/,:')
+        try:
+            response = requests.get(resource)
 
-            try:
-                response = requests.get(resource)
+            if response.status_code == 200:
+                license_text = response.text
+            else:
+                print("Unexpected response [%d] from %s.\n"
+                      % (response.status_code, resource),
+                      file=stderr)
 
-                if response.status_code == 200:
-                    license_text = response.text
-                else:
-                    print("Unexpected response [%d] from %s.\n"
-                          % (response.status_code, resource),
-                          file=stderr)
+        except (requests.exceptions.MissingSchema,
+                requests.exceptions.ConnectionError):
+            print("Error requesting %s." % (resource), file=stderr)
 
-            except (requests.exceptions.MissingSchema,
-                    requests.exceptions.ConnectionError):
-                print("Error requesting %s." % (resource), file=stderr)
-
-        # try to keep sub-clauses left-aligned;
-        # always put copyright notice on a new line
+        # - try to keep sub-clauses left-aligned;
+        # - always put copyright notice on a new line
         return sub(r'\n{2}\s*\-',
                    '\n\n     -',
                    sub(r'(?!$) ([cC]opyright(\s+\([cC]\))?\s+[\<\[\s][yearxYEARX]+)',

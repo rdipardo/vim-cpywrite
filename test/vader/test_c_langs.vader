@@ -23,10 +23,17 @@ Then(C header quotes the Apache-2.0 license);
   AssertEqual ' * Licensed under the Apache License, Version 2.0 (the "License");', getline(6)
   AssertEqual ' *     http://www.apache.org/licenses/LICENSE-2.0', getline(10)
 
+Execute(Use :CPYwriteDefaultLicense to set default license);
+  call vader#log('===== Calling :CPYwriteDefaultLicense =====')
+  CPYwriteDefaultLicense LGPL-3.0-or-later
+
+Then(Assert that :CPYwriteDefaultLicense changes default license);
+  AssertEqual 'LGPL-3.0-or-later', g:cpywrite_default_license
+
 Execute(Prepend a header-less license to a C source file);
   new! brief.c
   b brief.c
-  CPYwrite LGPL-3.0-or-later
+  norm LH
 
 Then(C header has brief license mention);
   AssertEqual ' * brief.c', getline(2)
@@ -42,8 +49,8 @@ Execute(Prepend a standard license header to a C++ header file);
 Then(C++ source file quotes the BitTorrent-1.1 license);
   AssertEqual ' * standard.hpp', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * The contents of this file are subject to the BitTorrent Open Source License Version 1.1 (the', getline(6)
-  AssertEqual ' */', getline(13)
+  AssertEqual ' * The contents of this file are subject to the BitTorrent Open Source License', getline(6)
+  AssertEqual ' */', getline(14)
 
 Execute(Prepend a header-less license to a C++ source file);
   new! brief.cxx
@@ -91,9 +98,9 @@ Then(Go file header quotes the entire BSD-1-Clause license);
   AssertEqual '// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.', getline(21)
   AssertEqual 2, len(getline(22)), 'Allow no trailing spaces'
 
-Execute(Turn off verbatim mode);
-  call vader#log('===== Switching off verbatim mode =====')
-  let g:cpywrite_verbatim_mode = 0
+Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
 
-Then(Assert that verbatim mode is now off);
+Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
   AssertEqual 0, g:cpywrite_verbatim_mode

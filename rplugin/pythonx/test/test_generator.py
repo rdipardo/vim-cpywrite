@@ -19,8 +19,8 @@ def test_language_recognition():
         'file.gO', 'file.Rs', 'file.fs', 'file.fsi', 'file.fsx',
         'file.fsscript', 'file.sCsS']
     script_lang_files = [
-        'script', 'script.Sh', 'script.pL', 'script.Py', 'script.Rb',
-        'script.cMaKe']
+        'script', 'script.Sh', 'script.pL', 'script.Py', 'script.PyW',
+        'script.Rb', 'script.cMaKe', 'CMakeLists.tXt']
     sql_and_haskell_files = ['file.sQl', 'file.HS', 'file.LhS']
     ml_lang_files = ['file.mL', 'file.MlI']
     html_files = ['file.hTmL', 'file.hTm']
@@ -67,9 +67,9 @@ def test_license_recognition():
 
 def test_file_name_validation():
     invalid_file_names = [
-        "", "wrong.", "wrong......", "w`rong.rb", "wr<ong.php", "wro>ng.ml",
-        "w:rong.c++", "wron\\g.js", "wrong\\\".ts", "\\wrong.h", "w\\rong.hpp",
-        "/wrong.hxx", "wro?ng.py", "wron*g.pl", "wron/g.html", "wron\\g.html"]
+        " ", "\t", " \t ", "\n", " \n", "wrong.", "wrong......", "w`rong.rb",
+        "wr<ong.php", "wro>ng.ml", "w:rong.c++", "wron|g.js", "wrong\".ts",
+        "'wrong.h", "*wrong.hpp", "wrong-", "wrong--", "wron*g.pl"]
     generator = Generator()
 
     for fname in invalid_file_names:

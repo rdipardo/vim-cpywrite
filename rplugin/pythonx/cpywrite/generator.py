@@ -42,7 +42,8 @@ class Generator(object):
             raise ValueError("Unrecognized source file extension: '%s'"
                              % (ext))
 
-        self.rights = License(rights) if rights else self.rights
+        if rights:
+            self.rights = License(rights)
         self.out_file = path.splitext(filename)[0] + ext
         self.lang = lang
         self.tokens = new_tokens
@@ -61,7 +62,7 @@ class Generator(object):
                 print(self.tokens[3], file=dest)
             except IndexError:
                 print(self.tokens[0], file=dest)
-            if self.lang_key() == 'php':
+            if self.lang_key == 'php':
                 print('\n?>', file=dest)
 
         def _apply_format(text, pattern, copying, email):
@@ -98,19 +99,19 @@ class Generator(object):
             copying = \
                 'Copyright (c) ' + year + ' ' + author + ' <' + email + '>'
             terms = \
-                self.rights.header() \
+                self.rights.header \
                 if not use_license_body \
-                else self.rights.license_text()
+                else self.rights.license_text
             author_date = \
                 re.compile(r"(?!.*(http).*)[\<\[\s][yearxYEARX]+[\>\]\s].+[\>\]]") \
                 if not self.rights.spdx_code.startswith('GFDL') \
                 else re.compile(r"[\<\[\s][yearxYEARX]+[\>\]\s].+[\>\]\.]")
 
-            if self.lang_key() in _SCRIPT_HEADERS:
-                print(_SCRIPT_HEADERS[self.lang_key()], file=out)
+            if self.lang_key in _SCRIPT_HEADERS:
+                print(_SCRIPT_HEADERS[self.lang_key], file=out)
 
             print(self.tokens[0], file=out)
-            print(self.tokens[1] + self.out_file, file=out)
+            print(self.tokens[1] + path.basename(self.out_file), file=out)
 
             if use_license_body:
                 _continue_block_comment(out)
@@ -154,6 +155,7 @@ class Generator(object):
         finally:
             out.close()
 
+    @property
     def lang_key(self):
         """
         Return the normalized name of this Generator's language to aid key
@@ -168,26 +170,29 @@ class Generator(object):
 
 def _get_language_meta(filename):
     """Identify programming language from file extension"""
-    if len(filename) < 1 or \
-        re.match(r'^.*[\-`<>:\"\'\/\\\|\?\*].*$', filename) or \
-            re.match(r'^.+[\-`<>:\"\'\/\\\|\?\*\.]+$', filename):
+    if len(filename.strip()) < 1 or \
+        re.match(r'^.*[`<>:\"\'\|\?\*].*$', filename) or \
+            re.match(r'^.+[\-`<>:\"\'\|\?\*\.]+$', filename):
         raise ValueError("Invalid filename: '%s'" % filename)
 
-    lang = ''
-    tokens = ()
-    _, ext = path.splitext(filename)
+    fname, ext = path.splitext(filename)
 
     if not ext or ext == '.':
         print('No extension; assuming shell script')
-        return ('bash', '', ('#', '# '))
+        return ('Bash', '', ('#', '# '))
 
+    if ext.lower() == '.txt' and path.basename(fname).lower() == 'cmakelists':
+        return ('CMake', '.txt', ('#', '# '))
+
+    lang = ''
+    tokens = ()
     ext = ext.lower()
 
     for k in _SOURCE_META:
         if ext in list(k):
             try:
                 for grp in _SOURCE_META[k][0]:
-                    if ext in grp:
+                    if ext in list(grp) or ext == grp:
                         lang = _SOURCE_META[k][0][grp]
                         tokens = _SOURCE_META[k][1]
                         break
@@ -247,11 +252,11 @@ def extensions():
 
 
 _SOURCE_META = {
-    ('', '.sh', '.pl', '.py', '.rb', '.cmake'):
+    ('', '.sh', '.pl', '.py', '.pyw', '.rb', '.cmake'):
         [{
             ('', '.sh'): 'Bash',
             ('.pl'): 'Perl',
-            ('.py'): 'Python',
+            ('.py', '.pyw'): 'Python',
             ('.rb'): 'Ruby',
             ('.cmake'): 'CMake'
         },
@@ -269,16 +274,16 @@ _SOURCE_META = {
      '.hpp', '.hxx', '.java', '.js', '.php', '.php4', '.php5', '.phtml', '.rs',
      '.ts'):
         [{
-            ('.c', '.C'): 'C',
-            ('.h', '.H'): 'C header',
+            ('.c'): 'C',
+            ('.h'): 'C header',
             ('.cc', '.c++', '.cpp', '.cxx'): 'C++',
             ('.hh', '.h++', '.hpp', '.hxx'): 'C++ header',
-            ('.cs', '.CS'): 'C-sharp',
-            ('.css', '.CSS'): 'CSS',
-            ('.java', '.JAVA'): 'Java',
+            ('.cs'): 'C-sharp',
+            ('.css'): 'CSS',
+            ('.java'): 'Java',
             ('.php', '.php4', '.php5', '.phtml'): 'PHP',
-            ('.js', '.JS'): 'JavaScript',
-            ('.ts', '.TS'): 'TypeScript'
+            ('.js'): 'JavaScript',
+            ('.ts'): 'TypeScript'
         },
          ('/**', ' * ', ' *', ' */')],
     ('.ml', '.mli'):

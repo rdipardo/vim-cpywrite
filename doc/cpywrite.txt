@@ -40,7 +40,7 @@ OPTIONS                                                   *cpywrite-options*
         `string` (default: 'GPL-3.0-or-later')
 
 Set this to the SPDX identifier of your favourite license. Press <tab> after
-the |:CPYwrite| command to see the list.
+the |:CPYwrite| command for suggestions.
 
                                                   *g:cpywrite_verbatim_mode*
         `number` (default: 0)
@@ -67,10 +67,28 @@ COMMANDS                                                 *cpywrite-commands*
 Optionally takes the name of a SPDX license identifier (without quotes). Use
 <tab> for name completion.
 
-When called with no argument, this commmand behaves exactly like
+When called with no argument, this command behaves exactly like
 |<Plug>(cpywrite)|.
 
-                                                           *<Plug>(cpywrite)*
+                                                   *:CPYwriteDefaultLicense*
+        :CPYwriteDefaultLicense [{spdx_short_name}]
+
+Sets |g:cpywrite_default_license| to the given SPDX license identifier (without
+quotes) and prints the updated value. Use <tab> for name completion.
+
+Simply prints |g:cpywrite_default_license| when called with no argument.
+
+                                                       *:CPYwriteToggleMode*
+        :CPYwriteToggleMode
+
+Toggles the state of the |g:cpywrite_verbatim_mode| option and prints a
+description of the updated state:
+>
+    off -> "standard header/brief"
+    on  -> "verbatim"
+<
+
+                                                          *<Plug>(cpywrite)*
 Quick action command for fetching the default license assigned to
 |g:cpywrite_default_license|.
 
