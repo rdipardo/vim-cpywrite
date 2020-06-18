@@ -4,7 +4,7 @@
 
 Generate copyright headers for any open source license
 
-<img src=".github/nvim_043_scheme.gif" alt="nvim-043-linux-demo" width="800"/>
+<img src=".github/img/nvim_043_scheme.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
@@ -17,9 +17,9 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 
 ## Highlights
 
-- Python bindings compatible with python 2.7 or 3.4+, depending on your platform and (neo)vim version, of course
+- Python bindings compatible with python 2.7.x or 3.4+, depending on your platform and (neo)vim version, of course
 - Choose from 380 licenses (press `<tab>` after the `:CPYwrite` command for suggestions)
-- No dependencies on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses!
+- No dependency on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses!
 
 
 ## Quick Reference
@@ -100,6 +100,7 @@ call vundle#end()
 ## Projects like this one
 
 * [vim-licenses][vim-lic-2.0], formerly [licenses][vim-lic-1.0]
+* [vim-header][vim-hdr]
 * [license-to-vim][lic2vim]
 * [license loader][licl]
 
@@ -119,9 +120,10 @@ Consider opening a PR with an updated [installation guide][#installation] if any
 
 ## License
 
-MIT
+Distributed under the terms of the MIT license
 
 
+[vim-hdr]: https://github.com/alpertuna/vim-header
 [vim-lic-2.0]: https://github.com/antoyo/vim-licenses
 [vim-lic-1.0]: https://github.com/vim-scripts/Licenses
 [lic2vim]: https://www.vim.org/scripts/script.php?script_id=5349
