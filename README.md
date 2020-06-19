@@ -10,7 +10,7 @@ Generate copyright headers for any open source license
 
 Mostly written in CPython, this (neo)vim plugin fetches the license of your choice directly from the [SPDX License List](https://github.com/spdx/license-list-xml). If the XML response contains a standard header, it's inserted at the top of the current buffer with your copyright info.
 
-When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode`  option [below](#quick-reference).)
+When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode` option [below](#quick-reference).)
 
 This plugin learns your name and email by invoking `git`. If that fails, the copyright line will contain your OS user and host names.
 
@@ -35,7 +35,7 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 
 * Vim compiled with any one of the *+python[3]* or *+python[3]/dyn* options. See if you're supported by entering `vim --version | grep +python` at your terminal, or start `vim` and enter the `:version` command
 
-* neovim with the [**pynvim**](https://github.com/neovim/pynvim) module in your `$PYTHONPATH`. Start `nvim` and enter `:help provider-python` for more information
+* Neovim with the [**pynvim**](https://github.com/neovim/pynvim) module in your `$PYTHONPATH`. Start `nvim` and enter `:help provider-python` for more information
 
 
 ## Installation
@@ -112,7 +112,7 @@ call vundle#end()
 
 
 ## Improve this README
-Consider opening a PR with an updated [installation guide][#installation] if any of the following applies to you:
+Consider opening a PR with an updated [installation guide](#installation) if any of the following applies to you:
 
 * installation fails
 * installation succeeds with a plugin manager not mentioned here
