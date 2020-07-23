@@ -14,8 +14,8 @@ if !has('python3')
             \ ['Enter :help provider-python for more information.'])
         else
             echohl WarningMsg |
-                echom 'Error loading cpywrite: this plugin requires one of the
-                \ following features: +python, +python3, +python/dyn, or
+                echom 'Error loading vim-cpywrite: this plugin requires one of
+                \ the following features: +python, +python3, +python/dyn, or
                 \ +python3/dyn. Enter :help python for more information.'
                 \ | echohl None
         endif

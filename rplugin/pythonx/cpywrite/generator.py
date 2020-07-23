@@ -20,23 +20,13 @@ __all__ = ['Generator', 'extensions']
 class Generator(object):
     """A source file generator"""
     def __init__(self, filename='new.py', rights='GPL-3.0-or-later'):
-        lang, ext, tokens = _get_language_meta(filename)
-
-        if not lang:
-            raise ValueError("Unrecognized source file extension: '%s'"
-                             % (ext))
-
-        self.rights = License(rights)
-        self.out_file = path.splitext(filename)[0] + ext
-        self.lang = lang
-        self.tokens = tokens
+        self.set_file_props(filename, rights)
 
     def set_file_props(self, filename, rights=''):
         """
-        Update this Generator's output file, along with all associated
-        properties
+        Set this Generator's output file, along with all associated properties
         """
-        lang, ext, new_tokens = _get_language_meta(filename)
+        lang, ext, tokens = _get_language_meta(filename)
 
         if not lang:
             raise ValueError("Unrecognized source file extension: '%s'"
@@ -46,7 +36,7 @@ class Generator(object):
             self.rights = License(rights)
         self.out_file = path.splitext(filename)[0] + ext
         self.lang = lang
-        self.tokens = new_tokens
+        self.tokens = tokens
 
     def fetch_license_header(self, use_license_body=False):
         """Return a license header, with or without standard language"""
@@ -66,17 +56,22 @@ class Generator(object):
                 print('\n?>', file=dest)
 
         def _apply_format(text, pattern, copying, email):
-            """
-            Wrap text if the raw header has no break after author's email, as
-            some license formats require, e.g the ECL, all of the GFDLs. Fix up
-            copyright format and insert punctuation
-            """
             year = str(datetime.now())[:4]
+            # - fix up copyright format and insert punctuation;
+            # - wrap text if raw header has no break after author's email;
+            # - catch some precularities of the older license templates
             text = re.sub(r'\)%s' % year,
                           ') ' + year,
-                          re.sub(r'(?!$)<%s> ' % email,
-                                 '<%s>. ' % email,
-                                 pattern.sub(copying[14:], text)))
+                          re.sub(r'(%s).+(\w+Permission)' % self.tokens[1],
+                                 '%sPermission' % self.tokens[1],
+                                 re.sub(r'(?!$)<%s> ' % email,
+                                        '<%s>. ' % email,
+                                        pattern.sub(
+                                            copying[14:],
+                                            re.sub(r'(%s).+[19]*[xy]{2,} .*\n' \
+                                                % self.tokens[1],
+                                                   '',
+                                                   text, re.IGNORECASE)))))
 
             if self.rights.spdx_code.startswith('ECL'):
                 run_on_text = re.search(r'(%s).+\<(%s)\>\w' % (self.tokens[1],
@@ -103,9 +98,8 @@ class Generator(object):
                 if not use_license_body \
                 else self.rights.license_text
             author_date = \
-                re.compile(r"(?!.*(http).*)[\<\[\s][yearxYEARX]+[\>\]\s].+[\>\]]") \
-                if not self.rights.spdx_code.startswith('GFDL') \
-                else re.compile(r"[\<\[\s][yearxYEARX]+[\>\]\s].+[\>\]\.]")
+                re.compile(r"(?!.*(http).*)[\<\[\s][YEARX]+[\>\]\s].+[\>\]]",
+                           re.IGNORECASE)
 
             if self.lang_key in _SCRIPT_HEADERS:
                 print(_SCRIPT_HEADERS[self.lang_key], file=out)
@@ -116,7 +110,7 @@ class Generator(object):
             if use_license_body:
                 _continue_block_comment(out)
 
-            if terms:  # found a standard header
+            if ''.join(terms).strip():  # found a standard header
                 def _clean_tokens(tkn, line):
                     return tkn.rstrip() if not line.strip() else tkn
 
@@ -124,9 +118,17 @@ class Generator(object):
                     '\n'.join([_clean_tokens(self.tokens[1], ln) + ln.rstrip() \
                                for ln in terms])
 
-                if author_date.search(terms):
-                    terms = _apply_format(terms, author_date, copying, email)
-                else:
+                if not author_date.search(terms):
+                    # probably a GFDL or older GPL with an oddball authorship
+                    # template
+                    author_date = \
+                        re.compile(r"(?!.*(http).*)[\<\[\s][YEARX]+[\>\]\s].+[\>\]\.]",
+                                   re.IGNORECASE)
+
+                terms = _apply_format(terms, author_date, copying, email)
+
+                if not re.findall(r'(<%s>)' % email, terms, re.MULTILINE):
+                    # no authorship template at all
                     _continue_block_comment(out)
                     print(self.tokens[1] + copying, file=out)
 

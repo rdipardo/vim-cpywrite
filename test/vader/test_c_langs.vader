@@ -38,7 +38,7 @@ Execute(Prepend a header-less license to a C source file);
 Then(C header has brief license mention);
   AssertEqual ' * brief.c', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the LGPL-3.0-or-later license', getline(6)
+  AssertEqual ' * Licensed under the terms of the LGPL-3.0-or-later License', getline(6)
   AssertEqual ' */', getline(7)
 
 Execute(Prepend a standard license header to a C++ header file);
@@ -60,7 +60,7 @@ Execute(Prepend a header-less license to a C++ source file);
 Then(C++ source file has brief license mention);
   AssertEqual ' * brief.cxx', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the OpenSSL license', getline(6)
+  AssertEqual ' * Licensed under the terms of the OpenSSL License', getline(6)
   AssertEqual ' */', getline(7)
 
 Execute(Turn on verbatim mode);

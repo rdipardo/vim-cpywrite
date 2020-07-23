@@ -82,7 +82,7 @@ Execute(Prepend a header-less license to a Lisp file);
 Then(Lisp file header has brief license mention);
   AssertEqual ';; brief.lsp', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ';; Licensed under the terms of the BSD-2-Clause-FreeBSD license', getline(6)
+  AssertEqual ';; Licensed under the terms of the BSD-2-Clause-FreeBSD License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 " Tc #5
@@ -98,16 +98,16 @@ Then(Clojure file header quotes the ECL-2.0);
   AssertEqual 2, len(getline(16)), 'Allow no trailing spaces'
 
 " Tc #6
-Execute(Prepend a header-less license to a ClojureScript file);
-  new! brief.cljs
-  b brief.cljs
-  CPYwrite CATOSL-1.1
+Execute(Prepend a standard license header to a ClojureScript file);
+  new! standard.cljs
+  b standard.cljs
+  CPYwrite GPL-3.0-only
 
-Then(ClojureScript file header has brief license mention);
-  AssertEqual ';; brief.cljs', getline(2)
+Then(ClojureScript file header quotes the GPL-3.0-only);
+  AssertEqual ';; standard.cljs', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ';; Licensed under the terms of the CATOSL-1.1 license', getline(6)
-  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+  AssertEqual ';; as published by the Free Software Foundation, version 3.', getline(8)
+  AssertEqual 2, len(getline(18)), 'Allow no trailing spaces'
 
 " Tc #7
 Execute(Prepend a standard license header to an OCaml file);
@@ -120,7 +120,7 @@ Then(OCaml file header quotes the GFDL-1.3-or-later);
   AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual ' distribute and/or modify this document under the terms of the GNU', getline(5)
   AssertEqual ' Free Documentation License, Version 1.3 or any later version published', getline(6)
-  AssertEqual '*)', getline(10)
+  AssertEqual '*)', getline(11)
 
 " Tc #8
 Execute(Prepend a header-less license to an OCaml file);
@@ -131,7 +131,7 @@ Execute(Prepend a header-less license to an OCaml file);
 Then(OCaml file header has brief license mention);
   AssertEqual ' brief.mli', getline(2)
   AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' Licensed under the terms of the DOC license', getline(6)
+  AssertEqual ' Licensed under the terms of the DOC License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 " Tc #9
@@ -155,5 +155,5 @@ Execute(Prepend a header-less license to a Haskell file);
 Then(Haskell file header has brief license mention);
   AssertEqual '-- brief.lhs', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '-- Licensed under the terms of the Eurosym license', getline(6)
+  AssertEqual '-- Licensed under the terms of the Eurosym License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'

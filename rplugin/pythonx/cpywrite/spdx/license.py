@@ -5,6 +5,7 @@ Utilities for fetching and printing open source license information
 """
 from __future__ import print_function, unicode_literals
 import xml.etree.ElementTree as parser
+from itertools import dropwhile
 from re import sub
 from sys import stderr
 from textwrap import TextWrapper
@@ -22,17 +23,13 @@ class License(object):
     """Encapsulates the details of a license on the SPDX index"""
     def __init__(self, code):
         self.spdx_code = None
+        self.header_width = 76
 
         try:
             self.spdx_code = _SPDX_IDS[_SPDX_IDS.index(code)]
         except ValueError:
             raise ValueError("No such license '%s' on the SPDX index!"
                              % (code))
-
-    @property
-    def header_line_width(self):
-        """Return the max allowed width of a line of header text"""
-        return 76
 
     @property
     def header(self):
@@ -49,6 +46,7 @@ class License(object):
         resource = quote(xml_resource % self.spdx_code, safe='/:')
         license_data = None
         header_text = []
+        should_wrap = False
 
         try:
             response = requests.get(resource)
@@ -113,35 +111,39 @@ class License(object):
                                else (child.tail or '')
 
                 line = sub(r'\n\s+', '\n', content.lstrip())
-
-                if list(filter(lambda l: len(l) > self.header_line_width,
-                               line.splitlines())):
-                    wrapper = TextWrapper(drop_whitespace=False,
-                                          width=self.header_line_width)
-                    line = '\n'.join(map(lambda l: l.lstrip(),
-                                         wrapper.wrap(line)))
+                should_wrap = \
+                    bool(list(filter(lambda l: len(l) > self.header_width,
+                                     line.splitlines())))
 
                 if child.tag == p_tag:
                     header_text.append('\n\n' + line)
                 else:
                     header_text.append(line)
 
+        # - drop leading empty lines;
         # - don't break before URLs; but . . .
-        # - if a line starts with a URL, indent it
+        # - if a line starts with a URL, indent it;
         # - remove extra space before URLs;
         # - keep authorship on same line as copyright;
         # - remove extra lines between paragraphs
-        return sub(r'\nhttp',
-                   ' http',
-                   sub(r'\n{2}http',
-                       '\n\n    http',
-                       sub(r'(?!\n)\s{2,}http',
-                           ' http',
-                           sub(r'[cC]opyright(\s+\([cC]\))?\s*\n',
-                               'Copyright (c) ',
-                               sub(r'\n{3,}',
-                                   '\n\n',
-                                   ''.join(header_text))))))[1:].splitlines()
+        header = list(
+            dropwhile(
+                lambda ln: not ln.strip(),
+                sub(r'\nhttp',
+                    ' http',
+                    sub(r'\n{2}http',
+                        '\n\n    http',
+                        sub(r'(?!\n)\s{2,}http',
+                            ' http',
+                            sub(r'([cC]opyright(\s+\([cC]\))?)\s*\n',
+                                'Copyright (c) ',
+                                sub(r'\n{3,}',
+                                    '\n\n',
+                                    ''.join(header_text)))))).splitlines()))
+
+        return ['\n'] + (header \
+                         if not should_wrap \
+                         else _wrap_header(header, self.header_width))
 
     @property
     def license_text(self):
@@ -184,7 +186,7 @@ class License(object):
         """Return a phrase describing this License"""
 
         if self.spdx_code:
-            return 'the ' + self.spdx_code + ' license'
+            return 'the ' + self.spdx_code + ' License'
 
         return ''
 
@@ -193,6 +195,17 @@ def licenses():
     """Return all SPDX ids of candidate licenses"""
     return _SPDX_IDS
 
+def _wrap_header(header_lines, limit):
+    """Keep header to a prescribed width"""
+    wrapper = TextWrapper(drop_whitespace=False, replace_whitespace=False,
+                          width=limit)
+    header_lines = ['\n' if not s.strip() else s + ' ' for s in header_lines]
+
+    return \
+        ''.join(
+            '\n'.join(
+                list(map(lambda l: l.lstrip(),
+                         wrapper.wrap(''.join(header_lines)))))).splitlines()
 
 _SPDX_IDS = [
     '0BSD',

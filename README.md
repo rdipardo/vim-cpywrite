@@ -4,7 +4,7 @@
 
 ---
 ### This branch is for development purposes
-#### End users are advised to checkout a release package from [master](https://github.com/rdipardo/vim-cpywrite)
+#### End users are advised to checkout a [release](https://github.com/rdipardo/vim-cpywrite/releases) package
 ---
 
 Generate copyright headers for any open source license
@@ -42,7 +42,7 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 
 * Vim compiled with any one of the *+python[3]* or *+python[3]/dyn* options. See if you're supported by entering `vim --version | grep +python` at your terminal, or start `vim` and enter the `:version` command
 
-* neovim with the [**pynvim**](https://github.com/neovim/pynvim) module in your `$PYTHONPATH`. Start `nvim` and enter `:help provider-python` for more information
+* Neovim with the [**pynvim**](https://github.com/neovim/pynvim) module in your `$PYTHONPATH`. Start `nvim` and enter `:help provider-python` for more information
 
 
 ## Installation
@@ -107,6 +107,7 @@ call vundle#end()
 ## Projects like this one
 
 * [vim-licenses][vim-lic-2.0], formerly [licenses][vim-lic-1.0]
+* [vim-header][vim-hdr]
 * [license-to-vim][lic2vim]
 * [license loader][licl]
 
@@ -129,6 +130,7 @@ Consider opening a PR with an updated [installation guide](#installation) if any
 Distributed under the terms of the MIT license
 
 
+[vim-hdr]: https://github.com/alpertuna/vim-header
 [vim-lic-2.0]: https://github.com/antoyo/vim-licenses
 [vim-lic-1.0]: https://github.com/vim-scripts/Licenses
 [lic2vim]: https://www.vim.org/scripts/script.php?script_id=5349
