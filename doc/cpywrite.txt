@@ -11,7 +11,7 @@ Pass a license identifier to the |:CPYwrite| command and it will insert the
 standard header, if available, at the top of the current buffer.
 
 When |g:cpywrite_verbatim_mode| is off, licenses with no standard header will
-be identified below your author line. Turn on |g:cpywrite_verbatim_mode| to
+be acknowledged below your author line. Turn on |g:cpywrite_verbatim_mode| to
 use the full license text instead.
 
 This plugin learns your name and email by invoking `git`; it falls back to
@@ -40,15 +40,14 @@ OPTIONS                                                   *cpywrite-options*
         `string` (default: 'GPL-3.0-or-later')
 
 Set this to the SPDX identifier of your favourite license. Press <tab> after
-the |:CPYwrite| command to see the list.
+the |:CPYwriteDefaultLicense| or |:CPYwrite| command for suggestions.
 
                                                   *g:cpywrite_verbatim_mode*
         `number` (default: 0)
 
-When set to a "truthy" value, the full license text will be requested (whether
-or not a standard header exists). You should only choose this when the license
-is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause,
-etc.)
+When set to 1, the full license text will be requested, whether or not a
+standard header exists. You should only choose this when the license is no
+longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)
 
 When set to 0, only standard headers are requested. Licenses with no standard
 header will be briefly mentioned below your copyright line.
@@ -67,10 +66,28 @@ COMMANDS                                                 *cpywrite-commands*
 Optionally takes the name of a SPDX license identifier (without quotes). Use
 <tab> for name completion.
 
-When called with no argument, this commmand behaves exactly like
+When called with no argument, this command behaves exactly like
 |<Plug>(cpywrite)|.
 
-                                                           *<Plug>(cpywrite)*
+                                                   *:CPYwriteDefaultLicense*
+        :CPYwriteDefaultLicense [{spdx_short_name}]
+
+Sets |g:cpywrite_default_license| to the given SPDX license identifier (without
+quotes) and prints the updated value. Use <tab> for name completion.
+
+Simply prints |g:cpywrite_default_license| when called with no argument.
+
+                                                       *:CPYwriteToggleMode*
+        :CPYwriteToggleMode
+
+Toggles the state of the |g:cpywrite_verbatim_mode| option and prints a
+description of the updated state:
+>
+    0 == "standard header/brief"
+    1 == "verbatim"
+<
+
+                                                          *<Plug>(cpywrite)*
 Quick action command for fetching the default license assigned to
 |g:cpywrite_default_license|.
 

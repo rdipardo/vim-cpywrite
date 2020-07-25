@@ -20,32 +20,23 @@ __all__ = ['Generator', 'extensions']
 class Generator(object):
     """A source file generator"""
     def __init__(self, filename='new.py', rights='GPL-3.0-or-later'):
+        self.set_file_props(filename, rights)
+
+    def set_file_props(self, filename, rights=''):
+        """
+        Set this Generator's output file, along with all associated properties
+        """
         lang, ext, tokens = _get_language_meta(filename)
 
         if not lang:
             raise ValueError("Unrecognized source file extension: '%s'"
                              % (ext))
 
-        self.rights = License(rights)
+        if rights:
+            self.rights = License(rights)
         self.out_file = path.splitext(filename)[0] + ext
         self.lang = lang
         self.tokens = tokens
-
-    def set_file_props(self, filename, rights=''):
-        """
-        Update this Generator's output file, along with all associated
-        properties
-        """
-        lang, ext, new_tokens = _get_language_meta(filename)
-
-        if not lang:
-            raise ValueError("Unrecognized source file extension: '%s'"
-                             % (ext))
-
-        self.rights = License(rights) if rights else self.rights
-        self.out_file = path.splitext(filename)[0] + ext
-        self.lang = lang
-        self.tokens = new_tokens
 
     def fetch_license_header(self, use_license_body=False):
         """Return a license header, with or without standard language"""
@@ -61,21 +52,26 @@ class Generator(object):
                 print(self.tokens[3], file=dest)
             except IndexError:
                 print(self.tokens[0], file=dest)
-            if self.lang_key() == 'php':
+            if self.lang_key == 'php':
                 print('\n?>', file=dest)
 
         def _apply_format(text, pattern, copying, email):
-            """
-            Wrap text if the raw header has no break after author's email, as
-            some license formats require, e.g the ECL, all of the GFDLs. Fix up
-            copyright format and insert punctuation
-            """
             year = str(datetime.now())[:4]
+            # - fix up copyright format and insert punctuation;
+            # - wrap text if raw header has no break after author's email;
+            # - catch some precularities of the older license templates
             text = re.sub(r'\)%s' % year,
                           ') ' + year,
-                          re.sub(r'(?!$)<%s> ' % email,
-                                 '<%s>. ' % email,
-                                 pattern.sub(copying[14:], text)))
+                          re.sub(r'(%s).+(\w+Permission)' % self.tokens[1],
+                                 '%sPermission' % self.tokens[1],
+                                 re.sub(r'(?!$)<%s> ' % email,
+                                        '<%s>. ' % email,
+                                        pattern.sub(
+                                            copying[14:],
+                                            re.sub(r'(%s).+[19]*[xy]{2,} .*\n' \
+                                                % self.tokens[1],
+                                                   '',
+                                                   text, re.IGNORECASE)))))
 
             if self.rights.spdx_code.startswith('ECL'):
                 run_on_text = re.search(r'(%s).+\<(%s)\>\w' % (self.tokens[1],
@@ -98,24 +94,23 @@ class Generator(object):
             copying = \
                 'Copyright (c) ' + year + ' ' + author + ' <' + email + '>'
             terms = \
-                self.rights.header() \
+                self.rights.header \
                 if not use_license_body \
-                else self.rights.license_text()
+                else self.rights.license_text
             author_date = \
-                re.compile(r"(?!.*(http).*)[\<\[\s][yearxYEARX]+[\>\]\s].+[\>\]]") \
-                if not self.rights.spdx_code.startswith('GFDL') \
-                else re.compile(r"[\<\[\s][yearxYEARX]+[\>\]\s].+[\>\]\.]")
+                re.compile(r"(?!.*(http).*)[\<\[\s][YEARX]+[\>\]\s].+[\>\]]",
+                           re.IGNORECASE)
 
-            if self.lang_key() in _SCRIPT_HEADERS:
-                print(_SCRIPT_HEADERS[self.lang_key()], file=out)
+            if self.lang_key in _SCRIPT_HEADERS:
+                print(_SCRIPT_HEADERS[self.lang_key], file=out)
 
             print(self.tokens[0], file=out)
-            print(self.tokens[1] + self.out_file, file=out)
+            print(self.tokens[1] + path.basename(self.out_file), file=out)
 
             if use_license_body:
                 _continue_block_comment(out)
 
-            if terms:  # found a standard header
+            if ''.join(terms).strip():  # found a standard header
                 def _clean_tokens(tkn, line):
                     return tkn.rstrip() if not line.strip() else tkn
 
@@ -123,9 +118,17 @@ class Generator(object):
                     '\n'.join([_clean_tokens(self.tokens[1], ln) + ln.rstrip() \
                                for ln in terms])
 
-                if author_date.search(terms):
-                    terms = _apply_format(terms, author_date, copying, email)
-                else:
+                if not author_date.search(terms):
+                    # probably a GFDL or older GPL with an oddball authorship
+                    # template
+                    author_date = \
+                        re.compile(r"(?!.*(http).*)[\<\[\s][YEARX]+[\>\]\s].+[\>\]\.]",
+                                   re.IGNORECASE)
+
+                terms = _apply_format(terms, author_date, copying, email)
+
+                if not re.findall(r'(<%s>)' % email, terms, re.MULTILINE):
+                    # no authorship template at all
                     _continue_block_comment(out)
                     print(self.tokens[1] + copying, file=out)
 
@@ -154,6 +157,7 @@ class Generator(object):
         finally:
             out.close()
 
+    @property
     def lang_key(self):
         """
         Return the normalized name of this Generator's language to aid key
@@ -168,26 +172,29 @@ class Generator(object):
 
 def _get_language_meta(filename):
     """Identify programming language from file extension"""
-    if len(filename) < 1 or \
-        re.match(r'^.*[\-`<>:\"\'\/\\\|\?\*].*$', filename) or \
-            re.match(r'^.+[\-`<>:\"\'\/\\\|\?\*\.]+$', filename):
+    if len(filename.strip()) < 1 or \
+        re.match(r'^.*[`<>:\"\'\|\?\*].*$', filename) or \
+            re.match(r'^.+[\-`<>:\"\'\|\?\*\.]+$', filename):
         raise ValueError("Invalid filename: '%s'" % filename)
 
-    lang = ''
-    tokens = ()
-    _, ext = path.splitext(filename)
+    fname, ext = path.splitext(filename)
 
     if not ext or ext == '.':
         print('No extension; assuming shell script')
-        return ('bash', '', ('#', '# '))
+        return ('Bash', '', ('#', '# '))
 
+    if ext.lower() == '.txt' and path.basename(fname).lower() == 'cmakelists':
+        return ('CMake', '.txt', ('#', '# '))
+
+    lang = ''
+    tokens = ()
     ext = ext.lower()
 
     for k in _SOURCE_META:
         if ext in list(k):
             try:
                 for grp in _SOURCE_META[k][0]:
-                    if ext in grp:
+                    if ext in list(grp) or ext == grp:
                         lang = _SOURCE_META[k][0][grp]
                         tokens = _SOURCE_META[k][1]
                         break
@@ -247,11 +254,11 @@ def extensions():
 
 
 _SOURCE_META = {
-    ('', '.sh', '.pl', '.py', '.rb', '.cmake'):
+    ('', '.sh', '.pl', '.py', '.pyw', '.rb', '.cmake'):
         [{
             ('', '.sh'): 'Bash',
             ('.pl'): 'Perl',
-            ('.py'): 'Python',
+            ('.py', '.pyw'): 'Python',
             ('.rb'): 'Ruby',
             ('.cmake'): 'CMake'
         },
@@ -269,16 +276,16 @@ _SOURCE_META = {
      '.hpp', '.hxx', '.java', '.js', '.php', '.php4', '.php5', '.phtml', '.rs',
      '.ts'):
         [{
-            ('.c', '.C'): 'C',
-            ('.h', '.H'): 'C header',
+            ('.c'): 'C',
+            ('.h'): 'C header',
             ('.cc', '.c++', '.cpp', '.cxx'): 'C++',
             ('.hh', '.h++', '.hpp', '.hxx'): 'C++ header',
-            ('.cs', '.CS'): 'C-sharp',
-            ('.css', '.CSS'): 'CSS',
-            ('.java', '.JAVA'): 'Java',
+            ('.cs'): 'C-sharp',
+            ('.css'): 'CSS',
+            ('.java'): 'Java',
             ('.php', '.php4', '.php5', '.phtml'): 'PHP',
-            ('.js', '.JS'): 'JavaScript',
-            ('.ts', '.TS'): 'TypeScript'
+            ('.js'): 'JavaScript',
+            ('.ts'): 'TypeScript'
         },
          ('/**', ' * ', ' *', ' */')],
     ('.ml', '.mli'):

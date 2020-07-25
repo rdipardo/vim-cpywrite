@@ -44,7 +44,7 @@ Execute(Prepend a header-less license to a CSS file);
 Then(CSS file header has brief license mention);
   AssertEqual ' * brief.css', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the Beerware license', getline(6)
+  AssertEqual ' * Licensed under the terms of the Beerware License', getline(6)
   AssertEqual ' */', getline(7)
 
 " Tc #3
@@ -63,8 +63,8 @@ Execute(Prepend the default license header to a TypeScript file);
 Then(TypeScript file header quotes the MPL-2.0 license);
   AssertEqual ' * standard.ts', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL', getline(6)
-  AssertEqual ' */', getline(8)
+  AssertEqual ' * This Source Code Form is subject to the terms of the Mozilla Public License,', getline(6)
+  AssertEqual ' */', getline(9)
 
 " Tc #4
 Execute(Prepend a header-less license to a TypeScript file);
@@ -75,7 +75,7 @@ Execute(Prepend a header-less license to a TypeScript file);
 Then(TypeScript file header has brief license mention);
   AssertEqual ' * brief.ts', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the Fair license', getline(6)
+  AssertEqual ' * Licensed under the terms of the Fair License', getline(6)
   AssertEqual ' */', getline(7)
 
 " Tc #5
@@ -99,7 +99,7 @@ Execute(Prepend a header-less license to HTML);
 Then(HTML comment block has brief license mention);
   AssertEqual ' brief.html', getline(2)
   AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' Licensed under the terms of the Xerox license', getline(6)
+  AssertEqual ' Licensed under the terms of the Xerox License', getline(6)
   AssertEqual '-->', getline(7)
 
 " Tc #7
@@ -111,8 +111,8 @@ Execute(Prepend a standard license header to a SASS file);
 Then(SASS file header quotes the BitTorrent-1.0 license);
   AssertEqual '// standard.scss', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '// The contents of this file are subject to the BitTorrent Open Source License Version 1.0 (the License).', getline(6)
-  AssertEqual '//', getline(13)
+  AssertEqual '// The contents of this file are subject to the BitTorrent Open Source License', getline(6)
+  AssertEqual '//', getline(14)
 
 " Tc #8
 Execute(Prepend a header-less license to a SASS file);
@@ -123,5 +123,5 @@ Execute(Prepend a header-less license to a SASS file);
 Then(SASS file header has brief license mention);
   AssertEqual '// brief.scss', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '// Licensed under the terms of the Afmparse license', getline(6)
+  AssertEqual '// Licensed under the terms of the Afmparse License', getline(6)
   AssertEqual '//', getline(7)

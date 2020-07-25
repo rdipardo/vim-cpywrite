@@ -15,10 +15,12 @@ from cpywrite import Generator
 def prepend():
     """Prepend license header to the open buffer"""
     if vim.current.buffer:
+        vim.command("let b:fn=expand('%:t')")
+        filename = vim.eval('b:fn')
         license_name = vim.eval('l:license_name')
 
         try:
-            generator = Generator(rights=license_name)
+            generator = Generator(filename, license_name)
             _write_header(generator, vim.current.buffer)
         except (ValueError, vim.error) as exc:
             print(str(exc))
@@ -28,19 +30,16 @@ def _write_header(writer, curr_buffer):
     """Write the license header"""
     try:
         old_row, old_col = vim.current.window.cursor
-        vim.command("let b:fn=expand('%:t')")
-        filename = vim.eval('b:fn')
         use_text_as_header = vim.eval('g:cpywrite_verbatim_mode')
 
         try:
             use_text_as_header = bool(int(use_text_as_header, 10))
         except ValueError:
-            print("'g:cpywrite_verbatim_mode' should be set to a number!",
+            print("'g:cpywrite_verbatim_mode' should be set to 1 or 0!",
                   file=sys.stderr)
             vim.command('let g:cpywrite_verbatim_mode=0')
             use_text_as_header = False
 
-        writer.set_file_props(filename)
         header = writer.fetch_license_header(use_text_as_header)
 
         if header:

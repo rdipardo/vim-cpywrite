@@ -26,18 +26,19 @@ Then(Shell script header quotes the GPL-3.0+);
   AssertEqual '# 3 of the License, or (at your option) any later version.', getline(10)
 
 " Tc #2
-Execute(Prepend a header-less license to a shell script);
+Execute(Prepend a standard license header to a shell script);
   new! brief_header
   b brief_header
-  CPYwrite Vim
+  CPYwrite GFDL-1.1-only
 
-Then(Shell script header has brief license mention);
+Then(Shell script header quotes the GFDL-1.1-only);
   AssertEqual '#!/usr/bin/env bash', getline(1)
   AssertEqual 1, len(getline(2)), 'Allow no trailing spaces'
   AssertEqual '# brief_header', getline(3)
-  AssertEqual '# Licensed under the terms of the Vim license', getline(7)
+  AssertEqual '# Permission is granted to copy, distribute and/or modify this', getline(7)
+  AssertEqual '# in the section entitled "GNU Free Documentation License".', getline(12)
+  AssertEqual 1, len(getline(13)), 'Allow no trailing spaces'
 
-" Tc #3
 Execute(Prepend the default license header to a Python file);
   new! default_header.py
   b default_header.py
@@ -85,7 +86,7 @@ Then(Ruby file header has brief license mention);
   AssertEqual '# frozen_string_literal: true', getline(1)
   AssertEqual 0, len(getline(2)), 'One blank line after frozen_string_literal directive'
   AssertEqual '# brief_header.rb', getline(4)
-  AssertEqual '# Licensed under the terms of the MIT license', getline(8)
+  AssertEqual '# Licensed under the terms of the MIT License', getline(8)
 
 " Tc #7
 Execute(Prepend the default license header to a PHP file);
@@ -111,7 +112,7 @@ Then(PHP file has brief license mention);
   AssertEqual '<?php', getline(1)
   AssertEqual ' * brief_header.phtml', getline(3)
   AssertEqual 2, len(getline(4)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the Zend-2.0 license', getline(7)
+  AssertEqual ' * Licensed under the terms of the Zend-2.0 License', getline(7)
   AssertEqual '?>', getline(10), 'Ensure closing PHP tag'
 
 " Tc #9
@@ -136,7 +137,7 @@ Execute(Prepend a header-less license to an SQL script);
 Then(SQL script has brief license mention);
   AssertEqual '-- brief.sql', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '-- Licensed under the terms of the bzip2-1.0.5 license', getline(6)
+  AssertEqual '-- Licensed under the terms of the bzip2-1.0.5 License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 " Tc #11
@@ -161,5 +162,5 @@ Execute(Prepend a header-less license to a Vim script);
 Then(Vim script has brief license mention);
   AssertEqual '"" brief.vim', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '"" Licensed under the terms of the Vim license', getline(6)
+  AssertEqual '"" Licensed under the terms of the Vim License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'

@@ -1,4 +1,6 @@
 :CPYwrite	cpywrite.txt	/*:CPYwrite*
+:CPYwriteDefaultLicense	cpywrite.txt	/*:CPYwriteDefaultLicense*
+:CPYwriteToggleMode	cpywrite.txt	/*:CPYwriteToggleMode*
 <Plug>(cpywrite)	cpywrite.txt	/*<Plug>(cpywrite)*
 LH	cpywrite.txt	/*LH*
 cpywrite-commands	cpywrite.txt	/*cpywrite-commands*
