@@ -4,7 +4,7 @@
 
 Generate copyright headers for any open source license
 
-<img src=".github/img/nvim_043_ver_011.gif" alt="nvim-043-linux-demo" width="800"/>
+<img src=".github/img/nvim_043_ver_020_rc.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
@@ -144,7 +144,7 @@ Distributed under the terms of the MIT license
 [vim-8-pkg-docs]: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 [vim-pack-man]: https://shapeshed.com/vim-packages/#how-it-works
 [lang-list]: rplugin/pythonx/cpywrite/generator.py#L255
-[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=master
+[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=autoload-refactoring
 [travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
 
 <!--

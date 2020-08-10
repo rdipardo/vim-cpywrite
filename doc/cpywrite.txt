@@ -34,6 +34,14 @@ REQUIREMENTS                                         *cpywrite-requirements*
     https://pypi.org/project/requests
 
 =============================================================================
+VARIABLES                                               *cpywrite-variables*
+
+                                                        *g:cpywrite_version*
+        `string` (set at runtime by the autoload script)
+
+The current version number of this plugin.
+
+=============================================================================
 OPTIONS                                                   *cpywrite-options*
 
                                                 *g:cpywrite_default_license*
@@ -51,11 +59,6 @@ longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)
 
 When set to 0, only standard headers are requested. Licenses with no standard
 header will be briefly mentioned below your copyright line.
-
-                                                        *g:cpywrite_version*
-        `string` (set at runtime)
-
-The current version number of this plugin.
 
 =============================================================================
 COMMANDS                                                 *cpywrite-commands*
