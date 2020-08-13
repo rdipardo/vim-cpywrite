@@ -18,8 +18,8 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 ## Highlights
 
 - Python bindings compatible with python 2.7.x or 3.4+, depending on your platform and (neo)vim version, of course
-- Choose from 380 licenses (press `<tab>` after the `CPYwriteDefaultLicense` or `:CPYwrite` command for suggestions)
-- No dependency on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses. Vim users may want to add `set wildmenu` to their `vimrc` file
+- Choose from 380 licenses (press `<tab>` after the `:CPYwriteDefaultLicense` or `:CPYwrite` command for suggestions)
+- No dependency on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses. Vim users may want to add `set wildmenu` to their `.vimrc` file
 
 
 ## Quick Reference
@@ -144,7 +144,7 @@ Distributed under the terms of the MIT license
 [vim-8-pkg-docs]: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 [vim-pack-man]: https://shapeshed.com/vim-packages/#how-it-works
 [lang-list]: rplugin/pythonx/cpywrite/generator.py#L255
-[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=autoload-refactoring
+[travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=master
 [travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
 
 <!--

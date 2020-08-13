@@ -1,3 +1,8 @@
+### 0.2.0
+
+- extract feature tests and core functions to `autoload` directory to [improve startup time][pr2]
+- suggest [`set wildmenu`](README.md#highlights) for faster completions when not using neovim
+
 ### 0.1.1
 
 - convenience commands for getting/setting global options:
@@ -17,3 +22,7 @@
 ### 0.1.0
 
 - initial release
+
+
+[pr2]: https://github.com/rdipardo/vim-cpywrite/pull/2
+
