@@ -34,7 +34,7 @@ REQUIREMENTS                                         *cpywrite-requirements*
     https://pypi.org/project/requests
 
 =============================================================================
-VARIABLES                                               *cpywrite-variables*
+ATTRIBUTES                                             *cpywrite-attributes*
 
                                                         *g:cpywrite_version*
         `string` (set at runtime by the autoload script)

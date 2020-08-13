@@ -1,6 +1,10 @@
+"" ==========================================================================
+""   vim-cpywrite
 ""
-""   vim-cpywrite: https://github.com/rdipardo/vim-cpywrite
-""
+""   Maintainer: Robert Di Pardo <dipardo.r@gmail.com>
+""   URL:        https://github.com/rdipardo/vim-cpywrite
+""   License:    MIT
+"" ==========================================================================
 
 if get(g:, 'autoloaded_cpywrite_error') | finish | endif
 let g:autoloaded_cpywrite_error = 1

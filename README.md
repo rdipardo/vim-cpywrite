@@ -4,7 +4,7 @@
 
 Generate copyright headers for any open source license
 
-<img src=".github/img/nvim_043_ver_020_rc.gif" alt="nvim-043-linux-demo" width="800"/>
+<img src=".github/img/nvim_043_ver_020.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
@@ -19,7 +19,7 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 
 - Python bindings compatible with python 2.7.x or 3.4+, depending on your platform and (neo)vim version, of course
 - Choose from 380 licenses (press `<tab>` after the `CPYwriteDefaultLicense` or `:CPYwrite` command for suggestions)
-- No dependency on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses!
+- No dependency on other plugins. That said, neovim users will be grateful to have the [completeopt](https://neovim.io/doc/user/options.html#'completeopt') feature when tabbing through all the available licenses. Vim users may want to add `set wildmenu` to their `vimrc` file
 
 
 ## Quick Reference
