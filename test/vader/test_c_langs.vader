@@ -63,6 +63,17 @@ Then(C++ source file has brief license mention);
   AssertEqual ' * Licensed under the terms of the OpenSSL License', getline(6)
   AssertEqual ' */', getline(7)
 
+Execute(Prepend a standard header to CMakeLists.txt);
+  new! CMakeLists.txt
+  b CMakeLists.txt
+  CPYwrite GPL-3.0-only
+
+Then(CMakeLists.txt quotes GPLv3);
+  AssertEqual '# CMakeLists.txt', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# as published by the Free Software Foundation, version 3.', getline(8)
+  AssertEqual 1, len(getline(18)), 'Allow no trailing spaces'
+
 Execute(Turn on verbatim mode);
   call vader#log('===== Switching to verbatim license mode =====')
   let g:cpywrite_verbatim_mode = 1
@@ -70,7 +81,20 @@ Execute(Turn on verbatim mode);
 Then(Assert that verbatim mode is now on);
   AssertEqual 1, g:cpywrite_verbatim_mode
 
-" Tc #5
+Execute(Prepend a public domain license verbatim to an Objective-C file);
+  new! freed.m
+  b freed.m
+  CPYwrite Unlicense
+
+Then(Objective-C  file header quotes the entire Unlicense);
+  AssertEqual ' * freed.m', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * This is free and unencumbered software released into the public domain.', getline(4)
+  AssertEqual ' * Anyone is free to copy, modify, publish, use, compile, sell, or distribute', getline(6)
+  AssertEqual ' * In jurisdictions that recognize copyright laws, the author or authors of this', getline(10)
+  AssertEqual ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(17)
+  AssertEqual ' */', getline(24)
+
 Execute(Prepend a license verbatim to a Rust file);
   new! verbatim.rs
   b verbatim.rs
@@ -84,19 +108,6 @@ Then(Rust file header quotes the entire BSD-3-Clause license);
   AssertEqual '// 3. Neither the name of the copyright holder nor the names of its contributors', getline(16)
   AssertEqual '// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"', getline(20)
   AssertEqual 2, len(getline(30)), 'Allow no trailing spaces'
-
-Execute(Prepend a license verbatim to a Go file);
-  new! verbatim.go
-  b verbatim.go
-  CPYwrite BSD-1-Clause
-
-Then(Go file header quotes the entire BSD-1-Clause license);
-  AssertEqual '// verbatim.go', getline(2)
-  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '// 1. Redistributions of source code must retain the above copyright notice,', getline(9)
-  AssertEqual '// THIS SOFTWARE IS PROVIDED BY Berkeley Software Design, Inc. "AS IS" AND ANY', getline(12)
-  AssertEqual '// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.', getline(21)
-  AssertEqual 2, len(getline(22)), 'Allow no trailing spaces'
 
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')

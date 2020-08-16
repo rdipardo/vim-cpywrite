@@ -13,13 +13,6 @@ if has('python3') || has('python')
     if empty(get(s:, 'cpywrite_python_cmd', ''))
         let s:cpywrite_python_cmd = (has('python3') ? 'py3' : 'py') . 'file'
     endif
-
-    if empty(get(g:, 'cpywrite_version', ''))
-        exe s:cpywrite_python_cmd
-          \ fnamemodify(
-          \   globpath(&rtp, 'plugin/cpywrite/version.py', 0, 1)[0],
-          \   ':p')
-    endif
 endif
 
 func! cpywrite#PrependHeader(...) abort

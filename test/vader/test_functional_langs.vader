@@ -157,3 +157,50 @@ Then(Haskell file header has brief license mention);
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual '-- Licensed under the terms of the Eurosym License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteDefaultLicense to set default license);
+  call vader#log('===== Calling :CPYwriteDefaultLicense =====')
+  CPYwriteDefaultLicense ECL-1.0
+
+Then(Assert that :CPYwriteDefaultLicense changes default license);
+  AssertEqual 'ECL-1.0', g:cpywrite_default_license
+
+" Tc #11
+Execute(Prepend standard header to an Erlang file);
+  new! standard.erl
+  b standard.erl
+  silent exe "norm \<Plug>(cpywrite)"
+
+Then(Erlang file header quotes the ECL-1.0);
+  AssertEqual '%% standard.erl', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '%% Licensed under the Educational Community License version 1.0', getline(6)
+  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that verbatim mode is now on);
+  AssertEqual 1, g:cpywrite_verbatim_mode
+
+" Tc #12
+Execute(Prepend a license verbatim to an Elixir file);
+  new! verbatim.ex
+  b verbatim.ex
+  norm LH
+
+Then(Elixir file quotes the entire ECL-1.0);
+  AssertEqual '# verbatim.ex', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# The Educational Community License', getline(4)
+  AssertEqual '# The full text of the Educational Community License in a location viewable',getline(28)
+  AssertEqual '# The name and trademarks of copyright holder(s) may NOT be used in advertising', getline(47)
+  AssertEqual 1, len(getline(51)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that verbatim mode is now off);
+  AssertEqual 0, g:cpywrite_verbatim_mode

@@ -125,3 +125,42 @@ Then(SASS file header has brief license mention);
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual '// Licensed under the terms of the Afmparse License', getline(6)
   AssertEqual '//', getline(7)
+
+" Tc #9
+Execute(Prepend a standard license header to an Elm file);
+  new! standard.elm
+  b standard.elm
+  CPYwrite BitTorrent-1.1
+
+Then(Elm file header quotes the BitTorrent-1.1);
+  AssertEqual ' standard.elm', getline(2)
+  AssertEqual ' Version 1.1 (the License). You may not copy or use this file, in either', getline(7)
+  AssertEqual ' may obtain a copy of the License at http://www.bittorrent.com/license/.', getline(9)
+  AssertEqual 2, len(getline(14)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that verbatim mode is now on);
+  AssertEqual 1, g:cpywrite_verbatim_mode
+
+" Tc #10
+Execute(Prepend a license verbatim to a CoffeeScript file);
+  new! verbatim.coffee
+  b verbatim.coffee
+  CPYwrite BSD-1-Clause
+
+Then(CoffeeScript file quotes the entire BSD 1-Clause);
+  AssertEqual '###', getline(1), 'Use proper multiline comment syntax'
+  AssertEqual ' verbatim.coffee', getline(2)
+  AssertEqual ' 1. Redistributions of source code must retain the above copyright notice,', getline(9)
+  AssertEqual ' THIS SOFTWARE IS PROVIDED BY Berkeley Software Design, Inc. "AS IS" AND ANY', getline(12)
+  AssertEqual '###', getline(22), 'Use proper multiline comment syntax'
+
+Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that verbatim mode is now off);
+  AssertEqual 0, g:cpywrite_verbatim_mode

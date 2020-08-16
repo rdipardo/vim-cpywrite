@@ -154,13 +154,13 @@ Then(Vim script quotes the GPL-3.0+);
   AssertEqual '""', getline(19)
 
 " Tc #12
-Execute(Prepend a header-less license to a Vim script);
-  new! brief.vim
-  b brief.vim
+Execute(Prepend a header-less license to a .vimrc file);
+  new! .vimrc
+  b .vimrc
   CPYwrite Vim
 
-Then(Vim script has brief license mention);
-  AssertEqual '"" brief.vim', getline(2)
+Then(.vimrc has brief license mention);
+  AssertEqual '"" .vimrc', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual '"" Licensed under the terms of the Vim License', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'

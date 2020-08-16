@@ -18,6 +18,8 @@ addons:
   apt:
     update: true
 
+cache: pip
+
 install:
   - pip install -r test/requirements.txt
   - git clone https://github.com/junegunn/vader.vim.git
@@ -27,4 +29,4 @@ script:
   - pytest -v
   - nvim --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
   - VIM= vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
-  - awk '/.*plugin\/cpywrite\.vim.*$/' nvim_bench.log vim_bench.log
+  - awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' *.log | sort

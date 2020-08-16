@@ -1,3 +1,23 @@
+### 0.2.1
+
+- add support for these file types:
+  - Ada
+  - Assembler
+  - Coffescript
+  - Elixir
+  - Elm
+  - Erlang
+  - Kotlin
+  - Lua
+  - Objective-C
+  - Pascal
+
+- recognize `.vimrc` as VimL
+- prevent copyright notice for appearing on public domain (i.e. copyright-free) licenses, in both modes
+- fix regex that was inserting authorship at random places in full license text
+- leave one blank line after header
+- improve load time of `autoload/cpywrite.vim`
+
 ### 0.2.0
 
 - extract feature tests and core functions to `autoload` directory to [improve startup time][pr2]

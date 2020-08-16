@@ -35,7 +35,7 @@ def _write_header(writer, curr_buffer):
         try:
             use_text_as_header = bool(int(use_text_as_header, 10))
         except ValueError:
-            print("'g:cpywrite_verbatim_mode' should be set to 1 or 0!",
+            print("'g:cpywrite_verbatim_mode' should be set to a number!",
                   file=sys.stderr)
             vim.command('let g:cpywrite_verbatim_mode=0')
             use_text_as_header = False
@@ -54,7 +54,7 @@ def _write_header(writer, curr_buffer):
             if to_trim > 0:
                 del curr_buffer[0:to_trim]
 
-            curr_buffer[0:0] = header.split('\n')[:-1]
+            curr_buffer[0:0] = header.split('\n')
 
     except (ValueError, vim.error) as exc:
         print(str(exc))

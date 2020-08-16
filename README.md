@@ -4,13 +4,13 @@
 
 Generate copyright headers for any open source license
 
-<img src=".github/img/nvim_043_ver_020.gif" alt="nvim-043-linux-demo" width="800"/>
+<img src=".github/img/nvim_043_ver_021.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
 Mostly written in CPython, this (neo)vim plugin fetches the license of your choice directly from the [SPDX License List](https://github.com/spdx/license-list-xml). If the XML response contains a standard header, it's inserted at the top of the current buffer with your copyright info.
 
-When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode` option [below](#quick-reference).)
+When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode` option [below](#options).)
 
 This plugin learns your name and email by invoking `git`. If that fails, the copyright line will contain your OS user and host names.
 
@@ -41,7 +41,7 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 |   |   |
 |:--|:--|
 |`g:cpywrite_default_license`|The SPDX identifier of the license to be fetched by the `:CPYwrite` command.|
-|`g:cpywrite_verbatim_mode`|When set to 1, the full license text will be requested -- only choose this when the license is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)|
+|`g:cpywrite_verbatim_mode`|When set to a non-zero value, the full license text will be requested -- only choose this when the license is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)|
 
 
 ## Requirements
@@ -120,8 +120,9 @@ call vundle#end()
 
 ## TODO
 
-- Provide a batch mode for licensing all tracked files in a working tree
-- Expand the list of [supported programming languages][lang-list]
+- [ ] Provide a batch mode for licensing all tracked files in a working tree
+- [ ] Provide the option to set user-defined authorship details
+- [x] Expand the list of [supported programming languages][lang-list]
 
 
 ## Improve this README
@@ -143,7 +144,7 @@ Distributed under the terms of the MIT license
 [licl]: https://www.vim.org/scripts/script.php?script_id=4064
 [vim-8-pkg-docs]: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 [vim-pack-man]: https://shapeshed.com/vim-packages/#how-it-works
-[lang-list]: rplugin/pythonx/cpywrite/generator.py#L255
+[lang-list]: rplugin/pythonx/cpywrite/generator.py#L273
 [travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=master
 [travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
 
