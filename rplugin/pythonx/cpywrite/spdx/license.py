@@ -186,7 +186,8 @@ class License(object):
         """Return a phrase describing this License"""
 
         if self.spdx_code:
-            return 'the ' + self.spdx_code + ' License'
+            return 'the ' + self.spdx_code + \
+                   (' License' if not in_pub_domain(self.spdx_code) else '')
 
         return ''
 
@@ -194,6 +195,10 @@ class License(object):
 def licenses():
     """Return all SPDX ids of candidate licenses"""
     return _SPDX_IDS
+
+def in_pub_domain(license_id):
+    """Return True if this License has no copyright requirement"""
+    return license_id in _PD_LICENSE_IDS
 
 def _wrap_header(header_lines, limit):
     """Keep header to a prescribed width"""
@@ -590,4 +595,9 @@ _SPDX_IDS = [
     'ZPL-2.1']
 """
 List of SPDX License Identifiers: https://spdx.org/licenses/
+"""
+
+_PD_LICENSE_IDS = ['CC-PDDC', 'CC0-1.0', 'Unlicense']
+"""
+Licenses with no copyright requirement
 """

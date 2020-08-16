@@ -3,7 +3,9 @@
 :CPYwriteToggleMode	cpywrite.txt	/*:CPYwriteToggleMode*
 <Plug>(cpywrite)	cpywrite.txt	/*<Plug>(cpywrite)*
 LH	cpywrite.txt	/*LH*
+cpywrite-attributes	cpywrite.txt	/*cpywrite-attributes*
 cpywrite-commands	cpywrite.txt	/*cpywrite-commands*
+cpywrite-contents	cpywrite.txt	/*cpywrite-contents*
 cpywrite-introduction	cpywrite.txt	/*cpywrite-introduction*
 cpywrite-keymaps	cpywrite.txt	/*cpywrite-keymaps*
 cpywrite-options	cpywrite.txt	/*cpywrite-options*

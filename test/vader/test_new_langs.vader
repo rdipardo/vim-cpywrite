@@ -1,0 +1,78 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Execute(Use :CPYwriteDefaultLicense to set default license);
+  call vader#log('===== Calling :CPYwriteDefaultLicense =====')
+  CPYwriteDefaultLicense GPL-3.0-only
+
+Then(Assert that :CPYwriteDefaultLicense changes default license);
+  AssertEqual 'GPL-3.0-only', g:cpywrite_default_license
+
+Execute(Prepend default license header to an Assembly file);
+  new! default.s
+  b default.s
+  norm LH
+
+Then(Assembly file quotes GPLv3);
+  AssertEqual '; default.s', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '; as published by the Free Software Foundation, version 3.', getline(8)
+  AssertEqual 1, len(getline(18)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
+  call vader#log('===== Callng :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that verbatim mode is now on);
+  AssertEqual 1, g:cpywrite_verbatim_mode
+
+Execute(Prepend a license verbatim to an Ada file);
+  new! verbatim.adb
+  b verbatim.adb
+  CPYwrite MIT
+
+Then(Ada file header quotes the entire MIT license);
+  AssertEqual '-- verbatim.adb', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '-- MIT License', getline(4)
+  AssertEqual '-- Permission is hereby granted, free of charge, to any person obtaining a copy', getline(8)
+  AssertEqual '-- The above copyright notice and this permission notice (including the next', getline(15)
+  AssertEqual '-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(19)
+  AssertEqual 2, len(getline(25)), 'Allow no trailing spaces'
+
+Execute(Prepend a license verbatim to a Go file);
+  new! verbatim.go
+  b verbatim.go
+  CPYwrite BSD-1-Clause
+
+Then(Go file header quotes the entire BSD-1-Clause license);
+  AssertEqual '// verbatim.go', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '// 1. Redistributions of source code must retain the above copyright notice,', getline(9)
+  AssertEqual '// THIS SOFTWARE IS PROVIDED BY Berkeley Software Design, Inc. "AS IS" AND ANY', getline(12)
+  AssertEqual '// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.', getline(21)
+  AssertEqual 2, len(getline(22)), 'Allow no trailing spaces'
+
+Execute(Prepend a license verbatim to a Pascal file);
+  new! verbatim.pas
+  b verbatim.pas
+  CPYwrite X11
+
+Then(Pascal file header quotes the entire X11 license);
+  AssertEqual ' verbatim.pas', getline(2)
+  AssertEqual ' X11 License Copyright (C) 1996 X Consortium', getline(6)
+  AssertEqual ' Permission is hereby granted, free of charge, to any person obtaining a copy', getline(8)
+  AssertEqual ' Except as contained in this notice, the name of the X Consortium shall not', getline(25)
+  AssertEqual ' X Window System is a trademark of X Consortium, Inc.', getline(29)
+  AssertEqual 1, len(getline(30)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
+  AssertEqual 0, g:cpywrite_verbatim_mode

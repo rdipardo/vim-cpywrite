@@ -54,7 +54,7 @@ def _write_header(writer, curr_buffer):
             if to_trim > 0:
                 del curr_buffer[0:to_trim]
 
-            curr_buffer[0:0] = header.split('\n')[:-1]
+            curr_buffer[0:0] = header.split('\n')
 
     except (ValueError, vim.error) as exc:
         print(str(exc))
