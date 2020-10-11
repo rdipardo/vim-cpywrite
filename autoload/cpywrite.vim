@@ -21,7 +21,7 @@ func! cpywrite#PrependHeader(...) abort
     if empty(loader)
         call cpywrite#error#NoPython()
     else
-        let l:license_name = get(a:, 1, g:cpywrite_default_license)
+        let l:license_name = get(a:, 1, g:cpywrite#default_license)
           exe loader
               \ fnamemodify(
               \   globpath(&rtp, 'plugin/cpywrite/main.py', 0, 1)[0],

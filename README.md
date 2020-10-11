@@ -4,18 +4,19 @@
 
 ---
 ### This branch is for development purposes
-#### End users are advised to checkout a [release](https://github.com/rdipardo/vim-cpywrite/releases) package
+#### End users are advised to checkout a [release][] package
 ---
 
 Generate copyright headers for any open source license
 
-<img src=".github/img/nvim_043_ver_021_pre.gif" alt="nvim-043-linux-demo" width="800"/>
+<img src=".github/img/nvim_043_ver_030.gif" alt="nvim-043-linux-demo" width="800"/>
 
 ## Description
 
-Mostly written in CPython, this (neo)vim plugin fetches the license of your choice directly from the [SPDX License List](https://github.com/spdx/license-list-xml). If the XML response contains a standard header, it's inserted at the top of the current buffer with your copyright info.
+Mostly written in CPython, this (neo)vim plugin fetches the license of your choice directly from the [SPDX License List](https://github.com/spdx/license-list-xml).
+If the XML response contains a standard header, it's inserted at the top of the current buffer with your copyright info.
 
-When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite_verbatim_mode` option [below](#options).)
+When no standard header is provided, you can either insert a brief license acknowledgement, or the full license text. (See the `g:cpywrite#verbatim_mode` option [below](#options).)
 
 This plugin learns your name and email by invoking `git`. If that fails, the copyright line will contain your OS user and host names.
 
@@ -32,9 +33,10 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 ### Commands
 |   |   |
 |:--|:--|
-|`:CPYwrite [{spdx_short_name}]`|Fetches the license identified by `spdx_short_name` (without quotes) -- uses the current value of `g:cpywrite_default_license` when no argument is given -- supports `<tab>` completion |
-|`:CPYwriteDefaultLicense [{spdx_short_name}]`|Sets `g:cpywrite_default_license` to the option license identified by `spdx_short_name` (without quotes) -- prints the default licence id when called with no argument -- supports `<tab>` completion|
-|`:CPYwriteToggleMode`|Switches `g:cpywrite_verbatim_mode` on or off|
+|`:CPYwrite [{spdx_short_name}]`|Fetches the license identified by `spdx_short_name` (without quotes) -- uses the current value of `g:cpywrite#default_license` when no argument is given -- supports `<tab>` completion |
+|`:CPYwriteDefaultLicense [{spdx_short_name}]`|Sets `g:cpywrite#default_license` to the option license identified by `spdx_short_name` (without quotes) -- prints the default licence id when called with no argument -- supports `<tab>` completion|
+|`:CPYwriteToggleMode`|Switches `g:cpywrite#verbatim_mode` on or off|
+|`:CPYwriteToggleFilename`|Switches `g:cpywrite#hide_filename` on or off|
 |`<Plug>(cpywrite)`|Does the same as calling `:CPYwrite` with no argument|
 
 ### Default mappings
@@ -43,10 +45,11 @@ This plugin learns your name and email by invoking `git`. If that fails, the cop
 |`{Normal}LH`|Maps to `<Plug>(cpywrite)`|
 
 ### Options
-|   |   |
-|:--|:--|
-|`g:cpywrite_default_license`|The SPDX identifier of the license to be fetched by the `:CPYwrite` command.|
-|`g:cpywrite_verbatim_mode`|When set to a non-zero value, the full license text will be requested -- only choose this when the license is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)|
+|   |   |Default Value|
+|:--|:--|:--:|
+|`g:cpywrite#default_license`|The SPDX identifier of the license to be fetched by the `:CPYwrite` command.|`"GPL-3.0-or-later"`|
+|`g:cpywrite#verbatim_mode`|When set to a non-zero value, the full license text will be requested -- only choose this when the license is no longer than 3-4 paragraphs (e.g. Unlicense, MIT, BSD 1- 2- 3-Clause, etc.)|`0`|
+|`g:cpywrite#hide_filename`|When set to a non-zero value, excludes the name of the current buffer from the license header in all modes.|`0`|
 
 
 ## Requirements
@@ -152,6 +155,7 @@ Distributed under the terms of the MIT license
 [lang-list]: rplugin/pythonx/cpywrite/generator.py#L273
 [travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=pre-release
 [travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
+[release]: https://github.com/rdipardo/vim-cpywrite/releases
 
 <!--
  vim:ft=markdown:et:tw=78:

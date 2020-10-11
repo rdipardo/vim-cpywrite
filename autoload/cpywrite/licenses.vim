@@ -11,10 +11,10 @@ let g:autoloaded_cpywrite_licenses = 1
 
 func! cpywrite#licenses#SetDefaultLicense(...)
     if !empty(get(a:, 1, ''))
-        exe 'let g:cpywrite_default_license = ' . string(a:1)
+        exe 'let g:cpywrite#default_license = ' . string(a:1)
     endif
 
-    exe 'echo g:cpywrite_default_license'
+    exe 'echo g:cpywrite#default_license'
 endfunc
 
 func! cpywrite#licenses#GetLicenseList(a,l,p)

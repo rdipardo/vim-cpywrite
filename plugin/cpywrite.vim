@@ -9,14 +9,18 @@
 if get(g:, 'loaded_cpywrite') | finish | endif
 let g:loaded_cpywrite = 1
 
-let g:cpywrite_version = '0.2.1-pre'
+let g:cpywrite#version = '0.3.0.pre'
 
-if empty(get(g:, 'cpywrite_default_license', ''))
-    let g:cpywrite_default_license = 'GPL-3.0-or-later'
+if empty(get(g:, 'cpywrite#default_license', ''))
+    let g:cpywrite#default_license = 'GPL-3.0-or-later'
 endif
 
-if !exists('g:cpywrite_verbatim_mode')
-    let g:cpywrite_verbatim_mode = 0
+if !exists('g:cpywrite#verbatim_mode')
+    let g:cpywrite#verbatim_mode = 0
+endif
+
+if !exists('g:cpywrite#hide_filename')
+    let g:cpywrite#hide_filename = 0
 endif
 
 if !exists(':CPYwrite')
@@ -31,25 +35,20 @@ endif
 
 if !exists(':CPYwriteToggleMode')
     com! CPYwriteToggleMode
-    \ exe 'if(g:cpywrite_verbatim_mode) | let g:cpywrite_verbatim_mode = 0 |
-    \   else | let g:cpywrite_verbatim_mode = 1 | endif |
-    \   echo (g:cpywrite_verbatim_mode) ? "verbatim" : "standard header/brief"'
+    \ exe 'if(g:cpywrite#verbatim_mode) | let g:cpywrite#verbatim_mode = 0 |
+    \   else | let g:cpywrite#verbatim_mode = 1 | endif |
+    \   echo (g:cpywrite#verbatim_mode) ? "verbatim" : "standard header/brief"'
 endif
 
-if !exists(':CPYwriteDefaultLicense')
-    com! -nargs=* -complete=customlist,s:get_license_list
-      \ CPYwriteDefaultLicense :call s:set_default_license(<f-args>)
-endif
-
-if !exists(':CPYwriteToggleMode')
-    com! CPYwriteToggleMode
-    \ exe 'if(g:cpywrite_verbatim_mode) | let g:cpywrite_verbatim_mode = 0 |
-    \   else | let g:cpywrite_verbatim_mode = 1 | endif |
-    \   echo (g:cpywrite_verbatim_mode) ? "verbatim" : "standard header/brief"'
+if !exists(':CPYwriteToggleFilename')
+    com! CPYwriteToggleFilename
+    \ exe 'if(g:cpywrite#hide_filename) | let g:cpywrite#hide_filename = 0 |
+    \   else | let g:cpywrite#hide_filename = 1 | endif |
+    \   echo (g:cpywrite#hide_filename) ? "hidden" : "showing"'
 endif
 
 nnoremap <silent> <Plug>(cpywrite)
-    \ :exe 'CPYwrite ' . g:cpywrite_default_license . ' '<CR>
+    \ :exe 'CPYwrite ' . g:cpywrite#default_license . ' '<CR>
 
 if !hasmapto('<Plug>(cpywrite)')
     nmap <unique> LH <Plug>(cpywrite)

@@ -7,10 +7,17 @@ Execute(Test that plugin was loaded);
 
 Execute(Set default license to the GPL-3.0+);
   call vader#log('===== Setting default license =====')
-  let g:cpywrite_default_license = 'GPL-3.0-or-later'
+  let g:cpywrite#default_license = 'GPL-3.0-or-later'
 
 Then(Assert that default license was set);
-  AssertEqual 'GPL-3.0-or-later', g:cpywrite_default_license
+  AssertEqual 'GPL-3.0-or-later', g:cpywrite#default_license
+
+Execute(Use :CPYwriteToggleFilename to hide buffer name);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now hidden);
+  AssertEqual 1, g:cpywrite#hide_filename
 
 " Tc #1
 Execute(Prepend the default license header to a shell script);
@@ -21,11 +28,29 @@ Execute(Prepend the default license header to a shell script);
 Then(Shell script header quotes the GPL-3.0+);
   AssertEqual '#!/usr/bin/env bash', getline(1)
   AssertEqual 1, len(getline(2)), 'Allow no trailing spaces'
-  AssertEqual '# default_header', getline(3)
-  AssertEqual '# modify it under the terms of the GNU General Public License', getline(8)
-  AssertEqual '# 3 of the License, or (at your option) any later version.', getline(10)
+  AssertEqual '# modify it under the terms of the GNU General Public License', getline(6)
+  AssertEqual '# 3 of the License, or (at your option) any later version.', getline(8)
 
 " Tc #2
+Execute(Prepend a standard header to a Perl script);
+  new! standard.pl
+  b standard.pl
+  CPYwrite ECL-2.0
+
+Then(Perl script header quotes the ECL-2.0);
+  AssertEqual '#!/usr/bin/env perl', getline(1)
+  AssertEqual 1, len(getline(2)), 'Allow no trailing spaces'
+  AssertEqual '# Educational Community License, Version 2.0 (the "License"); you may', getline(4)
+  AssertEqual '# permissions and limitations under the License.', getline(14)
+
+Execute(Use :CPYwriteToggleFilename to show buffer name);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now showing);
+  AssertEqual 0, g:cpywrite#hide_filename
+
+" Tc #3
 Execute(Prepend a standard license header to a shell script);
   new! brief_header
   b brief_header
@@ -39,6 +64,7 @@ Then(Shell script header quotes the GFDL-1.1-only);
   AssertEqual '# in the section entitled "GNU Free Documentation License".', getline(12)
   AssertEqual 1, len(getline(13)), 'Allow no trailing spaces'
 
+" Tc #4
 Execute(Prepend the default license header to a Python file);
   new! default_header.py
   b default_header.py
@@ -51,7 +77,7 @@ Then(Python file header quotes the GPL-3.0+);
   AssertEqual '# modify it under the terms of the GNU General Public License', getline(10)
   AssertEqual '# 3 of the License, or (at your option) any later version.', getline(12)
 
-" Tc #4
+" Tc #5
 Execute(Prepend a standard header to a Python file);
   new! standard.py
   b standard.py
@@ -63,7 +89,7 @@ Then(Python file header quotes the AFL-1.1);
   AssertEqual '# standard.py', getline(5)
   AssertEqual '# Licensed under the Academic Free License version 1.1.', getline(9)
 
-" Tc #5
+" Tc #6
 Execute(Prepend the default license header to a Ruby file);
   new! default_header.rb
   b default_header.rb
@@ -76,7 +102,7 @@ Then(Ruby file header quotes the GPL-3.0+);
   AssertEqual '# modify it under the terms of the GNU General Public License', getline(9)
   AssertEqual '# 3 of the License, or (at your option) any later version.', getline(11)
 
-" Tc #6
+" Tc #7
 Execute(Prepend a header-less license to a Ruby file);
   new! brief_header.rb
   b brief_header.rb
@@ -86,9 +112,9 @@ Then(Ruby file header has brief license mention);
   AssertEqual '# frozen_string_literal: true', getline(1)
   AssertEqual 0, len(getline(2)), 'One blank line after frozen_string_literal directive'
   AssertEqual '# brief_header.rb', getline(4)
-  AssertEqual '# Licensed under the terms of the MIT License', getline(8)
+  AssertEqual '# Distributed under the terms of the MIT License.', getline(8)
 
-" Tc #7
+" Tc #8
 Execute(Prepend the default license header to a PHP file);
   new! default_header.php
   b default_header.php
@@ -102,7 +128,7 @@ Then(PHP file quotes the GPL-3.0+);
   AssertEqual ' * 3 of the License, or (at your option) any later version.', getline(10)
   AssertEqual '?>', getline(22), 'Ensure closing PHP tag'
 
-" Tc #8
+" Tc #9
 Execute(Prepend a header-less license to a PHP file);
   new! brief_header.phtml
   b brief_header.phtml
@@ -112,10 +138,10 @@ Then(PHP file has brief license mention);
   AssertEqual '<?php', getline(1)
   AssertEqual ' * brief_header.phtml', getline(3)
   AssertEqual 2, len(getline(4)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the Zend-2.0 License', getline(7)
+  AssertEqual ' * Distributed under the terms of the Zend License Version 2.0.', getline(7)
   AssertEqual '?>', getline(10), 'Ensure closing PHP tag'
 
-" Tc #9
+" Tc #10
 Execute(Prepend the default license header to an SQL script);
   new! default_header.sql
   b default_header.sql
@@ -128,7 +154,7 @@ Then(SQL script quotes the GPL-3.0+);
   AssertEqual '-- 3 of the License, or (at your option) any later version.', getline(9)
   AssertEqual '--', getline(19)
 
-" Tc #10
+" Tc #11
 Execute(Prepend a header-less license to an SQL script);
   new! brief.sql
   b brief.sql
@@ -137,10 +163,10 @@ Execute(Prepend a header-less license to an SQL script);
 Then(SQL script has brief license mention);
   AssertEqual '-- brief.sql', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '-- Licensed under the terms of the bzip2-1.0.5 License', getline(6)
+  AssertEqual '-- Distributed under the terms of the bzip2 and libbzip2 License Version 1.0.5.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
-" Tc #11
+" Tc #12
 Execute(Prepend the default license header to a Vim script);
   new! standard.vim
   b standard.vim
@@ -153,7 +179,7 @@ Then(Vim script quotes the GPL-3.0+);
   AssertEqual '"" 3 of the License, or (at your option) any later version.', getline(9)
   AssertEqual '""', getline(19)
 
-" Tc #12
+" Tc #13
 Execute(Prepend a header-less license to a .vimrc file);
   new! .vimrc
   b .vimrc
@@ -162,5 +188,17 @@ Execute(Prepend a header-less license to a .vimrc file);
 Then(.vimrc has brief license mention);
   AssertEqual '"" .vimrc', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '"" Licensed under the terms of the Vim License', getline(6)
+  AssertEqual '"" Distributed under the terms of the Vim License.', getline(6)
+  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+" Tc #14
+Execute(Prepend a header-less license to a .exrc file);
+  new! .exrc
+  b .exrc
+  CPYwrite XFree86-1.1
+
+Then(.exrc has brief license mention);
+  AssertEqual '"" .exrc', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '"" Distributed under the terms of the XFree86 License Version 1.1.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'

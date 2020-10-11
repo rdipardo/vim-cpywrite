@@ -30,17 +30,27 @@ def _write_header(writer, curr_buffer):
     """Write the license header"""
     try:
         old_row, old_col = vim.current.window.cursor
-        use_text_as_header = vim.eval('g:cpywrite_verbatim_mode')
+        use_text_as_header = vim.eval('g:cpywrite#verbatim_mode')
+        exclude_file_name = vim.eval('g:cpywrite#hide_filename')
 
         try:
             use_text_as_header = bool(int(use_text_as_header, 10))
         except ValueError:
-            print("'g:cpywrite_verbatim_mode' should be set to a number!",
+            print("'g:cpywrite#verbatim_mode' should be set to a number!",
                   file=sys.stderr)
-            vim.command('let g:cpywrite_verbatim_mode=0')
+            vim.command('let g:cpywrite#verbatim_mode=0')
             use_text_as_header = False
 
-        header = writer.fetch_license_header(use_text_as_header)
+        try:
+            exclude_file_name = bool(int(exclude_file_name, 10))
+        except ValueError:
+            print("'g:cpywrite#hide_filename' should be set to a number!",
+                  file=sys.stderr)
+            vim.command('let g:cpywrite#hide_filename=0')
+            exclude_file_name = False
+
+        header = writer.fetch_license_header(use_text_as_header,
+                                             exclude_file_name)
 
         if header:
             to_trim = 0

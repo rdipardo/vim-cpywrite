@@ -4,11 +4,11 @@
 Module providing a file writer
 """
 from __future__ import print_function, unicode_literals
-import itertools
 import re
 import sys
 from datetime import datetime
 from io import StringIO
+from itertools import chain
 from os import path, environ
 from platform import system
 from subprocess import check_output, CalledProcessError
@@ -38,7 +38,7 @@ class Generator(object):
         self.lang = lang
         self.tokens = tokens
 
-    def fetch_license_header(self, full_text=False):
+    def fetch_license_header(self, full_text=False, no_name=False):
         """Return a license header, with or without standard language"""
         def _continue_block_comment(dest):
             try:
@@ -79,7 +79,7 @@ class Generator(object):
                                         text)
                 if run_on_text:
                     one_liner = \
-                        'Copyright (c) ' + authorship + ' Licensed under the'
+                        'Copyright (c) ' + authorship + ' Distributed under the'
                     text = re.sub(r'[\*(%s)]*(%s)'
                                   % (self.tokens[1], run_on_text.group()),
                                   '%s%s\n%s%s'
@@ -109,9 +109,9 @@ class Generator(object):
                 print(_SCRIPT_HEADERS[self.lang_key], file=out)
 
             print(self.tokens[0], file=out)
-            print(self.tokens[1] + path.basename(self.out_file), file=out)
 
-            if full_text:
+            if not no_name:
+                print(self.tokens[1] + path.basename(self.out_file), file=out)
                 _continue_block_comment(out)
 
             if ''.join(terms).strip():  # found a standard header
@@ -134,27 +134,22 @@ class Generator(object):
                 if not re.findall(r'(<%s>)' % email, terms, re.MULTILINE) \
                    and not in_pub_domain(self.rights.spdx_code):
                     # no authorship template, so use our own
-                    _continue_block_comment(out)
                     print(self.tokens[1] + copying, file=out)
+                    _continue_block_comment(out)
 
                 print(terms, file=out)
 
             else:  # no standard header
                 if not in_pub_domain(self.rights.spdx_code):
-                    _continue_block_comment(out)
                     print(self.tokens[1] + copying, file=out)
 
                 # License should return the name of any recognized license,
                 # even if there's no header; just be sure to call __str__
                 # explicitly
                 if str(self.rights):
-                    _continue_block_comment(out)
-                    print(self.tokens[1] + \
-                          ('Licensed' \
-                          if not in_pub_domain(self.rights.spdx_code) \
-                          else 'Distributed') + \
-                          " under the terms of %s" % (self.rights),
-                          file=out)
+                    if not in_pub_domain(self.rights.spdx_code):
+                        _continue_block_comment(out)
+                    print(self.tokens[1] + str(self.rights), file=out)
 
             _close_block_comment(out)
 
@@ -183,7 +178,7 @@ def extensions():
     """Return a list of file extensions recognized by the Generator type"""
     return sorted('*' + e for e in \
                   filter(len,
-                         set(itertools.chain(
+                         set(chain(
                              (l.lower() for l in _SOURCE_META
                               if not l[0] == '.' for l in l),
                              (lang.lower() for lang in _SOURCE_META
@@ -200,15 +195,17 @@ def _get_language_meta(filename):
 
     if not ext:
         if fname.startswith('.'):
-            if path.basename(fname).lower()[1:] == 'vimrc':
-                return ('Vimrc', '', ('""', '"" '))
+            for ext in extensions():
+                if 'vim' in ext or ext.endswith('exrc'):
+                    return ('VimL', '', ('""', '"" '))
 
             return ('dot', '', ('#', '# '))
 
         print('No extension; assuming shell script')
-        return ('Shell script', '', ('#', '# '))
+        return ('shell script', '', ('#', '# '))
 
-    if ext.lower() == '.txt' and path.basename(fname).lower() == 'cmakelists':
+    if ext.lower() == '.txt' and \
+       path.basename(fname).lower().startswith('cmake'):
         return ('CMake', '.txt', ('#', '# '))
 
     lang = ''
@@ -221,7 +218,8 @@ def _get_language_meta(filename):
         if ext in exts:
             try:
                 for grp in _SOURCE_META[k][0]:
-                    if ext in grp or ext == grp:
+                    if (ext in grp and not grp[0] == '.') or \
+                       (ext == grp and grp[0] == '.'):
                         lang = _SOURCE_META[k][0][grp]
                         tokens = _SOURCE_META[k][1]
                         break
@@ -273,7 +271,7 @@ _SOURCE_META = {
     ('', '.cmake', '.ex', '.exs', '.pl', '.py', '.pyw', '.rb', '.sh'):
         [{
             ('.ex', '.exs'): 'Elixir',
-            ('', '.sh'): 'Shell script',
+            ('', '.sh'): 'shell script',
             ('.pl'): 'Perl',
             ('.py', '.pyw'): 'Python',
             ('.rb'): 'Ruby',
@@ -284,13 +282,15 @@ _SOURCE_META = {
         [{('.coffee', '.litcoffee'): 'CoffeeScript'}, ('###', ' ', ' ', '###')],
     ('.asm', '.s'):
         [{('.asm', '.s'): 'Assembly',}, (';', '; ')],
-    ('.lisp', '.lsp', '.cl', '.scm', '.ss', '.clj', '.cljc', '.cljs'):
+    ('.lisp', '.lsp', '.cl', '.scm', '.ss', '.clj', '.cljc', '.cljs', '.edn', '.fnl'):
         [{
             ('.lisp', '.lsp'): 'Lisp',
             ('.cl'): 'Common Lisp',
             ('.scm', '.ss'): 'Scheme',
             ('.clj', '.cljc'): 'Clojure',
             ('.cljs'): 'ClojureScript',
+            ('.edn'): 'Edn',
+            ('.fnl'): 'Fennel'
         },
          (';;', ';; ')],
     ('.erl', '.hrl'):
@@ -301,13 +301,15 @@ _SOURCE_META = {
          ('%%', '%% ')],
     ('.pas', '.pp', '.inc'):
         [{('.pas', '.pp', '.inc'): 'Pascal'}, ('{', ' ', ' ', '}')],
-    ('.c', '.cc', '.c++', '.cpp', '.cxx', '.cs', '.css', '.h', '.hh', '.h++',
-     '.hpp', '.hxx', '.java', '.js', '.kt', '.kts', '.ktm', '.m', '.mm',
-     '.php', '.php4', '.php5', '.phtml', '.ts'):
+    ('.c', '.cc', '.c++', '.cpp', '.cxx', '.cs', '.css', '.d', '.h', '.hh',
+     '.h++', '.hpp', '.hxx', '.java', '.js', '.jsx', '.mjs', '.kt', '.kts',
+     '.ktm', '.m', '.mm', '.php', '.php4', '.php5', '.phtml', '.scala', '.sc',
+     '.swift', '.ts'):
         [{
-            ('.c'): 'C',
+            ('.c'): 'C source',
+            ('.d'): 'D source',
             ('.h'): 'C header',
-            ('.cc', '.c++', '.cpp', '.cxx'): 'C++',
+            ('.cc', '.c++', '.cpp', '.cxx'): 'C++ source',
             ('.hh', '.h++', '.hpp', '.hxx'): 'C++ header',
             ('.cs'): 'C-sharp',
             ('.css'): 'CSS',
@@ -316,6 +318,10 @@ _SOURCE_META = {
             ('.m', '.mm'): 'Objective-C',
             ('.php', '.php4', '.php5', '.phtml'): 'PHP',
             ('.js'): 'JavaScript',
+            ('.jsx'): 'ReactJS',
+            ('.mjs'): 'ES Module',
+            ('.scala', '.sc'): 'Scala',
+            ('.swift'): 'Swift',
             ('.ts'): 'TypeScript'
         },
          ('/**', ' * ', ' *', ' */')],
@@ -323,8 +329,11 @@ _SOURCE_META = {
         [{('.elm'): 'Elm'}, ('{-', ' ', ' ', '-}')],
     ('.ml', '.mli'):
         [{('.ml', '.mli'): 'OCaml'}, ('(*', ' ', ' ', '*)')],
-    ('.html', '.htm'):
-        [{('.html', '.htm'): 'HTML'}, ('<!--', ' ', ' ', '-->')],
+    ('.html', '.htm', '.markdown', '.md'):
+        [{('.html', '.htm'): 'HTML',
+          ('.markdown', '.md'): 'Markdown'
+         },
+         ('<!--', ' ', ' ', '-->')],
     ('.adb', '.ads', '.lua', '.sql', '.hs', '.lhs'):
         [{
             ('.adb', '.ads'): 'Ada',
@@ -341,7 +350,9 @@ _SOURCE_META = {
             ('.scss'): 'SASS'
         },
          ('//', '// ')],
-    ('.vim'): [{('.vim'): 'VimL'}, ('""', '"" ')]
+    ('.vim', '.vimrc', '.gvim', '.ideavim', '.exrc'):
+        [{('.vim', '.vimrc', '.gvim', '.ideavim', '.exrc'): 'VimL'},
+         ('""', '"" ')]
 }
 """
 Mapping of file extensions to comment markers for all programming languages

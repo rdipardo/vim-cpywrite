@@ -10,14 +10,14 @@ Execute(Use :CPYwriteDefaultLicense to set default license);
   CPYwriteDefaultLicense BSD-2-Clause
 
 Then(Assert that :CPYwriteDefaultLicense changes default license);
-  AssertEqual 'BSD-2-Clause', g:cpywrite_default_license
+  AssertEqual 'BSD-2-Clause', g:cpywrite#default_license
 
 Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
   call vader#log('===== Callng :CPYwriteToggleMode =====')
   CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 1, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite#verbatim_mode
 
 " Tc #1
 Execute(Prepend a license verbatim to a Scheme file);
@@ -52,14 +52,14 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
-  AssertEqual 0, g:cpywrite_verbatim_mode
+  AssertEqual 0, g:cpywrite#verbatim_mode
 
 Execute(Use :CPYwriteDefaultLicense to set default license);
   call vader#log('===== Calling :CPYwriteDefaultLicense =====')
   CPYwriteDefaultLicense GFDL-1.2-or-later
 
 Then(Assert that :CPYwriteDefaultLicense changes default license);
-  AssertEqual 'GFDL-1.2-or-later', g:cpywrite_default_license
+  AssertEqual 'GFDL-1.2-or-later', g:cpywrite#default_license
 
 " Tc #3
 Execute(Prepend the default license header to a Common Lisp file);
@@ -82,7 +82,7 @@ Execute(Prepend a header-less license to a Lisp file);
 Then(Lisp file header has brief license mention);
   AssertEqual ';; brief.lsp', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ';; Licensed under the terms of the BSD-2-Clause-FreeBSD License', getline(6)
+  AssertEqual ';; Distributed under the terms of the BSD 2-Clause FreeBSD License.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 " Tc #5
@@ -131,7 +131,7 @@ Execute(Prepend a header-less license to an OCaml file);
 Then(OCaml file header has brief license mention);
   AssertEqual ' brief.mli', getline(2)
   AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' Licensed under the terms of the DOC License', getline(6)
+  AssertEqual ' Distributed under the terms of the DOC License.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 " Tc #9
@@ -155,7 +155,7 @@ Execute(Prepend a header-less license to a Haskell file);
 Then(Haskell file header has brief license mention);
   AssertEqual '-- brief.lhs', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '-- Licensed under the terms of the Eurosym License', getline(6)
+  AssertEqual '-- Distributed under the terms of the Eurosym License.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 Execute(Use :CPYwriteDefaultLicense to set default license);
@@ -163,7 +163,7 @@ Execute(Use :CPYwriteDefaultLicense to set default license);
   CPYwriteDefaultLicense ECL-1.0
 
 Then(Assert that :CPYwriteDefaultLicense changes default license);
-  AssertEqual 'ECL-1.0', g:cpywrite_default_license
+  AssertEqual 'ECL-1.0', g:cpywrite#default_license
 
 " Tc #11
 Execute(Prepend standard header to an Erlang file);
@@ -182,7 +182,7 @@ Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 1, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite#verbatim_mode
 
 " Tc #12
 Execute(Prepend a license verbatim to an Elixir file);
@@ -203,4 +203,4 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now off);
-  AssertEqual 0, g:cpywrite_verbatim_mode
+  AssertEqual 0, g:cpywrite#verbatim_mode

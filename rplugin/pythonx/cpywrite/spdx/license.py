@@ -4,9 +4,11 @@
 Utilities for fetching and printing open source license information
 """
 from __future__ import print_function, unicode_literals
+import os
+import tempfile
 import xml.etree.ElementTree as parser
 from itertools import dropwhile
-from re import sub
+from re import search, sub
 from sys import stderr
 from textwrap import TextWrapper
 import requests
@@ -23,6 +25,7 @@ class License(object):
     """Encapsulates the details of a license on the SPDX index"""
     def __init__(self, code):
         self.spdx_code = None
+        self.license_name = None
         self.header_width = 76
 
         try:
@@ -45,31 +48,55 @@ class License(object):
                        'spdx/license-list-XML/master/src/%s.xml'
         resource = quote(xml_resource % self.spdx_code, safe='/:')
         license_data = None
+        cache = _find_cached_license(self.spdx_code)
         header_text = []
         should_wrap = False
 
-        try:
-            response = requests.get(resource)
+        if cache:
+            try:
+                with open(cache, 'r') as tmp:
+                    license_data = parser.fromstring(tmp.read())
+            except (parser.ParseError, IOError):
+                pass
 
-            if response.status_code == 200:
-                try:
-                    safe_xml = \
-                        ''.join(list(filter(strict_ascii, response.text)))
-                    license_data = parser.fromstring(safe_xml)
-                except (parser.ParseError, TypeError, IOError):
-                    print("Got invalid licence data from %s." % (resource),
+        if license_data is None:
+            try:
+                response = requests.get(resource)
+
+                if response.status_code == 200:
+                    try:
+                        safe_xml = \
+                            ''.join(list(filter(strict_ascii, response.text)))
+                        license_data = parser.fromstring(safe_xml)
+                        _, temp_file = \
+                            tempfile.mkstemp(prefix=self.spdx_code + '_',
+                                             suffix=".xml",
+                                             text=True)
+                        if temp_file:
+                            try:
+                                with open(temp_file, 'w') as tmp:
+                                    tmp.write(safe_xml)
+                            except IOError:
+                                pass
+
+                    except (parser.ParseError, TypeError, IOError):
+                        print("Got invalid licence data from %s." % (resource),
+                              file=stderr)
+                else:
+                    print("Unexpected response [%d] from %s.\n"
+                          % (response.status_code, resource),
                           file=stderr)
-            else:
-                print("Unexpected response [%d] from %s.\n"
-                      % (response.status_code, resource),
-                      file=stderr)
 
-        except (requests.exceptions.MissingSchema,
-                requests.exceptions.ConnectionError):
-            print("Error requesting %s." % (resource), file=stderr)
+            except (requests.exceptions.MissingSchema,
+                    requests.exceptions.ConnectionError):
+                print("Error requesting %s." % (resource), file=stderr)
 
         if license_data is None:
             return ''
+
+        for child in license_data:
+            if child.tag == '{http://www.spdx.org/license}license':
+                self.license_name = child.attrib.get('name')
 
         header_tag = \
             './/{http://www.spdx.org/license}standardLicenseHeader'
@@ -141,9 +168,9 @@ class License(object):
                                     '\n\n',
                                     ''.join(header_text)))))).splitlines()))
 
-        return ['\n'] + (header \
-                         if not should_wrap \
-                         else _wrap_header(header, self.header_width))
+        return header \
+                if not should_wrap \
+                else _wrap_header(header, self.header_width)
 
     @property
     def license_text(self):
@@ -154,21 +181,40 @@ class License(object):
         text_resource = 'https://raw.githubusercontent.com/' \
                        'spdx/license-list-data/master/text/%s.txt'
         resource = quote(text_resource % self.spdx_code, safe='/,:')
-        license_text = ''
+        license_text = None
+        cache = _find_cached_license(self.spdx_code, '.txt')
 
-        try:
-            response = requests.get(resource)
+        if cache:
+            try:
+                with open(cache, 'r') as tmp:
+                    license_text = tmp.read()
+            except IOError:
+                pass
 
-            if response.status_code == 200:
-                license_text = response.text
-            else:
-                print("Unexpected response [%d] from %s.\n"
-                      % (response.status_code, resource),
-                      file=stderr)
+        if license_text is None:
+            try:
+                response = requests.get(resource)
 
-        except (requests.exceptions.MissingSchema,
-                requests.exceptions.ConnectionError):
-            print("Error requesting %s." % (resource), file=stderr)
+                if response.status_code == 200:
+                    license_text = response.text
+                    _, temp_file = \
+                        tempfile.mkstemp(prefix=self.spdx_code + '_',
+                                         suffix=".txt",
+                                         text=True)
+                    if temp_file:
+                        try:
+                            with open(temp_file, 'w') as tmp:
+                                tmp.write(license_text)
+                        except IOError:
+                            pass
+                else:
+                    print("Unexpected response [%d] from %s.\n"
+                          % (response.status_code, resource),
+                          file=stderr)
+
+            except (requests.exceptions.MissingSchema,
+                    requests.exceptions.ConnectionError):
+                print("Error requesting %s." % (resource), file=stderr)
 
         # - try to keep sub-clauses left-aligned;
         # - always put copyright notice on a new line
@@ -183,11 +229,29 @@ class License(object):
         return str((self.__class__.__name__, self.spdx_code))
 
     def __str__(self):
-        """Return a phrase describing this License"""
+        """Return the full name of this License"""
+
+        template = "Distributed under the terms of the %s"
+
+        if self.license_name:
+            name = self.license_name
+            full_name = search(r'[tT]he.+$', self.license_name)
+
+            if full_name:
+                name = ''.join(full_name.group().split()[1:])
+            if in_pub_domain(self.spdx_code):
+                return template % name + '.'
+
+            name = search(r'.+[lL]icense', name)
+            version = search(r'\d\.\d.*$', self.license_name)
+
+            return (template % name.group()) + \
+                   (' Version ' + version.group() if version else '') + \
+                   '.'
 
         if self.spdx_code:
-            return 'the ' + self.spdx_code + \
-                   (' License' if not in_pub_domain(self.spdx_code) else '')
+            return (template % self.spdx_code) + \
+                   (' License.' if not in_pub_domain(self.spdx_code) else '.')
 
         return ''
 
@@ -211,6 +275,17 @@ def _wrap_header(header_lines, limit):
             '\n'.join(
                 list(map(lambda l: l.lstrip(),
                          wrapper.wrap(''.join(header_lines)))))).splitlines()
+
+def _find_cached_license(short_name, ext='.xml'):
+    """Return the path to a temp file saved with the given SPDX id as prefix"""
+    for root, _, files in os.walk(tempfile.gettempdir()):
+        found = [f for f in files \
+                 if f.startswith(short_name) and \
+                 os.path.splitext(f)[1] == ext]
+        if found:
+            return os.path.join(root, found[0])
+
+    return None
 
 _SPDX_IDS = [
     '0BSD',
