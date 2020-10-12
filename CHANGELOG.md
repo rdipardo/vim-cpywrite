@@ -1,3 +1,28 @@
+### 0.3.0
+
+- rewrite [`license` module][] to cache HTTP responses
+- hide the current buffer's name in license headers when `g:cpywrite#hide_filename` is set to a non-zero value
+- provide a `:CPYwriteToggleFilename` command
+- identify licenses by full name when there's no standard header
+
+**Note.** To keep longer names like (e.g.) the `LGPLvXX` from running off the screen, enable line wrapping in your `vimrc` or `init.vim`:
+
+```vim
+set lbr
+set tw=500 "break after 500 characters
+set wrap "wrap lines
+```
+
+- detect `.vimrc`, `.gvim`, `.ideavim` and `.exrc` as Vim files
+- add support for these file types:
+  - D
+  - Edn (.edn)
+  - Fennel
+  - Markdown
+  - ReactJS (.jsx) and ES Module (.mjs)
+  - Scala
+  - Swift
+
 ### 0.2.1
 
 - add support for these file types:
@@ -20,14 +45,14 @@
 
 ### 0.2.0
 
-- extract feature tests and core functions to `autoload` directory to [improve startup time][pr2]
+- extract feature tests and core functions to `autoload` directory to improve startup time ([#2][pr2])
 - suggest [`set wildmenu`](README.md#highlights) for faster completions when not using neovim
 
 ### 0.1.1
 
 - convenience commands for getting/setting global options:
     - `:CPYwriteDefaultLicense` -- supports `<tab>` completion
-    - `:CPYwriteToggleMode` -- switches `g:cpywrite_verbatim_mode` on/off
+    - `:CPYwriteToggleMode` -- switches `g:cpywrite#verbatim_mode` on/off
 
 - relaxed file naming rules to accept full paths
 
@@ -45,4 +70,4 @@
 
 
 [pr2]: https://github.com/rdipardo/vim-cpywrite/pull/2
-
+[`license` module]: https://github.com/rdipardo/vim-cpywrite/blob/master/rplugin/pythonx/cpywrite/spdx/license.py

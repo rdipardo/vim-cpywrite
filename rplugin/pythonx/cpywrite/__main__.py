@@ -20,6 +20,9 @@ def main():
                         dest='short_name', default='Apache-2.0',
                         help="SPDX identifier of an open source license \
                          (default: %(default)s)")
+    parser.add_argument('-n', '--noname', action="store_true",
+                        dest='no_name', default=False,
+                        help="Exclude file name from licence header")
     parser.add_argument('files', nargs='*', metavar='FILES', type=str,
                         help='name(s) of output file(s) (supported extensions: \
                         %s)' % (', '.join(extensions())))
@@ -36,7 +39,9 @@ def main():
             generator = Generator()
             for fnm in map(str.strip, filenames):
                 generator.set_file_props(fnm, args.short_name)
-                source_file = generator.fetch_license_header(args.verbatim_mode)
+                source_file = \
+                    generator.fetch_license_header(args.verbatim_mode,
+                                                   args.no_name)
                 if source_file:
                     with open(generator.out_file, 'w') as source:
                         source.write(source_file)

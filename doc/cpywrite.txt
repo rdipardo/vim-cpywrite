@@ -1,4 +1,10 @@
-Generate copyright headers for any open source license         *cpywrite.txt*
+*cpywrite.txt*
+              _                                                _ __
+       _   __(_)___ ___        _________  __  ___      _______(_) /____
+      | | / / / __ `__ \______/ ___/ __ \/ / / / | /| / / ___/ / __/ _ \
+      | |/ / / / / / / /_____/ /__/ /_/ / /_/ /| |/ |/ / /  / / /_/  __/
+      |___/_/_/ /_/ /_/      \___/ .___/\__, / |__/|__/_/_/  /_/\__/\___/
+                                /_/    /____/
 
 Maintainer: Robert Di Pardo <dipardo.r@gmail.com>
 URL:        https://github.com/rdipardo/vim-cpywrite
@@ -20,8 +26,8 @@ INTRODUCTION                                         *cpywrite-introduction*
 Pass a license identifier to the |:CPYwrite| command and it will insert the
 standard header, if available, at the top of the current buffer.
 
-When |g:cpywrite_verbatim_mode| is off, licenses with no standard header will
-be acknowledged below your author line. Turn on |g:cpywrite_verbatim_mode| to
+When |g:cpywrite#verbatim_mode| is off, licenses with no standard header will
+be acknowledged below your author line. Turn on |g:cpywrite#verbatim_mode| to
 use the full license text instead.
 
 This plugin learns your name and email by invoking `git`; it falls back to
@@ -46,7 +52,7 @@ REQUIREMENTS                                         *cpywrite-requirements*
 =============================================================================
 ATTRIBUTES                                             *cpywrite-attributes*
 
-                                                        *g:cpywrite_version*
+                                                        *g:cpywrite#version*
         `string`
 
 The current version number of this plugin.
@@ -54,13 +60,13 @@ The current version number of this plugin.
 =============================================================================
 OPTIONS                                                   *cpywrite-options*
 
-                                                *g:cpywrite_default_license*
+                                                *g:cpywrite#default_license*
         `string` (default: 'GPL-3.0-or-later')
 
 Set this to the SPDX identifier of your favourite license. Press <tab> after
 the |:CPYwriteDefaultLicense| or |:CPYwrite| command for suggestions.
 
-                                                  *g:cpywrite_verbatim_mode*
+                                                  *g:cpywrite#verbatim_mode*
         `number` (default: 0)
 
 When set to a non-zero value, the full license text will be requested, whether
@@ -71,14 +77,21 @@ etc.)
 When set to 0, only standard headers are requested. Licenses with no standard
 header will be briefly mentioned below your copyright line.
 
+                                                  *g:cpywrite#hide_filename*
+        `number` (default: 0)
+
+When set to a non-zero value, hides the name of the current buffer from the
+license header in all modes. Otherwise, the buffer's name will appear on the
+first line.
+
 =============================================================================
 COMMANDS                                                 *cpywrite-commands*
 
                                                                  *:CPYwrite*
         :CPYwrite [{spdx_short_name}]
 
-Optionally takes the name of a SPDX license identifier (without quotes). Use
-<tab> for name completion.
+Optionally takes the name of an SPDX license identifier (without quotes).
+Use <tab> for name completion.
 
 When called with no argument, this command behaves exactly like
 |<Plug>(cpywrite)|.
@@ -86,23 +99,33 @@ When called with no argument, this command behaves exactly like
                                                    *:CPYwriteDefaultLicense*
         :CPYwriteDefaultLicense [{spdx_short_name}]
 
-Sets |g:cpywrite_default_license| to the given SPDX license identifier (without
+Sets |g:cpywrite#default_license| to the given SPDX license identifier (without
 quotes) and prints the updated value. Use <tab> for name completion.
 
-Simply prints |g:cpywrite_default_license| when called with no argument.
+Simply prints |g:cpywrite#default_license| when called with no argument.
 
                                                        *:CPYwriteToggleMode*
         :CPYwriteToggleMode
 
-Toggles the state of the |g:cpywrite_verbatim_mode| option and prints a
-description of the updated state:
+Toggles the state of the |g:cpywrite#verbatim_mode| option and prints a
+description of the current state:
 >
     0 == "standard header/brief"
     1 == "verbatim"
 <
+
+                                                   *:CPYwriteToggleFilename*
+        :CPYwriteToggleFilename
+
+Toggles the state of the |g:cpywrite#hide_filename| option and prints a
+description of the current state:
+>
+    0 == "showing"
+    1 == "hidden"
+<
                                                           *<Plug>(cpywrite)*
 Quick action command for fetching the default license assigned to
-|g:cpywrite_default_license|.
+|g:cpywrite#default_license|.
 
 =============================================================================
 KEYMAPS                                                   *cpywrite-keymaps*
@@ -111,3 +134,6 @@ KEYMAPS                                                   *cpywrite-keymaps*
         {Normal}LH
 
 Default mapping of the |<Plug>(cpywrite)| command.
+
+=============================================================================
+vim:tw=78:noet:ft=help:norl:

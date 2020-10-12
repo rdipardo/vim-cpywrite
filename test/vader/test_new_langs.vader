@@ -10,7 +10,7 @@ Execute(Use :CPYwriteDefaultLicense to set default license);
   CPYwriteDefaultLicense GPL-3.0-only
 
 Then(Assert that :CPYwriteDefaultLicense changes default license);
-  AssertEqual 'GPL-3.0-only', g:cpywrite_default_license
+  AssertEqual 'GPL-3.0-only', g:cpywrite#default_license
 
 Execute(Prepend default license header to an Assembly file);
   new! default.s
@@ -28,7 +28,7 @@ Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 1, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite#verbatim_mode
 
 Execute(Prepend a license verbatim to an Ada file);
   new! verbatim.adb
@@ -75,4 +75,4 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
-  AssertEqual 0, g:cpywrite_verbatim_mode
+  AssertEqual 0, g:cpywrite#verbatim_mode

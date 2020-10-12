@@ -7,10 +7,10 @@ Execute(Test that plugin was loaded);
 
 Execute(Set default license to Apache-2.0);
   call vader#log('===== Setting default license =====')
-  let g:cpywrite_default_license = 'Apache-2.0'
+  let g:cpywrite#default_license = 'Apache-2.0'
 
 Then(Assert that default license was set);
-  AssertEqual 'Apache-2.0', g:cpywrite_default_license
+  AssertEqual 'Apache-2.0', g:cpywrite#default_license
 
 Execute(Prepend a standard license header to a C header file);
   new! standard.H
@@ -28,7 +28,7 @@ Execute(Use :CPYwriteDefaultLicense to set default license);
   CPYwriteDefaultLicense LGPL-3.0-or-later
 
 Then(Assert that :CPYwriteDefaultLicense changes default license);
-  AssertEqual 'LGPL-3.0-or-later', g:cpywrite_default_license
+  AssertEqual 'LGPL-3.0-or-later', g:cpywrite#default_license
 
 Execute(Prepend a header-less license to a C source file);
   new! brief.c
@@ -38,7 +38,7 @@ Execute(Prepend a header-less license to a C source file);
 Then(C header has brief license mention);
   AssertEqual ' * brief.c', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the LGPL-3.0-or-later License', getline(6)
+  AssertEqual ' * Distributed under the terms of the GNU Lesser General Public License Version 3.0 or later.', getline(6)
   AssertEqual ' */', getline(7)
 
 Execute(Prepend a standard license header to a C++ header file);
@@ -60,7 +60,7 @@ Execute(Prepend a header-less license to a C++ source file);
 Then(C++ source file has brief license mention);
   AssertEqual ' * brief.cxx', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the OpenSSL License', getline(6)
+  AssertEqual ' * Distributed under the terms of the OpenSSL License.', getline(6)
   AssertEqual ' */', getline(7)
 
 Execute(Prepend a standard header to CMakeLists.txt);
@@ -76,10 +76,10 @@ Then(CMakeLists.txt quotes GPLv3);
 
 Execute(Turn on verbatim mode);
   call vader#log('===== Switching to verbatim license mode =====')
-  let g:cpywrite_verbatim_mode = 1
+  let g:cpywrite#verbatim_mode = 1
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 1, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite#verbatim_mode
 
 Execute(Prepend a public domain license verbatim to an Objective-C file);
   new! freed.m
@@ -95,23 +95,36 @@ Then(Objective-C  file header quotes the entire Unlicense);
   AssertEqual ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(17)
   AssertEqual ' */', getline(24)
 
+Execute(Hide buffer name from license header);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that :CPYwriteToggleFilename turns on file name hiding);
+  AssertEqual 1, g:cpywrite#hide_filename
+
 Execute(Prepend a license verbatim to a Rust file);
   new! verbatim.rs
   b verbatim.rs
   CPYwrite BSD-3-Clause
 
 Then(Rust file header quotes the entire BSD-3-Clause license);
-  AssertEqual '// verbatim.rs', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '// 1. Redistributions of source code must retain the above copyright notice,', getline(9)
-  AssertEqual '// 2. Redistributions in binary form must reproduce the above copyright notice,', getline(12)
-  AssertEqual '// 3. Neither the name of the copyright holder nor the names of its contributors', getline(16)
-  AssertEqual '// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"', getline(20)
-  AssertEqual 2, len(getline(30)), 'Allow no trailing spaces'
+  AssertEqual '// 1. Redistributions of source code must retain the above copyright notice,', getline(7)
+  AssertEqual '// 2. Redistributions in binary form must reproduce the above copyright notice,', getline(10)
+  AssertEqual '// 3. Neither the name of the copyright holder nor the names of its contributors', getline(14)
+  AssertEqual '// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"', getline(18)
+  AssertEqual 2, len(getline(28)), 'Allow no trailing spaces'
 
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')
   CPYwriteToggleMode
 
 Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
-  AssertEqual 0, g:cpywrite_verbatim_mode
+  AssertEqual 0, g:cpywrite#verbatim_mode
+
+Execute(Use :CPYwriteToggleFilename to start showing buffer name);
+  call vader#log('===== Restoring file name display =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now showing);
+  AssertEqual 0, g:cpywrite#hide_filename

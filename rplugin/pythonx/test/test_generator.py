@@ -9,15 +9,19 @@ from cpywrite import licenses
 def test_language_recognition():
     c_lang_files = [
         'file.c', 'file.h', 'file.cc', 'file.CpP', 'file.c++', 'file.CxX',
-        'file.hh', 'file.H++', 'file.hPp', 'file.cs', 'file.CsS', 'file.java',
-        'file.KT', 'file.kTs', 'file.Ktm', 'file.JS', 'file.M', 'file.mM',
-        'file.ts', 'file.pHp', 'file.phP4', 'file.Php5', 'file.Phtml']
-    assembly_lang_files = ['file.S,' 'file.s', 'fils.Asm']
+        'filed.D', 'file.hh', 'file.H++', 'file.hPp', 'file.cs', 'file.CsS',
+        'file.java', 'file.KT', 'file.kTs', 'file.Ktm', 'file.M', 'file.mM',
+        'file.sWiFt']
+    web_lang_files = [
+        'file.JS', 'file.jSx', 'module.MjS', 'file.ts', 'file.pHp',
+        'file.phP4', 'file.Php5', 'file.Phtml']
+    assembly_lang_files = ['file.S', 'file.s', 'fils.Asm']
     lisp_lang_files = [
         'file.cl', 'file.lSp', 'file.LisP', 'file.cLJ', 'file.CLJC',
-        'file.CLjS', 'file.sS', 'file.sCM']
-    erlang_files = ['file.Erl','file.hRl']
+        'file.CLjS', 'file.sS', 'file.sCM', 'deps.Edn', 'file.FNl']
+    erlang_files = ['file.Erl', 'file.hRl']
     pascal_files = ['file.PAs', 'file.pP', 'file.iNC']
+    scala_files = ['file.sCaLa', 'file.SCala', 'file.sC']
     go_and_etc_files = [
         'file.gO', 'file.Rs', 'file.fs', 'file.fsi', 'file.fsx',
         'file.fsscript', 'file.sCsS']
@@ -28,12 +32,15 @@ def test_language_recognition():
     coffeescript_files = ['file.coFFee', 'main.litcoffEe']
     elm_files = ['file.eLm', 'file.Elm', 'file.elM']
     ml_lang_files = ['file.mL', 'file.MlI']
-    html_files = ['file.hTmL', 'file.hTm']
-    vim_script_files = ['script.viM', '.VIMrC']
-    misc_script_files = ['file.ADb', 'file.adS', 'file.LuA', 'file.sQl',
+    markup_files = ['file.hTmL', 'file.hTm', 'file.MaRkDoWn', 'file.MD']
+    vim_script_files = [
+        'script.viM', '.VIMrC', 'config.VIMrC', '.gvim', 'config.gvim',
+        '.ideavim', 'script.ideavim', '.exrc', 'config.exrc']
+    misc_script_files = [
+        'file.ADb', 'file.adS', 'file.LuA', 'file.sQl',
         'file.HS', 'file.LhS']
 
-    for src in c_lang_files:
+    for src in c_lang_files + web_lang_files + scala_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('/**', ' * ', ' *', ' */')
 
@@ -73,7 +80,7 @@ def test_language_recognition():
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('(*', ' ', ' ', '*)')
 
-    for src in html_files:
+    for src in markup_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('<!--', ' ', ' ', '-->')
 

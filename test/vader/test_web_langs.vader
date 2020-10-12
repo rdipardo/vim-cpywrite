@@ -7,10 +7,10 @@ Execute(Test that plugin was loaded);
 
 Execute(Turn on verbatim mode);
   call vader#log('===== Switching to verbatim license mode =====')
-  let g:cpywrite_verbatim_mode = 1
+  let g:cpywrite#verbatim_mode = 1
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 1, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite#verbatim_mode
 
 " Tc #1
 Execute(Prepend a license verbatim to a CSS file);
@@ -30,10 +30,10 @@ Then(CSS file header quotes the entire MIT license text);
 
 Execute(Turn off verbatim mode);
   call vader#log('===== Switching off verbatim mode =====')
-  let g:cpywrite_verbatim_mode = 0
+  let g:cpywrite#verbatim_mode = 0
 
 Then(Assert that verbatim mode is now off);
-  AssertEqual 0, g:cpywrite_verbatim_mode
+  AssertEqual 0, g:cpywrite#verbatim_mode
 
 " Tc #2
 Execute(Prepend a header-less license to a CSS file);
@@ -44,17 +44,17 @@ Execute(Prepend a header-less license to a CSS file);
 Then(CSS file header has brief license mention);
   AssertEqual ' * brief.css', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the Beerware License', getline(6)
+  AssertEqual ' * Distributed under the terms of the Beerware License.', getline(6)
   AssertEqual ' */', getline(7)
 
-" Tc #3
 Execute(Set default license to MPL-2.0);
   call vader#log('===== Setting default license =====')
-  let g:cpywrite_default_license = 'MPL-2.0'
+  let g:cpywrite#default_license = 'MPL-2.0'
 
 Then(Assert that default license was set);
-  AssertEqual 'MPL-2.0', g:cpywrite_default_license
+  AssertEqual 'MPL-2.0', g:cpywrite#default_license
 
+" Tc #3
 Execute(Prepend the default license header to a TypeScript file);
   new! standard.ts
   b standard.ts
@@ -75,7 +75,7 @@ Execute(Prepend a header-less license to a TypeScript file);
 Then(TypeScript file header has brief license mention);
   AssertEqual ' * brief.ts', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' * Licensed under the terms of the Fair License', getline(6)
+  AssertEqual ' * Distributed under the terms of the Fair License.', getline(6)
   AssertEqual ' */', getline(7)
 
 " Tc #5
@@ -91,15 +91,15 @@ Then(HTML comment block quotes the GFDL-1.1-or-later);
   AssertEqual '-->', getline(11)
 
 " Tc #6
-Execute(Prepend a header-less license to HTML);
-  new! brief.html
-  b brief.html
+Execute(Prepend a header-less license to Markdown);
+  new! brief.md
+  b brief.md
   CPYwrite Xerox
 
 Then(HTML comment block has brief license mention);
-  AssertEqual ' brief.html', getline(2)
+  AssertEqual ' brief.md', getline(2)
   AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' Licensed under the terms of the Xerox License', getline(6)
+  AssertEqual ' Distributed under the terms of the Xerox License.', getline(6)
   AssertEqual '-->', getline(7)
 
 " Tc #7
@@ -123,7 +123,7 @@ Execute(Prepend a header-less license to a SASS file);
 Then(SASS file header has brief license mention);
   AssertEqual '// brief.scss', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '// Licensed under the terms of the Afmparse License', getline(6)
+  AssertEqual '// Distributed under the terms of the Afmparse License.', getline(6)
   AssertEqual '//', getline(7)
 
 " Tc #9
@@ -143,7 +143,7 @@ Execute(Use :CPYwriteToggleMode to switch on verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now on);
-  AssertEqual 1, g:cpywrite_verbatim_mode
+  AssertEqual 1, g:cpywrite#verbatim_mode
 
 " Tc #10
 Execute(Prepend a license verbatim to a CoffeeScript file);
@@ -163,4 +163,4 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   CPYwriteToggleMode
 
 Then(Assert that verbatim mode is now off);
-  AssertEqual 0, g:cpywrite_verbatim_mode
+  AssertEqual 0, g:cpywrite#verbatim_mode
