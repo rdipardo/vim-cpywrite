@@ -147,7 +147,7 @@ Distributed under the terms of the MIT license
 [licl]: https://www.vim.org/scripts/script.php?script_id=4064
 [vim-8-pkg-docs]: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 [vim-pack-man]: https://shapeshed.com/vim-packages/#how-it-works
-[lang-list]: rplugin/pythonx/cpywrite/generator.py#L270
+[lang-list]: https://github.com/rdipardo/vim-cpywrite/blob/7661fb2a6d1cf81b949f2ec9854c9598c04fac4a/rplugin/pythonx/cpywrite/generator.py#L270
 [travis-badge]: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=master
 [travis-builds]: https://travis-ci.com/rdipardo/vim-cpywrite
 
