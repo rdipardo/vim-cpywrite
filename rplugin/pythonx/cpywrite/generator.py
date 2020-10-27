@@ -75,13 +75,16 @@ class Generator(object):
             # wrap text if raw header has no break after author's email
             if self.rights.spdx_code.startswith('ECL'):
                 run_on_text = re.search(r'(%s).+((%s)|\<(%s)\>)\w' \
-                                        % (self.tokens[1], author, email),
+                                        % (self.tokens[1],
+                                           author,
+                                           re.escape(email)),
                                         text)
                 if run_on_text:
                     one_liner = \
                         'Copyright (c) ' + authorship + ' Distributed under the'
                     text = re.sub(r'[\*(%s)]*(%s)'
-                                  % (self.tokens[1], run_on_text.group()),
+                                  % (self.tokens[1],
+                                     re.escape(run_on_text.group())),
                                   '%s%s\n%s%s'
                                   % (self.tokens[1],
                                      one_liner,
@@ -131,7 +134,9 @@ class Generator(object):
 
                 terms = _apply_format(terms, author_date, author, email, year)
 
-                if not re.findall(r'(<%s>)' % email, terms, re.MULTILINE) \
+                if not re.findall(r'(<%s>)' % re.escape(email),
+                                  terms,
+                                  re.MULTILINE) \
                    and not in_pub_domain(self.rights.spdx_code):
                     # no authorship template, so use our own
                     print(self.tokens[1] + copying, file=out)
