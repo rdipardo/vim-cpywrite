@@ -80,7 +80,7 @@ header will be briefly mentioned below your copyright line.
                                                   *g:cpywrite#hide_filename*
         `number` (default: 0)
 
-When set to a non-zero value, excludes the name of the current buffer from the
+When set to a non-zero value, hides the name of the current buffer from the
 license header in all modes. Otherwise, the buffer's name will appear on the
 first line.
 
@@ -90,8 +90,8 @@ COMMANDS                                                 *cpywrite-commands*
                                                                  *:CPYwrite*
         :CPYwrite [{spdx_short_name}]
 
-Optionally takes the name of a SPDX license identifier (without quotes). Use
-<tab> for name completion.
+Optionally takes the name of an SPDX license identifier (without quotes).
+Use <tab> for name completion.
 
 When called with no argument, this command behaves exactly like
 |<Plug>(cpywrite)|.
@@ -107,7 +107,7 @@ Simply prints |g:cpywrite#default_license| when called with no argument.
                                                        *:CPYwriteToggleMode*
         :CPYwriteToggleMode
 
-Toggles the state of the |g:cpywrite#hide_filename| option and prints a
+Toggles the state of the |g:cpywrite#verbatim_mode| option and prints a
 description of the current state:
 >
     0 == "standard header/brief"
