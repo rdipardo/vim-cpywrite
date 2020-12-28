@@ -29,6 +29,6 @@ func! cpywrite#PrependHeader(...) abort
     endif
 endfunc
 
-func! cpywrite#GetInterpreter()
+func! cpywrite#GetInterpreter() abort
     return exists('s:cpywrite_python_cmd') ? s:cpywrite_python_cmd : ''
 endfunc

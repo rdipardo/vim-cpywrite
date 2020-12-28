@@ -2,14 +2,14 @@
 vim-cpywrite
 ############
 
-|travis-badge|
+|gh-actions|  |current version|
 
 Generate copyright headers for any open source license
 
-.. figure:: .github/img/nvim_043_ver_031.gif
+.. figure:: .github/img/vim_821860.gif
     :alt: nvim-043-linux-demo
     :align: center
-    :width: 800
+    :width: 900
 
 ----
 
@@ -119,8 +119,6 @@ Requirements
 .. _pynvim: https://github.com/neovim/pynvim
 .. _requests: https://pypi.org/project/requests
 
-.. _installation guide:
-
 Installation
 ============
 
@@ -218,7 +216,7 @@ TODO
 Improve this README
 -------------------
 
-Consider opening a PR with an updated `installation guide`_ if any of the
+Consider opening a PR with an updated `installation guide <#installation>`_ if any of the
 following applies to you:
 
 * installation fails
@@ -227,14 +225,15 @@ following applies to you:
 License
 =======
 
-Distributed under the terms of the MIT license
+Distributed under the terms of the MIT license.
 
-.. |travis-badge| image:: https://travis-ci.com/rdipardo/vim-cpywrite.svg?branch=master
+.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=master
     :alt: Build Status
-    :scale: 100%
-    :target: https://travis-ci.com/rdipardo/vim-cpywrite
+    :target: https://github.com/rdipardo/vim-cpywrite/actions
+.. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
+    :alt: Vim Scripts version
 
-.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/7661fb2a6d1cf81b949f2ec9854c9598c04fac4a/rplugin/pythonx/cpywrite/generator.py#L270
+.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/324af8c1dbfd728ef2cff4f37f1623cc5a48c7f8/rplugin/pythonx/cpywrite/generator.py#L274
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management
 .. _native package directory: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 .. _DIY plugin management: https://shapeshed.com/vim-packages

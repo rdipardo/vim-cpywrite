@@ -11,10 +11,10 @@ def test_language_recognition():
         'file.c', 'file.h', 'file.cc', 'file.CpP', 'file.c++', 'file.CxX',
         'filed.D', 'file.hh', 'file.H++', 'file.hPp', 'file.cs', 'file.CsS',
         'file.java', 'file.KT', 'file.kTs', 'file.Ktm', 'file.M', 'file.mM',
-        'file.sWiFt']
+        'file.sWiFt', 'file.VAlA', 'file.vAPi']
     web_lang_files = [
         'file.JS', 'file.jSx', 'module.MjS', 'file.ts', 'file.pHp',
-        'file.phP4', 'file.Php5', 'file.Phtml']
+        'file.phP4', 'file.Php5', 'file.Phtml', 'file.Re', 'file.Rei']
     assembly_lang_files = ['file.S', 'file.s', 'fils.Asm']
     lisp_lang_files = [
         'file.cl', 'file.lSp', 'file.LisP', 'file.cLJ', 'file.CLJC',
@@ -27,18 +27,20 @@ def test_language_recognition():
         'file.fsscript', 'file.sCsS']
     script_lang_files = [
         'script', 'script.eX', 'script.ExS', 'script.Sh', 'script.pL',
-        'script.Py', 'script.PyW', 'script.Rb', 'script.cMaKe',
-        'CMakeLists.tXt']
+        'script.Py', 'script.PyW', 'script.R', 'script.rDA', 'script.RdAta',
+        'script.rdS', 'script.Rb', 'script.cMaKe', 'CMakeLists.tXt']
     coffeescript_files = ['file.coFFee', 'main.litcoffEe']
     elm_files = ['file.eLm', 'file.Elm', 'file.elM']
     ml_lang_files = ['file.mL', 'file.MlI']
-    markup_files = ['file.hTmL', 'file.hTm', 'file.MaRkDoWn', 'file.MD']
+    markup_files = ['file.hTmL', 'file.hTm', 'file.MaRkDoWn', 'file.MD',
+        'file.mKd']
     vim_script_files = [
         'script.viM', '.VIMrC', 'config.VIMrC', '.gvim', 'config.gvim',
         '.ideavim', 'script.ideavim', '.exrc', 'config.exrc']
     misc_script_files = [
-        'file.ADb', 'file.adS', 'file.LuA', 'file.sQl',
-        'file.HS', 'file.LhS']
+        'file.ADb', 'file.adS', 'file.E', 'file.LuA', 'file.sQl',
+        'file.HS', 'file.LhS', 'file.PuRs']
+    smalltalk_files = ['class.sT', 'instance.St']
 
     for src in c_lang_files + web_lang_files + scala_files:
         _, _, tokens = _get_language_meta(src)
@@ -91,6 +93,10 @@ def test_language_recognition():
     for src in misc_script_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('--', '-- ')
+
+    for src in smalltalk_files:
+        _, _, tokens = _get_language_meta(src)
+        assert tokens == ('"', ' ', ' ', '"')
 
 def test_license_recognition():
     generator = Generator()

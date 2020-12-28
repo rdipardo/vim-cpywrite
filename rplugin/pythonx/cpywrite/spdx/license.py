@@ -21,7 +21,7 @@ except ImportError:
 __all__ = ['License', 'licenses']
 
 
-class License(object):
+class License(object): # pylint: disable=R0205
     """Encapsulates the details of a license on the SPDX index"""
     def __init__(self, code):
         self.spdx_code = None
@@ -66,7 +66,7 @@ class License(object):
                 if response.status_code == 200:
                     try:
                         safe_xml = \
-                            ''.join(list(filter(strict_ascii, response.text)))
+                            ''.join([ch for ch in response.text if strict_ascii(ch)])
                         license_data = parser.fromstring(safe_xml)
                         _, temp_file = \
                             tempfile.mkstemp(prefix=self.spdx_code + '_',
@@ -134,13 +134,13 @@ class License(object):
                     content = child.text if (child.text and \
                                 child.tag != alt_tag and \
                                 child.tag != opt_tag and \
-                                any(list(filter(str.isalpha, child.text)))) \
+                                any([ch for ch in child.text if str.isalpha(ch)])) \
                                else (child.tail or '')
 
                 line = sub(r'\n\s+', '\n', content.lstrip())
                 should_wrap = \
-                    bool(list(filter(lambda l: len(l) > self.header_width,
-                                     line.splitlines())))
+                    bool([ln for ln in line.splitlines() \
+                          if len(ln) > self.header_width])
 
                 if child.tag == p_tag:
                     header_text.append('\n\n' + line)
@@ -180,6 +180,16 @@ class License(object):
 
         text_resource = 'https://raw.githubusercontent.com/' \
                        'spdx/license-list-data/master/text/%s.txt'
+
+        # TODO: open an issue about these: # pylint: disable=W0511
+        # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/Unlicense.txt#L10
+        # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/BSD-1-Clause.txt#L9
+        if self.spdx_code == 'Unlicense' or \
+           self.spdx_code == 'BSD-1-Clause':
+            text_resource = 'https://raw.githubusercontent.com/' \
+                           'spdx/license-list-data/' \
+                           'cade284866b0a1b6b18d7cb159279d3d41e6fa07/text/%s.txt'
+
         resource = quote(text_resource % self.spdx_code, safe='/,:')
         license_text = None
         cache = _find_cached_license(self.spdx_code, '.txt')
@@ -217,12 +227,18 @@ class License(object):
                 print("Error requesting %s." % (resource), file=stderr)
 
         # - try to keep sub-clauses left-aligned;
-        # - always put copyright notice on a new line
-        return sub(r'\n{2}\s*\-',
+        # - try to preserve indent of copyright notice;
+        # - always put copyright notice on a new line;
+        # - remove extra lines between paragraphs
+        return sub(r'\n{2}\s+\-',
                    '\n\n     -',
-                   sub(r'(?!$) ([cC]opyright(\s+\([cC]\))?\s+[\<\[\s][yearxYEARX]+)',
-                       '\n\nCopyright (c) <year>',
-                       license_text)).splitlines()
+                   sub(r'\n{2}\s+[cC]opyright',
+                       '\n\n     Copyright',
+                       sub(r'(?!$) ([cC]opyright(\s+\([cC]\))?\s+[\<\[\s][yearxYEARX]+)',
+                           '\n\nCopyright (c) <year>',
+                           sub(r'\n{3,}',
+                               '\n\n',
+                               license_text)))).splitlines()
 
     def __repr__(self):
         """Return a debug string representing this License"""
@@ -272,9 +288,8 @@ def _wrap_header(header_lines, limit):
 
     return \
         ''.join(
-            '\n'.join(
-                list(map(lambda l: l.lstrip(),
-                         wrapper.wrap(''.join(header_lines)))))).splitlines()
+            '\n'.join([ln.lstrip() for ln \
+                       in wrapper.wrap(''.join(header_lines))])).splitlines()
 
 def _find_cached_license(short_name, ext='.xml'):
     """Return the path to a temp file saved with the given SPDX id as prefix"""

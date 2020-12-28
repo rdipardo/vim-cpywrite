@@ -154,30 +154,44 @@ Then(SQL script quotes the GPL-3.0+);
   AssertEqual '-- 3 of the License, or (at your option) any later version.', getline(9)
   AssertEqual '--', getline(19)
 
-" Tc #11
-Execute(Prepend a header-less license to an SQL script);
-  new! brief.sql
-  b brief.sql
-  CPYwrite bzip2-1.0.5
+Execute(Hide buffer name from license header);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
 
-Then(SQL script has brief license mention);
-  AssertEqual '-- brief.sql', getline(2)
-  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '-- Distributed under the terms of the bzip2 and libbzip2 License Version 1.0.5.', getline(6)
-  AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+Then(Assert that file name is now hidden);
+  AssertEqual 1, g:cpywrite#hide_filename
+
+" Tc #11
+Execute(Prepend a header-less license to an R source file);
+  new! script.R
+  b script.R
+  CPYwrite bzip2-1.0.6
+
+Then(R source file has brief license mention);
+  AssertEqual '#', getline(1)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# Distributed under the terms of the bzip2 and libbzip2 License Version 1.0.6.', getline(4)
+  AssertEqual 1, len(getline(5)), 'Allow no trailing spaces'
+
+Execute(Use :CPYwriteToggleFilename to start showing buffer name);
+  call vader#log('===== Restoring file name display =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now showing);
+  AssertEqual 0, g:cpywrite#hide_filename
 
 " Tc #12
 Execute(Prepend the default license header to a Vim script);
-  new! standard.vim
-  b standard.vim
-  norm LH
+  new! standard.ideavim
+  b standard.ideavim
+  CPYwrite Apache-2.0
 
-Then(Vim script quotes the GPL-3.0+);
-  AssertEqual '"" standard.vim', getline(2)
+Then(Vim script quotes the Apache-2.0);
+  AssertEqual '"" standard.ideavim', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '"" modify it under the terms of the GNU General Public License', getline(7)
-  AssertEqual '"" 3 of the License, or (at your option) any later version.', getline(9)
-  AssertEqual '""', getline(19)
+  AssertEqual '"" Licensed under the Apache License, Version 2.0 (the ''License'');', getline(6)
+  AssertEqual '"" distributed under the License is distributed on an ''AS IS'' BASIS,', getline(13)
+  AssertEqual '""', getline(17)
 
 " Tc #13
 Execute(Prepend a header-less license to a .vimrc file);

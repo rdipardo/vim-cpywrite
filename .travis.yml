@@ -1,3 +1,9 @@
+branches:
+  except:
+    - master
+    - pre-release
+    - gh-actions
+
 dist: xenial
 
 language: python
@@ -9,6 +15,10 @@ python:
   - 3.6
   - 3.7
   - 3.8
+
+jobs:
+  allow_failures:
+  - python: 3.8
 
 before_install:
   - sudo apt-get -y install vim

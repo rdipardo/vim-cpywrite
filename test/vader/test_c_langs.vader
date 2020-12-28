@@ -122,6 +122,17 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
 Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
   AssertEqual 0, g:cpywrite#verbatim_mode
 
+Execute(Prepend a brief license mention to a Vala file);
+  new! brief.vala
+  b brief.vala
+  CPYwrite ISC
+
+Then(Vala file header mentions the ISC);
+  AssertEqual '/**', getline(1)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * Distributed under the terms of the ISC License.', getline(4)
+  AssertEqual ' */', getline(5)
+
 Execute(Use :CPYwriteToggleFilename to start showing buffer name);
   call vader#log('===== Restoring file name display =====')
   CPYwriteToggleFilename

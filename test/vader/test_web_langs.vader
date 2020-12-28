@@ -24,9 +24,9 @@ Then(CSS file header quotes the entire MIT license text);
   AssertEqual ' * MIT License', getline(4)
   AssertEqual 2, len(getline(5)), 'Allow no trailing spaces'
   AssertEqual ' * Permission is hereby granted, free of charge, to any person obtaining a copy', getline(8)
-  AssertEqual ' * The above copyright notice and this permission notice (including the next', getline(15)
-  AssertEqual ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(19)
-  AssertEqual ' */', getline(25)
+  AssertEqual ' * The above copyright notice and this permission notice shall be included in', getline(15)
+  AssertEqual ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(18)
+  AssertEqual ' */', getline(24)
 
 Execute(Turn off verbatim mode);
   call vader#log('===== Switching off verbatim mode =====')
@@ -164,3 +164,40 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
 
 Then(Assert that verbatim mode is now off);
   AssertEqual 0, g:cpywrite#verbatim_mode
+
+Execute(Prepend a standard license header to a PureScript file);
+  new! gplv2.purs
+  b gplv2.purs
+  CPYwrite GPL-2.0-or-later
+
+Then(PureScript file header quotes the GPLv2+);
+  AssertEqual '-- gplv2.purs', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '-- modify it under the terms of the GNU General Public License', getline(7)
+  AssertEqual '-- 2 of the License, or (at your option) any later version.', getline(9)
+  AssertEqual '--', getline(19)
+
+Execute(Hide buffer name from license header);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that :CPYwriteToggleFilename turns on file name hiding);
+  AssertEqual 1, g:cpywrite#hide_filename
+
+Execute(Prepend a brief license mention to a ReasonML file);
+  new! brief.rei
+  b brief.rei
+  CPYwrite Artistic-2.0
+
+Then(ReasonML file identifies the Artistic-2.0);
+  AssertEqual '/**', getline(1)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' * Distributed under the terms of the Artistic License Version 2.0.', getline(4)
+  AssertEqual ' */', getline(5)
+
+Execute(Resume showing file name);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now showing);
+  AssertEqual 0, g:cpywrite#hide_filename
