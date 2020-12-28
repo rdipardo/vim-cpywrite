@@ -1,0 +1,5 @@
+cmdargs:
+  color: true
+policies:
+  ProhibitAbbreviationOption:
+    enabled: false

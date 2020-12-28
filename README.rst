@@ -2,7 +2,7 @@
 vim-cpywrite
 ############
 
-|travis-badge|
+|gh-actions|  |current version|
 
 :WARNING: **This branch is for development purposes.**
           **End users are advised to checkout a** `release`_ **package**
@@ -230,12 +230,13 @@ following applies to you:
 License
 =======
 
-Distributed under the terms of the MIT license
+Distributed under the terms of the MIT license.
 
-.. |travis-badge| image:: https://travis-ci.com/rdipardo/vim-cpywrite.svg?token=yCqYFpeQtymaztY4Spav&branch=pre-release
+.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=pre-release
     :alt: Build Status
-    :scale: 100%
-    :target: https://travis-ci.com/rdipardo/vim-cpywrite
+    :target: https://github.com/rdipardo/vim-cpywrite/actions
+.. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
+    :alt: Vim Scripts version
 
 .. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/7661fb2a6d1cf81b949f2ec9854c9598c04fac4a/rplugin/pythonx/cpywrite/generator.py#L270
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management

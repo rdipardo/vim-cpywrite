@@ -1,0 +1,112 @@
+name: (Neo)vim
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Restore cache
+      uses: actions/cache@v2
+      with:
+        path: '~/.cache/pip'
+        key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
+        restore-keys: ${{ runner.os }}-pip-
+    - name: Install
+      run: |
+        pip install --upgrade pip
+        pip install vim-vint
+    - name: Lint
+      run: vint autoload plugin -wt
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04]
+        vim-version: [stable]
+        nvim-version: [nightly]
+        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
+        include:
+          - python-version: '3.4.10'
+            os: [ubuntu-18.04]
+          - python-version: '3.5'
+            # don't clobber standard issue python on 16.04
+            os: [ubuntu-18.04]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install latest pip
+      if: ${{ !(startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.4') || startsWith(matrix.python-version, '3.5')) }}
+      run: |
+        pip install --upgrade pip
+
+    - name: Install pip < 21.0
+      if: ${{ (startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.5')) }}
+      run: |
+        pip install --upgrade 'pip < 21.0'
+
+    - name: Install pip < 19.2
+      if: ${{ startsWith(matrix.python-version, '3.4') }}
+      run: |
+        pip install --upgrade 'pip < 19.2'
+
+    - name: Restore pip cache
+      uses: actions/cache@v2
+      with:
+        path: '~/.cache/pip'
+        key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
+        restore-keys: ${{ matrix.python-version }}-pip-
+
+    - name: Install python modules
+      run: pip install -r test/requirements.txt
+
+    - name: Set up plugin test environment
+      uses: actions/checkout@v2
+      with:
+        repository: junegunn/vader.vim
+        path: vader.vim
+        fetch-depth: 1
+
+    - name: Install vim
+      uses: rhysd/action-setup-vim@v1
+      id: vim
+      with:
+        version: ${{ matrix.vim-version }}
+
+    - name: Install neovim
+      uses: rhysd/action-setup-vim@v1
+      id: neovim
+      with:
+        neovim: true
+        version: ${{ matrix.nvim-version }}
+
+    - name: Run python tests
+      run: pytest -v
+
+    - name: Test plugin on vim
+      run: |
+        "${{ steps.vim.outputs.executable }}" --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+
+    - name: Test plugin on neovim
+      run: |
+        "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+
+    - name: Check startup times
+      run: |
+        head -n 10 nvim*.log > BENCH.log
+        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' nvim_* | sort >> BENCH.log
+        head -n 10 vim*.log >> BENCH.log
+        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> BENCH.log
+
+    - name: Save startup times
+      uses: actions/upload-artifact@v2
+      with:
+        name: plugin-load-stats
+        path: '**/BENCH.log'
