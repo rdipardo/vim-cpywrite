@@ -11,7 +11,7 @@ vim-cpywrite
 
 Generate copyright headers for any open source license
 
-.. figure:: .github/img/nvim_043_ver_030.gif
+.. figure:: .github/img/nvim_043_ver_031.gif
     :alt: nvim-043-linux-demo
     :align: center
     :width: 800
@@ -124,8 +124,6 @@ Requirements
 .. _pynvim: https://github.com/neovim/pynvim
 .. _requests: https://pypi.org/project/requests
 
-.. _installation guide:
-
 Installation
 ============
 
@@ -223,7 +221,7 @@ TODO
 Improve this README
 -------------------
 
-Consider opening a PR with an updated `installation guide`_ if any of the
+Consider opening a PR with an updated `installation guide <#installation>`_ if any of the
 following applies to you:
 
 * installation fails

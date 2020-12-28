@@ -17,7 +17,7 @@ from cpywrite.spdx.license import License, in_pub_domain
 __all__ = ['Generator', 'extensions']
 
 
-class Generator(object):
+class Generator(object): # pylint: disable=R0205
     """A source file generator"""
     def __init__(self, filename='new.py', rights='GPL-3.0-or-later'):
         self.set_file_props(filename, rights)
@@ -68,10 +68,7 @@ class Generator(object):
                 text = re.sub(r'\)%s' % year,
                               ') ' + year,
                               re.sub(r'(%s).+(\w+Permission)' % self.tokens[1],
-                                     '%sPermission' % self.tokens[1],
-                                     re.sub(r'(?!$)<%s> ' % email,
-                                            '<%s>. ' % email,
-                                            text)))
+                                     '%sPermission' % self.tokens[1], text))
             # wrap text if raw header has no break after author's email
             if self.rights.spdx_code.startswith('ECL'):
                 run_on_text = re.search(r'(%s).+((%s)|\<(%s)\>)\w' \
@@ -110,6 +107,8 @@ class Generator(object):
 
             if self.lang_key in _SCRIPT_HEADERS:
                 print(_SCRIPT_HEADERS[self.lang_key], file=out)
+            elif self.tokens[0].startswith('"'):
+                terms = [ln.replace('"', '\'') for ln in terms]
 
             print(self.tokens[0], file=out)
 
@@ -191,7 +190,7 @@ def extensions():
 
 def _get_language_meta(filename):
     """Identify programming language from file extension"""
-    if len(filename.strip()) < 1 or \
+    if not bool(filename.strip()) or \
         re.match(r'^.*[`<>:\"\'\|\?\*].*$', filename) or \
             re.match(r'^.+[\-`<>:\"\'\|\?\*\.]+$', filename):
         raise ValueError("Invalid filename: '%s'" % filename)
@@ -273,12 +272,14 @@ def _get_source_author():
     return (author, email)
 
 _SOURCE_META = {
-    ('', '.cmake', '.ex', '.exs', '.pl', '.py', '.pyw', '.rb', '.sh'):
+    ('', '.cmake', '.ex', '.exs', '.pl', '.py', '.pyw', '.r',
+     '.rb', '.rda', '.rdata', '.rds', '.sh'):
         [{
             ('.ex', '.exs'): 'Elixir',
             ('', '.sh'): 'shell script',
             ('.pl'): 'Perl',
             ('.py', '.pyw'): 'Python',
+            ('.r', '.rda', '.rdata', '.rds'): 'R',
             ('.rb'): 'Ruby',
             ('.cmake'): 'CMake'
         },
@@ -308,8 +309,8 @@ _SOURCE_META = {
         [{('.pas', '.pp', '.inc'): 'Pascal'}, ('{', ' ', ' ', '}')],
     ('.c', '.cc', '.c++', '.cpp', '.cxx', '.cs', '.css', '.d', '.h', '.hh',
      '.h++', '.hpp', '.hxx', '.java', '.js', '.jsx', '.mjs', '.kt', '.kts',
-     '.ktm', '.m', '.mm', '.php', '.php4', '.php5', '.phtml', '.scala', '.sc',
-     '.swift', '.ts'):
+     '.ktm', '.m', '.mm', '.php', '.php4', '.php5', '.phtml', '.re', '.rei',
+     '.scala', '.sc', '.swift', '.ts', '.vala', '.vapi'):
         [{
             ('.c'): 'C source',
             ('.d'): 'D source',
@@ -325,26 +326,30 @@ _SOURCE_META = {
             ('.js'): 'JavaScript',
             ('.jsx'): 'ReactJS',
             ('.mjs'): 'ES Module',
+            ('.re', '.rei'): 'ReasonML',
             ('.scala', '.sc'): 'Scala',
             ('.swift'): 'Swift',
-            ('.ts'): 'TypeScript'
+            ('.ts'): 'TypeScript',
+            ('.vala', '.vapi'): 'Vala'
         },
          ('/**', ' * ', ' *', ' */')],
     ('.elm'):
         [{('.elm'): 'Elm'}, ('{-', ' ', ' ', '-}')],
     ('.ml', '.mli'):
         [{('.ml', '.mli'): 'OCaml'}, ('(*', ' ', ' ', '*)')],
-    ('.html', '.htm', '.markdown', '.md'):
+    ('.html', '.htm', '.markdown', '.md', '.mkd'):
         [{('.html', '.htm'): 'HTML',
-          ('.markdown', '.md'): 'Markdown'
+          ('.markdown', '.md', '.mkd'): 'Markdown'
          },
          ('<!--', ' ', ' ', '-->')],
-    ('.adb', '.ads', '.lua', '.sql', '.hs', '.lhs'):
+    ('.adb', '.ads', '.e', '.lua', '.sql', '.hs', '.lhs', '.purs'):
         [{
             ('.adb', '.ads'): 'Ada',
+            ('.e'): 'Eiffel',
             ('.lua'): 'Lua',
             ('.sql'): 'SQL',
             ('.hs', '.lhs'): 'Haskell',
+            ('.purs'): 'PureScript'
         },
          ('--', '-- ')],
     ('.go', '.rs', '.fs', '.fsi', '.fsx', '.fsscript', '.scss'):
@@ -355,6 +360,9 @@ _SOURCE_META = {
             ('.scss'): 'SASS'
         },
          ('//', '// ')],
+    ('.st'):
+        [{('.st'): 'Smalltalk'},
+         ('"', ' ', ' ', '"')],
     ('.vim', '.vimrc', '.gvim', '.ideavim', '.exrc'):
         [{('.vim', '.vimrc', '.gvim', '.ideavim', '.exrc'): 'VimL'},
          ('""', '"" ')]

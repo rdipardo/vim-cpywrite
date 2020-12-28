@@ -204,3 +204,14 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
 
 Then(Assert that verbatim mode is now off);
   AssertEqual 0, g:cpywrite#verbatim_mode
+
+Execute(Prepend a standard license header to an Eiffel file);
+  new! brief.e
+  b brief.e
+  CPYwrite EUDatagrid
+
+Then(Eiffel file header mentions the EUDatagrid);
+  AssertEqual '-- brief.e', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '-- Distributed under the terms of the EU DataGrid Software License.', getline(6)
+  AssertEqual '--', getline(7)

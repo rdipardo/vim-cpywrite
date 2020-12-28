@@ -40,9 +40,9 @@ Then(Ada file header quotes the entire MIT license);
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual '-- MIT License', getline(4)
   AssertEqual '-- Permission is hereby granted, free of charge, to any person obtaining a copy', getline(8)
-  AssertEqual '-- The above copyright notice and this permission notice (including the next', getline(15)
-  AssertEqual '-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(19)
-  AssertEqual 2, len(getline(25)), 'Allow no trailing spaces'
+  AssertEqual '-- The above copyright notice and this permission notice shall be included in', getline(15)
+  AssertEqual '-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR', getline(18)
+  AssertEqual 2, len(getline(24)), 'Allow no trailing spaces'
 
 Execute(Prepend a license verbatim to a Go file);
   new! verbatim.go
@@ -64,11 +64,11 @@ Execute(Prepend a license verbatim to a Pascal file);
 
 Then(Pascal file header quotes the entire X11 license);
   AssertEqual ' verbatim.pas', getline(2)
-  AssertEqual ' X11 License Copyright (C) 1996 X Consortium', getline(6)
-  AssertEqual ' Permission is hereby granted, free of charge, to any person obtaining a copy', getline(8)
-  AssertEqual ' Except as contained in this notice, the name of the X Consortium shall not', getline(25)
-  AssertEqual ' X Window System is a trademark of X Consortium, Inc.', getline(29)
-  AssertEqual 1, len(getline(30)), 'Allow no trailing spaces'
+  AssertEqual ' X11 License', getline(6)
+  AssertEqual ' Permission is hereby granted, free of charge, to any person obtaining a copy', getline(10)
+  AssertEqual ' Except as contained in this notice, the name of the X Consortium shall not', getline(27)
+  AssertEqual ' X Window System is a trademark of X Consortium, Inc.', getline(31)
+  AssertEqual 1, len(getline(32)), 'Allow no trailing spaces'
 
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')
@@ -76,3 +76,15 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
 
 Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
   AssertEqual 0, g:cpywrite#verbatim_mode
+
+Execute(Prepend a standard license header to a Smalltalk file);
+  new! apache20.st
+  b apache20.st
+  CPYwrite Apache-2.0
+
+Then(Smalltalk file header quotes the Apache-2.0);
+  AssertEqual ' apache20.st', getline(2)
+  AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' Licensed under the Apache License, Version 2.0 (the ''License'');', getline(6)
+  AssertEqual ' distributed under the License is distributed on an ''AS IS'' BASIS,', getline(13)
+  AssertEqual '"', getline(17)

@@ -9,7 +9,7 @@
 if get(g:, 'autoloaded_cpywrite_error') | finish | endif
 let g:autoloaded_cpywrite_error = 1
 
-func! cpywrite#error#NoPython()
+func! cpywrite#error#NoPython() abort
   if has ('nvim')
       call health#report_error(
       \'Your editor is missing a python provider!',

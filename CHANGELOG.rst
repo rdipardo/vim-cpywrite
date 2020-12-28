@@ -6,6 +6,20 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.3.1
+======
+**(2020-10-26)**
+
+Changed
+-------
+- use reStructuredText in project documentation
+
+Fixed
+-----
+- call ``re.escape()`` on emails when searching authorship templates in case
+  they contain regex symbols, e.g. ``00000000+some1@users.noreply.github.com``
+
+
 0.3.0
 ======
 **(2020-10-12)**
@@ -13,8 +27,8 @@ CHANGELOG
 Changed
 -------
 - options that were prefixed with ``cpywrite_`` now start with ``cpywrite#``;
-  this will allow future new options to be loaded from the ``autoload``
-  directory
+  this will allow future options to be loaded from the ``autoload`` directory
+
 - licenses are now identified by full name when there's no standard header
 
 .. _configure vim to wrap lines:
