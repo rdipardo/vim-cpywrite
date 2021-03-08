@@ -60,36 +60,7 @@ class License(object): # pylint: disable=R0205
                 pass
 
         if license_data is None:
-            try:
-                response = requests.get(resource)
-
-                if response.status_code == 200:
-                    try:
-                        safe_xml = \
-                            ''.join([ch for ch in response.text if strict_ascii(ch)])
-                        license_data = parser.fromstring(safe_xml)
-                        _, temp_file = \
-                            tempfile.mkstemp(prefix=self.spdx_code + '_',
-                                             suffix=".xml",
-                                             text=True)
-                        if temp_file:
-                            try:
-                                with open(temp_file, 'w') as tmp:
-                                    tmp.write(safe_xml)
-                            except IOError:
-                                pass
-
-                    except (parser.ParseError, TypeError, IOError):
-                        print("Got invalid licence data from %s." % (resource),
-                              file=stderr)
-                else:
-                    print("Unexpected response [%d] from %s.\n"
-                          % (response.status_code, resource),
-                          file=stderr)
-
-            except (requests.exceptions.MissingSchema,
-                    requests.exceptions.ConnectionError):
-                print("Error requesting %s." % (resource), file=stderr)
+            license_data = _fetch_license(resource, self.spdx_code, strict_ascii)
 
         if license_data is None:
             return ''
@@ -178,14 +149,17 @@ class License(object): # pylint: disable=R0205
         if not self.spdx_code:
             return ''
 
-        text_resource = 'https://raw.githubusercontent.com/' \
-                       'spdx/license-list-data/master/text/%s.txt'
-
-        # TODO: open an issue about these: # pylint: disable=W0511
+        # TODO: find a more reliable license generator: # pylint: disable=W0511
+        # https://github.com/spdx/license-list-data/blob/master/text/MIT.txt
+        # https://github.com/spdx/license-list-data/blob/master/text/0BSD.txt
         # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/Unlicense.txt#L10
         # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/BSD-1-Clause.txt#L9
-        if self.spdx_code == 'Unlicense' or \
-           self.spdx_code == 'BSD-1-Clause':
+        # etc., etc.
+        text_resource = 'https://raw.githubusercontent.com/' \
+                       'spdx/license-list-data/' \
+                       '2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/%s.txt'
+
+        if self.spdx_code in ['Unlicense', 'BSD-1-Clause']:
             text_resource = 'https://raw.githubusercontent.com/' \
                            'spdx/license-list-data/' \
                            'cade284866b0a1b6b18d7cb159279d3d41e6fa07/text/%s.txt'
@@ -202,29 +176,10 @@ class License(object): # pylint: disable=R0205
                 pass
 
         if license_text is None:
-            try:
-                response = requests.get(resource)
+            license_text = _fetch_license(resource, self.spdx_code)
 
-                if response.status_code == 200:
-                    license_text = response.text
-                    _, temp_file = \
-                        tempfile.mkstemp(prefix=self.spdx_code + '_',
-                                         suffix=".txt",
-                                         text=True)
-                    if temp_file:
-                        try:
-                            with open(temp_file, 'w') as tmp:
-                                tmp.write(license_text)
-                        except IOError:
-                            pass
-                else:
-                    print("Unexpected response [%d] from %s.\n"
-                          % (response.status_code, resource),
-                          file=stderr)
-
-            except (requests.exceptions.MissingSchema,
-                    requests.exceptions.ConnectionError):
-                print("Error requesting %s." % (resource), file=stderr)
+        if license_text is None:
+            return ''
 
         # - try to keep sub-clauses left-aligned;
         # - try to preserve indent of copyright notice;
@@ -301,6 +256,53 @@ def _find_cached_license(short_name, ext='.xml'):
             return os.path.join(root, found[0])
 
     return None
+
+def _fetch_license(resource, spdx_id, validator=None):
+    license_data = None
+    cached_content = None
+    ext = '.xml' if validator else '.txt'
+
+    try:
+        response = requests.get(resource)
+
+        if response.status_code == 200:
+            if validator:
+                try:
+                    safe_xml = \
+                        ''.join([ch for ch in response.text if validator(ch)])
+                    license_data = parser.fromstring(safe_xml)
+                    cached_content = safe_xml
+                except (parser.ParseError, TypeError):
+                    print("Got invalid licence data from %s." % (resource),
+                          file=stderr)
+            else:
+                license_data = response.text
+                cached_content = license_data
+
+            try:
+                _, temp_file = \
+                    tempfile.mkstemp(prefix=spdx_id + '_',
+                                     suffix=ext,
+                                     text=True)
+                if temp_file:
+                    try:
+                        with open(temp_file, 'w') as tmp:
+                            tmp.write(cached_content)
+                    except IOError:
+                        pass
+
+            except IOError:
+                pass
+        else:
+            print("Unexpected response [%d] from %s.\n"
+                  % (response.status_code, resource),
+                  file=stderr)
+
+    except (requests.exceptions.MissingSchema,
+            requests.exceptions.ConnectionError):
+        print("Error requesting %s." % (resource), file=stderr)
+
+    return license_data
 
 _SPDX_IDS = [
     '0BSD',

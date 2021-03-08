@@ -6,6 +6,32 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.3.2
+======
+**(2020-12-28)**
+
+Fixed
+-----
+- replace double-quotes with single-quotes when filetypes use ``"`` as their
+  comment delimiter (i.e. VimL, Smalltalk)
+- (temporarily) avoid requesting defective copies of the full `Unlicense`_ and
+  `BSD-1-Clause`_
+- minor pruning of some unreachable code (overlooked in `last release`_)
+
+.. _last release: https://github.com/rdipardo/vim-cpywrite/releases/tag/v0.3.1
+
+Added
+-----
+- match the ``.mkd`` extension with Markdown files
+- support for these file types:
+
+  + Eiffel
+  + PureScript
+  + R
+  + ReasonML
+  + Smalltalk
+  + Vala
+
 0.3.1
 ======
 **(2020-10-26)**
@@ -138,5 +164,7 @@ Added
 
 .. _`#2`: https://github.com/rdipardo/vim-cpywrite/pull/2
 .. _cached: https://github.com/rdipardo/vim-cpywrite/blob/7661fb2a6d1cf81b949f2ec9854c9598c04fac4a/rplugin/pythonx/cpywrite/spdx/license.py#L55
+.. _Unlicense: https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/Unlicense.txt#L10
+.. _BSD-1-Clause: https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/BSD-1-Clause.txt#L9
 
 .. vim:ft=rst:et:tw=78:

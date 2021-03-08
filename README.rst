@@ -238,7 +238,7 @@ Distributed under the terms of the MIT license.
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
     :alt: Vim Scripts version
 
-.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/7661fb2a6d1cf81b949f2ec9854c9598c04fac4a/rplugin/pythonx/cpywrite/generator.py#L270
+.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/324af8c1dbfd728ef2cff4f37f1623cc5a48c7f8/rplugin/pythonx/cpywrite/generator.py#L274
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management
 .. _native package directory: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 .. _DIY plugin management: https://shapeshed.com/vim-packages
