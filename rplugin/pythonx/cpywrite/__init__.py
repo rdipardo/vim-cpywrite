@@ -20,7 +20,7 @@ cpywrite
                   ~~~~~~~~~
 """
 
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 __authors__ = ['Robert Di Pardo']
 __url__ = 'https://github.com/rdipardo/vim-cpywrite'
 __license__ = 'MIT'

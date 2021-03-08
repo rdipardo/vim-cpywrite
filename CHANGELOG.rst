@@ -6,6 +6,20 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.3.3
+======
+**(2021-03-08)**
+
+Fixed
+-----
+- (temporarily) request *ALL* full text licenses from the `previous release versions`_
+  (with the exception of the `Unlicense`_ and `BSD-1-Clause`_ as before). A future
+  release will probably start using a different repository when theses versions
+  fall too far behind the officially recognized templates
+- minor refactoring of some redundant code
+
+.. _previous release versions: https://github.com/spdx/license-list-data/releases/tag/v3.11
+
 0.3.2
 ======
 **(2020-12-28)**
