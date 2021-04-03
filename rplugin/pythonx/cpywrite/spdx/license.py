@@ -216,9 +216,10 @@ class License(object): # pylint: disable=R0205
             name = search(r'.+[lL]icense', name)
             version = search(r'\d\.\d.*$', self.license_name)
 
-            return (template % name.group()) + \
-                   (' Version ' + version.group() if version else '') + \
-                   '.'
+            if name:
+                return (template % name.group()) + \
+                       (' Version ' + version.group() if version else '') + \
+                       '.'
 
         if self.spdx_code:
             return (template % self.spdx_code) + \

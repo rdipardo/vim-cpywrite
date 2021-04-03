@@ -6,6 +6,22 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.3.4
+======
+**(2021-04-04)**
+
+Fixed
+-----
+- prevent copyright year regex from accidentally matching older versions of the
+  Mozilla Public License
+- don't throw an exception if the full name of a license doesn't start with *The*
+- don't print angle brackets when ``user.email`` is empty
+
+Changed
+-------
+- try to detect the user's interpreter program when modifying a shell script
+- remove example GIF from plugin assets and use a hyperlink instead
+
 0.3.3
 ======
 **(2021-03-08)**
@@ -14,7 +30,7 @@ Fixed
 -----
 - (temporarily) request *ALL* full text licenses from the `previous release versions`_
   (with the exception of the `Unlicense`_ and `BSD-1-Clause`_ as before). A future
-  release will probably start using a different repository when theses versions
+  release will probably start using a different repository when these versions
   fall too far behind the officially recognized templates
 - minor refactoring of some redundant code
 
@@ -32,7 +48,7 @@ Fixed
   `BSD-1-Clause`_
 - minor pruning of some unreachable code (overlooked in `last release`_)
 
-.. _last release: https://github.com/rdipardo/vim-cpywrite/releases/tag/v0.3.1
+.. _last release: https://github.com/rdipardo/vim-cpywrite/blob/master/CHANGELOG.rst#031
 
 Added
 -----

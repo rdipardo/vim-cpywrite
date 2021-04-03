@@ -96,7 +96,12 @@ jobs:
         version: ${{ matrix.nvim-version }}
 
     - name: Run python tests
-      run: pytest -v
+      # > platform linux -- Python 3.7.3, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- /usr/bin/python3
+      # > ...
+      # > /usr/lib/python3/dist-packages/socks.py:58: DeprecationWarning: Using or importing the ABCs from 'collections'
+      # > instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
+      # >   from collections import Callable
+      run: pytest -v -W ignore::DeprecationWarning
 
     - name: Test plugin on vim
       run: |

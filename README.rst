@@ -6,7 +6,7 @@ vim-cpywrite
 
 Generate copyright headers for any open source license
 
-.. figure:: .github/img/vim_8.2.2549.gif
+.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/rel/vim_8.2.2549.gif
     :alt: vim-win-x64-demo
     :align: center
     :width: 900

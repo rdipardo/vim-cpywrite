@@ -9,7 +9,7 @@
 if get(g:, 'loaded_cpywrite') | finish | endif
 let g:loaded_cpywrite = 1
 
-let g:cpywrite#version = '0.3.3'
+let g:cpywrite#version = '0.3.4'
 
 if empty(get(g:, 'cpywrite#default_license', ''))
     let g:cpywrite#default_license = 'GPL-3.0-or-later'

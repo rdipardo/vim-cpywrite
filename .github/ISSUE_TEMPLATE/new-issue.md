@@ -10,7 +10,7 @@ assignees: ''
 *Please provide the following with your description of the issue:*
 - [ ] Platform information (e.g. Ubuntu Linux 16.04):
 - [ ] Python version:
-- [ ] plugin version (enter `:echo g:cpywrite#version` at the vim command window):
+- [ ] Plugin version (`vim -V1 -i NONE -ENsu ~/.vimrc -c ':echo g:cpywrite#version' +q`):
 
 *If applicable, include  one of the following:*
 - [ ] Output of `pip list | grep requests`:
