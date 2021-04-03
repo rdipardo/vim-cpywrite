@@ -56,7 +56,7 @@ class Generator(object): # pylint: disable=R0205
                 print('\n?>', file=dest)
 
         def _apply_format(text, pattern, author, email, year):
-            authorship = year + ' ' + author + ' <' + email + '>'
+            authorship = year + ' ' + author
 
             # watch out for 20^th-century year template of the older GPLs
             text = \
@@ -70,12 +70,13 @@ class Generator(object): # pylint: disable=R0205
                               re.sub(r'(%s).+(\w+Permission)' % self.tokens[1],
                                      '%sPermission' % self.tokens[1], text))
             # wrap text if raw header has no break after author's email
-            if self.rights.spdx_code.startswith('ECL'):
-                run_on_text = re.search(r'(%s).+((%s)|\<(%s)\>)\w' \
+            elif self.rights.spdx_code.startswith('ECL'):
+                run_on_text = re.search(r'(%s).+((%s)|(%s))\w' \
                                         % (self.tokens[1],
                                            author,
                                            re.escape(email)),
                                         text)
+
                 if run_on_text:
                     one_liner = \
                         'Copyright (c) ' + authorship + ' Distributed under the'
@@ -88,6 +89,10 @@ class Generator(object): # pylint: disable=R0205
                                      self.tokens[1],
                                      run_on_text.group()[-1]),
                                   text)
+            else:
+                text = re.sub(r'(%s)' % re.escape(authorship),
+                              authorship + email,
+                              text)
 
             return text
 
@@ -95,14 +100,15 @@ class Generator(object): # pylint: disable=R0205
             out = StringIO()
             year = str(datetime.now())[:4]
             author, email = _get_source_author()
+            contact = ' <' + email + '>' if email else ''
             copying = \
-                'Copyright (c) ' + year + ' ' + author + ' <' + email + '>'
+                'Copyright (c) ' + year + ' ' + author + contact
             terms = \
                 self.rights.header \
                 if not full_text \
                 else self.rights.license_text
             author_date = \
-                re.compile(r"(?!.*(http).*)[\<\[\s][YEARX]+[\>\]\s].+[\>\]]",
+                re.compile(r"(?!.*(http).*)[\<\[\s]((YEAR)|[YX]+)[\>\]\s].+[\>\]]",
                            re.IGNORECASE)
 
             if self.lang_key in _SCRIPT_HEADERS:
@@ -128,12 +134,12 @@ class Generator(object): # pylint: disable=R0205
                     # probably a GFDL or older GPL with an oddball authorship
                     # template
                     author_date = \
-                        re.compile(r"(?!.*(http).*)[\<\[\s][YEARX]+[\>\]\s].+[\>\]\.]",
+                        re.compile(r"(?!.*(http).*)[\<\[\s]((YEAR)|[YX]+)[\>\]\s].+[\>\]\.]",
                                    re.IGNORECASE)
 
-                terms = _apply_format(terms, author_date, author, email, year)
+                terms = _apply_format(terms, author_date, author, contact, year)
 
-                if not re.findall(r'(<%s>)' % re.escape(email),
+                if not re.findall(r'(%s)' % author,
                                   terms,
                                   re.MULTILINE) \
                    and not in_pub_domain(self.rights.spdx_code):
@@ -373,7 +379,10 @@ recognized by the Generator type
 """
 
 _SCRIPT_HEADERS = {
-    'shell script': '#!/usr/bin/env bash',
+    'shell script': '#!/usr/bin/env %s'
+                    % re.sub(r'^\$\w+',
+                             'bash',
+                             path.expandvars('$SHELL').split('/')[-1]),
     'perl': '#!/usr/bin/env perl',
     'php': '<?php',
     'python': '#!/usr/bin/env python%s\n# -*- coding: utf-8 -*-\n'
