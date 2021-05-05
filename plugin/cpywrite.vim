@@ -9,10 +9,10 @@
 if get(g:, 'loaded_cpywrite') | finish | endif
 let g:loaded_cpywrite = 1
 
-let g:cpywrite#version = '0.3.4-pre'
+let g:cpywrite#version = '0.3.5-pre'
 
 if empty(get(g:, 'cpywrite#default_license', ''))
-    let g:cpywrite#default_license = 'GPL-3.0-or-later'
+    let g:cpywrite#default_license = 'Apache-2.0'
 endif
 
 if !exists('g:cpywrite#verbatim_mode')

@@ -61,7 +61,7 @@ The current version number of this plugin.
 OPTIONS                                                   *cpywrite-options*
 
                                                 *g:cpywrite#default_license*
-        `string` (default: 'GPL-3.0-or-later')
+        `string` (default: 'Apache-2.0')
 
 Set this to the SPDX identifier of your favourite license. Press <tab> after
 the |:CPYwriteDefaultLicense| or |:CPYwrite| command for suggestions.

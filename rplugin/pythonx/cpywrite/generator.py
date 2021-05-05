@@ -19,7 +19,7 @@ __all__ = ['Generator', 'extensions']
 
 class Generator(object): # pylint: disable=R0205
     """A source file generator"""
-    def __init__(self, filename='new.py', rights='GPL-3.0-or-later'):
+    def __init__(self, filename='new.py', rights='Apache-2.0'):
         self.set_file_props(filename, rights)
 
     def set_file_props(self, filename, rights=''):

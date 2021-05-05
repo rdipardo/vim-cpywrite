@@ -96,7 +96,7 @@ Options
 +-------------------------------+----------------------------------------------+
 |``g:cpywrite#default_license`` | The SPDX identifier of the license to be     |
 |                               | fetched by the ``:CPYwrite`` command.        |
-|                               | Default: ``'GPL-3.0-or-later'``              |
+|                               | Default: ``'Apache-2.0'``              |
 +-------------------------------+----------------------------------------------+
 |``g:cpywrite#verbatim_mode``   | When set to a non-zero value, the full       |
 |                               | license text will be requested -- you should |
