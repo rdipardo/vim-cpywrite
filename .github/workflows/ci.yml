@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: '3.9'
     - name: Restore cache
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2.1.5
       with:
         path: '~/.cache/pip'
         key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
@@ -30,6 +30,7 @@ jobs:
     - name: Lint
       run: vint autoload plugin -wt
   build:
+    needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -38,11 +39,15 @@ jobs:
         nvim-version: [nightly]
         python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
         include:
-          - python-version: '3.4.10'
-            os: [ubuntu-18.04]
-          - python-version: '3.5'
+          - os: ubuntu-18.04
+            vim-version: stable
+            nvim-version: stable
+            python-version: '3.4.10'
+          - os: ubuntu-18.04
+            vim-version: stable
+            nvim-version: stable
             # don't clobber standard issue python on 16.04
-            os: [ubuntu-18.04]
+            python-version: '3.5'
     steps:
     - uses: actions/checkout@v2
     - name: Set up python
@@ -63,10 +68,10 @@ jobs:
     - name: Install pip < 19.2
       if: ${{ startsWith(matrix.python-version, '3.4') }}
       run: |
-        pip install --upgrade 'pip < 19.2'
+        pip install --upgrade 'pip < 19.2' typing
 
     - name: Restore pip cache
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.5
       with:
         path: '~/.cache/pip'
         key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
@@ -112,14 +117,16 @@ jobs:
         "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
 
     - name: Check startup times
+      env:
+        LOG: python-${{ matrix.python-version }}-bench.log
       run: |
-        head -n 10 nvim*.log > BENCH.log
-        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' nvim_* | sort >> BENCH.log
-        head -n 10 vim*.log >> BENCH.log
-        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> BENCH.log
+        head -n 10 nvim_*.log > neovim-${{ matrix.nvim-version }}-$LOG
+        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' nvim_* | sort >> neovim-${{ matrix.nvim-version }}-$LOG
+        head -n 10 vim_*.log >> vim-${{ matrix.vim-version }}-$LOG
+        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> vim-${{ matrix.vim-version }}-$LOG
 
     - name: Save startup times
       uses: actions/upload-artifact@v2
       with:
         name: plugin-load-stats
-        path: '**/BENCH.log'
+        path: '**/*python*.log'
