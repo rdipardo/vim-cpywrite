@@ -4,17 +4,12 @@ vim-cpywrite
 
 |gh-actions|  |current version|
 
-:WARNING: **This branch is for development purposes.**
-          **End users are advised to checkout a** `release`_ **package**
-
-.. _release: https://github.com/rdipardo/vim-cpywrite/releases
-
 Generate copyright headers for any open source license
 
-.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/pre/nvim_043_ver_031.gif
-    :alt: nvim-043-linux-demo
+.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/rel/vim_8.2.2549.gif
+    :alt: vim-win-x64-demo
     :align: center
-    :width: 800
+    :width: 900
 
 ----
 
@@ -45,7 +40,7 @@ Features
 * Python bindings compatible with python 2.7.x or 3.4+, depending on your
   platform and (neo)vim version, of course
 
-* Choose from 380 licenses (press ``<tab>`` after the ``:CPYwriteDefaultLicense``
+* Choose from more than 420 licenses (press ``<tab>`` after the ``:CPYwriteDefaultLicense``
   or ``:CPYwrite`` command for suggestions)
 
 .. _completions:
@@ -96,7 +91,7 @@ Options
 +-------------------------------+----------------------------------------------+
 |``g:cpywrite#default_license`` | The SPDX identifier of the license to be     |
 |                               | fetched by the ``:CPYwrite`` command.        |
-|                               | Default: ``'Apache-2.0'``              |
+|                               | Default: ``'Apache-2.0'``                    |
 +-------------------------------+----------------------------------------------+
 |``g:cpywrite#verbatim_mode``   | When set to a non-zero value, the full       |
 |                               | license text will be requested -- you should |
@@ -232,7 +227,7 @@ License
 
 Distributed under the terms of the MIT license.
 
-.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=pre-release
+.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=master
     :alt: Build Status
     :target: https://github.com/rdipardo/vim-cpywrite/actions
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim

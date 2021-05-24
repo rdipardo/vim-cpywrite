@@ -6,6 +6,46 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.4.0
+======
+**(2021-05-24)**
+
+Fixed
+-----
+- include user's email in the ECL-1.0 header
+
+Changed
+-------
+- drop the `deprecated FreeBSD variant`_ of the BSD 2-Clause License
+- detect more styles of authorship template, like a generic range years
+  (e.g. ``<yyyy, yyyy>``), or an actual year that's merely historical
+  (e.g. copyright notice of the 0BSD). The old matching rules are retained
+  for the licenses that need them (e.g. the GFDLs, the ECLs, etc.)
+
+.. _deprecated FreeBSD variant: https://spdx.org/licenses/BSD-2-Clause-FreeBSD
+
+Added
+-----
+- include recent additions to the `SPDX License List`_
+
+.. _SPDX License List: https://spdx.org/licenses
+
+0.3.4
+======
+**(2021-04-04)**
+
+Fixed
+-----
+- prevent copyright year regex from accidentally matching older versions of the
+  Mozilla Public License
+- don't throw an exception if the full name of a license doesn't start with *The*
+- don't print angle brackets when ``user.email`` is empty
+
+Changed
+-------
+- try to detect the user's interpreter program when modifying a shell script
+- remove example GIF from plugin assets and use a hyperlink instead
+
 0.3.3
 ======
 **(2021-03-08)**
