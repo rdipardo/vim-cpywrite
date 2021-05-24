@@ -154,10 +154,25 @@ class License(object): # pylint: disable=R0205
         # https://github.com/spdx/license-list-data/blob/master/text/0BSD.txt
         # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/Unlicense.txt#L10
         # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/BSD-1-Clause.txt#L9
-        # etc., etc.
+        #
+        # full text of new licenses added since v3.11 are fetched from
+        # the HEAD of spdx/license-list-data; USE THEM AT YOUR OWN RISK
+        spdx_revision = '2e20899c0504ff6c0acfcc1b0994d7163ce46939' \
+            if not self.spdx_code in [
+                'BSD-3-Clause-Modification',
+                'BSD-3-Clause-No-Military-License',
+                'BSD-4-Clause-Shortened',
+                'C-UDA-1.0',
+                'DRL-1.0',
+                'FreeBSD-DOC',
+                'GD',
+                'MIT-Modern-Variant',
+                'OGDL-Taiwan-1.0'] \
+            else 'master'
+
         text_resource = 'https://raw.githubusercontent.com/' \
-                       'spdx/license-list-data/' \
-                       '2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/%s.txt'
+                       'spdx/license-list-data/' + spdx_revision + \
+                       '/text/%s.txt'
 
         if self.spdx_code in ['Unlicense', 'BSD-1-Clause']:
             text_resource = 'https://raw.githubusercontent.com/' \
@@ -206,14 +221,14 @@ class License(object): # pylint: disable=R0205
 
         if self.license_name:
             name = self.license_name
-            full_name = search(r'[tT]he.+$', self.license_name)
+            full_name = search(r'[tT]he.+[lL]icense.*$', self.license_name)
 
             if full_name:
                 name = ''.join(full_name.group().split()[1:])
             if in_pub_domain(self.spdx_code):
                 return template % name + '.'
 
-            name = search(r'.+[lL]icense', name)
+            name = search(r'.+[lL]icense(.*[vV]ariant)?', name)
             version = search(r'\d\.\d.*$', self.license_name)
 
             if name:
@@ -222,7 +237,7 @@ class License(object): # pylint: disable=R0205
                        '.'
 
         if self.spdx_code:
-            return (template % self.spdx_code) + \
+            return (template % sub(r'(?!\d)-', ' ', self.spdx_code)) + \
                    (' License.' if not in_pub_domain(self.spdx_code) else '.')
 
         return ''
@@ -251,7 +266,7 @@ def _find_cached_license(short_name, ext='.xml'):
     """Return the path to a temp file saved with the given SPDX id as prefix"""
     for root, _, files in os.walk(tempfile.gettempdir()):
         found = [f for f in files \
-                 if f.startswith(short_name) and \
+                 if search(r'^(%s)_' % short_name, f) and \
                  os.path.splitext(f)[1] == ext]
         if found:
             return os.path.join(root, found[0])
@@ -327,6 +342,7 @@ _SPDX_IDS = [
     'AML',
     'AMPAS',
     'ANTLR-PD',
+    'ANTLR-PD-fallback',
     'Apache-1.0',
     'Apache-1.1',
     'Apache-2.0',
@@ -350,29 +366,38 @@ _SPDX_IDS = [
     'Borceux',
     'BSD-1-Clause',
     'BSD-2-Clause',
-    'BSD-2-Clause-FreeBSD',
     'BSD-2-Clause-Patent',
+    'BSD-2-Clause-Views',
     'BSD-3-Clause',
     'BSD-3-Clause-Attribution',
     'BSD-3-Clause-Clear',
     'BSD-3-Clause-LBNL',
+    'BSD-3-Clause-Modification',
+    'BSD-3-Clause-No-Military-License',
     'BSD-3-Clause-No-Nuclear-License',
     'BSD-3-Clause-No-Nuclear-License-2014',
     'BSD-3-Clause-No-Nuclear-Warranty',
     'BSD-3-Clause-Open-MPI',
     'BSD-4-Clause',
+    'BSD-4-Clause-Shortened',
     'BSD-4-Clause-UC',
     'BSD-Protection',
     'BSD-Source-Code',
     'BSL-1.0',
+    'BUSL-1.1',
     'bzip2-1.0.5',
     'bzip2-1.0.6',
+    'C-UDA-1.0',
+    'CAL-1.0',
+    'CAL-1.0-Combined-Work-Exception',
     'Caldera',
     'CATOSL-1.1',
     'CC-BY-1.0',
     'CC-BY-2.0',
     'CC-BY-2.5',
     'CC-BY-3.0',
+    'CC-BY-3.0-AT',
+    'CC-BY-3.0-US',
     'CC-BY-4.0',
     'CC-BY-NC-1.0',
     'CC-BY-NC-2.0',
@@ -383,6 +408,7 @@ _SPDX_IDS = [
     'CC-BY-NC-ND-2.0',
     'CC-BY-NC-ND-2.5',
     'CC-BY-NC-ND-3.0',
+    'CC-BY-NC-ND-3.0-IGO',
     'CC-BY-NC-ND-4.0',
     'CC-BY-NC-SA-1.0',
     'CC-BY-NC-SA-2.0',
@@ -396,8 +422,10 @@ _SPDX_IDS = [
     'CC-BY-ND-4.0',
     'CC-BY-SA-1.0',
     'CC-BY-SA-2.0',
+    'CC-BY-SA-2.0-UK',
     'CC-BY-SA-2.5',
     'CC-BY-SA-3.0',
+    'CC-BY-SA-3.0-AT',
     'CC-BY-SA-4.0',
     'CC-PDDC',
     'CC0-1.0',
@@ -413,6 +441,9 @@ _SPDX_IDS = [
     'CECILL-C',
     'CERN-OHL-1.1',
     'CERN-OHL-1.2',
+    'CERN-OHL-P-2.0',
+    'CERN-OHL-S-2.0',
+    'CERN-OHL-W-2.0',
     'ClArtistic',
     'CNRI-Jython',
     'CNRI-Python',
@@ -432,6 +463,7 @@ _SPDX_IDS = [
     'diffmark',
     'DOC',
     'Dotseqn',
+    'DRL-1.0',
     'DSDP',
     'dvipdfm',
     'ECL-1.0',
@@ -440,6 +472,7 @@ _SPDX_IDS = [
     'EFL-2.0',
     'eGenix',
     'Entessa',
+    'EPICS',
     'EPL-1.0',
     'EPL-2.0',
     'ErlPL-1.1',
@@ -451,15 +484,29 @@ _SPDX_IDS = [
     'Eurosym',
     'Fair',
     'Frameworx-1.0',
+    'FreeBSD-DOC',
     'FreeImage',
     'FSFAP',
     'FSFUL',
     'FSFULLR',
     'FTL',
+    'GD',
+    'GFDL-1.1-invariants-only',
+    'GFDL-1.1-invariants-or-later',
+    'GFDL-1.1-no-invariants-only',
+    'GFDL-1.1-no-invariants-or-later',
     'GFDL-1.1-only',
     'GFDL-1.1-or-later',
+    'GFDL-1.2-invariants-only',
+    'GFDL-1.2-invariants-or-later',
+    'GFDL-1.2-no-invariants-only',
+    'GFDL-1.2-no-invariants-or-later',
     'GFDL-1.2-only',
     'GFDL-1.2-or-later',
+    'GFDL-1.3-invariants-only',
+    'GFDL-1.3-invariants-or-later',
+    'GFDL-1.3-no-invariants-only',
+    'GFDL-1.3-no-invariants-or-later',
     'GFDL-1.3-only',
     'GFDL-1.3-or-later',
     'Giftware',
@@ -475,8 +522,10 @@ _SPDX_IDS = [
     'GPL-3.0-or-later',
     'gSOAP-1.3b',
     'HaskellReport',
+    'Hippocratic-2.1',
     'HPND',
     'HPND-sell-variant',
+    'HTMLTIDY',
     'IBM-pibs',
     'ICU',
     'IJG',
@@ -527,6 +576,8 @@ _SPDX_IDS = [
     'MIT-CMU',
     'MIT-enna',
     'MIT-feh',
+    'MIT-Modern-Variant',
+    'MIT-open-group',
     'MITNFA',
     'Motosoto',
     'mpich2',
@@ -538,16 +589,20 @@ _SPDX_IDS = [
     'MS-RL',
     'MTLL',
     'MulanPSL-1.0',
+    'MulanPSL-2.0',
     'Multics',
     'Mup',
     'NASA-1.3',
     'Naumen',
     'NBPL-1.0',
+    'NCGL-UK-2.0',
     'NCSA',
     'Net-SNMP',
     'NetCDF',
     'Newsletr',
     'NGPL',
+    'NIST-PD',
+    'NIST-PD-fallback',
     'NLOD-1.0',
     'NLPL',
     'Nokia',
@@ -559,6 +614,7 @@ _SPDX_IDS = [
     'NRL',
     'NTP',
     'NTP-0',
+    'O-UDA-1.0',
     'OCCT-PL',
     'OCLC-2.0',
     'ODbL-1.0',
@@ -569,6 +625,8 @@ _SPDX_IDS = [
     'OFL-1.1',
     'OFL-1.1-no-RFN',
     'OFL-1.1-RFN',
+    'OGC-1.0',
+    'OGDL-Taiwan-1.0',
     'OGL-Canada-2.0',
     'OGL-UK-1.0',
     'OGL-UK-2.0',
@@ -600,10 +658,13 @@ _SPDX_IDS = [
     'OSL-2.1',
     'OSL-3.0',
     'Parity-6.0.0',
+    'Parity-7.0.0',
     'PDDL-1.0',
     'PHP-3.0',
     'PHP-3.01',
     'Plexus',
+    'PolyForm-Noncommercial-1.0.0',
+    'PolyForm-Small-Business-1.0.0',
     'PostgreSQL',
     'PSF-2.0',
     'psfrag',
@@ -690,7 +751,10 @@ _SPDX_IDS = [
 List of SPDX License Identifiers: https://spdx.org/licenses/
 """
 
-_PD_LICENSE_IDS = ['CC-PDDC', 'CC0-1.0', 'Unlicense']
+_PD_LICENSE_IDS = [
+    'ANTLR-PD', 'ANTLR-PD-fallback', 'CC-PDDC', 'CC0-1.0',
+    'libselinux-1.0', 'NIST-PD', 'NIST-PD-fallback', 'PDDL-1.0',
+    'SAX-PD', 'Unlicense']
 """
 Licenses with no copyright requirement
 """

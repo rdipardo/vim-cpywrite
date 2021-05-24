@@ -77,12 +77,12 @@ Then(Common Lisp file header quotes the GFDL-1.2-or-later);
 Execute(Prepend a header-less license to a Lisp file);
   new! brief.lsp
   b brief.lsp
-  CPYwrite BSD-2-Clause-FreeBSD
+  CPYwrite MIT-Modern-Variant
 
 Then(Lisp file header has brief license mention);
   AssertEqual ';; brief.lsp', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ';; Distributed under the terms of the BSD 2-Clause FreeBSD License.', getline(6)
+  AssertEqual ';; Distributed under the terms of the MIT License Modern Variant.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
 
 " Tc #5
