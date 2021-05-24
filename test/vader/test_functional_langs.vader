@@ -42,10 +42,9 @@ Execute(Prepend a license verbatim to an F-sharp file);
 Then(F-sharp file quotes the entire BSD 0-Clause license);
   AssertEqual '// verbatim.fsi', getline(2)
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '// Copyright (C) 2006 by Rob Landley <rob@landley.net>', getline(6)
-  AssertEqual '// Permission to use, copy, modify, and/or distribute this software for any purpose', getline(8)
-  AssertEqual '// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH', getline(11)
-  AssertEqual 2, len(getline(18)), 'Allow no trailing spaces'
+  AssertEqual '// Permission to use, copy, modify, and/or distribute this software for any purpose', getline(6)
+  AssertEqual '// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH', getline(9)
+  AssertEqual 2, len(getline(16)), 'Allow no trailing spaces'
 
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')

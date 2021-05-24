@@ -79,7 +79,7 @@ class Generator(object): # pylint: disable=R0205
 
                 if run_on_text:
                     one_liner = \
-                        'Copyright (c) ' + authorship + ' Distributed under the'
+                        'Copyright (c) ' + authorship + '. Licensed under the'
                     text = re.sub(r'[\*(%s)]*(%s)'
                                   % (self.tokens[1],
                                      re.escape(run_on_text.group())),
@@ -88,6 +88,10 @@ class Generator(object): # pylint: disable=R0205
                                      one_liner,
                                      self.tokens[1],
                                      run_on_text.group()[-1]),
+                                  text)
+                else:
+                    text = re.sub(r'(%s)' % re.escape(authorship),
+                                  authorship + email,
                                   text)
             else:
                 text = re.sub(r'(%s)' % re.escape(authorship),
@@ -107,9 +111,13 @@ class Generator(object): # pylint: disable=R0205
                 self.rights.header \
                 if not full_text \
                 else self.rights.license_text
-            author_date = \
-                re.compile(r"(?!.*(http).*)[\<\[\s]((YEAR)|[YX]+)[\>\]\s].+[\>\]]",
-                           re.IGNORECASE)
+            author_date_re = \
+                r'(?!.*(http).*)[\<\(\[\s\d]((YEAR)|\d{3}|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+]' \
+                if not (self.rights.spdx_code.startswith('ECL') or \
+                        self.rights.spdx_code.startswith('GFDL')) and \
+                   not self.rights.spdx_code in ['GD', 'X11'] \
+                else r'(?!.*(http).*)[\<\[\s]((YEAR)|[YX]+)[\>\]\s].+[\>\]]'
+            author_date = re.compile(author_date_re, re.IGNORECASE)
 
             if self.lang_key in _SCRIPT_HEADERS:
                 print(_SCRIPT_HEADERS[self.lang_key], file=out)
