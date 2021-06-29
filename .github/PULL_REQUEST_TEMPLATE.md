@@ -1,16 +1,14 @@
-Please provide the following when submitting your PR
+*Please provide the following when submitting your PR*
 
 #### Description
-*choose one*
+*Explain what this pull request fixes or adds*
 
-- [ ] This PR addresses the following issue(s):
-  - https://github.com/rdipardo/vim-cpywrite/issues/<#issue-number>
+*Choose one:*
 
-- [ ] This PR makes these improvements:
-  - ...
+- [ ] this PR resolves these issue(s):
 
-#### Tests
-*Targeting the [vader.vim framework](https://github.com/junegunn/vader.vim/blob/master/doc/vader.txt) is strongly encouraged*
+  + *link(s) to issue(s):*
 
-- [ ] This PR has passed these tests:
-  - https://<your/new/test/files>  *and/or* https://<your/successful/CI/build>
+- [ ] this PR closes this feature request:
+
+  + *link to feature request:*

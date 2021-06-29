@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: '3.9'
     - name: Restore cache
-      uses: actions/cache@v2.1.5
+      uses: actions/cache@v2.1.6
       with:
         path: '~/.cache/pip'
         key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
@@ -31,23 +31,12 @@ jobs:
       run: vint autoload plugin -wt
   build:
     needs: lint
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
-        os: [ubuntu-16.04]
-        vim-version: [stable]
+        vim-version: [7.4.1689]
         nvim-version: [nightly]
-        python-version: ['2.7', '3.6', '3.7', '3.8', '3.9']
-        include:
-          - os: ubuntu-18.04
-            vim-version: stable
-            nvim-version: stable
-            python-version: '3.4.10'
-          - os: ubuntu-18.04
-            vim-version: stable
-            nvim-version: stable
-            # don't clobber standard issue python on 16.04
-            python-version: '3.5'
+        python-version: ['2.7.18', '3.4.10', '3.5', '3.6', '3.7', '3.8', '3.9']
     steps:
     - uses: actions/checkout@v2
     - name: Set up python
@@ -71,7 +60,7 @@ jobs:
         pip install --upgrade 'pip < 19.2' typing
 
     - name: Restore pip cache
-      uses: actions/cache@v2.1.5
+      uses: actions/cache@v2.1.6
       with:
         path: '~/.cache/pip'
         key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
@@ -86,12 +75,6 @@ jobs:
         repository: junegunn/vader.vim
         path: vader.vim
         fetch-depth: 1
-
-    - name: Install vim
-      uses: rhysd/action-setup-vim@v1
-      id: vim
-      with:
-        version: ${{ matrix.vim-version }}
 
     - name: Install neovim
       uses: rhysd/action-setup-vim@v1
@@ -109,8 +92,19 @@ jobs:
       run: pytest -v -W ignore::DeprecationWarning
 
     - name: Test plugin on vim
+      if: ${{ startsWith(matrix.python-version, '2.7') }}
+      env:
+        LOG: python-${{ matrix.python-version }}-bench.log
       run: |
-        "${{ steps.vim.outputs.executable }}" --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+        git clone --branch v${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
+        cd vim-src
+        ./configure --prefix=/usr/local --with-features=normal \
+            --enable-pythoninterp=dynamic \
+            --with-python-config-dir=$(find /opt/hostedtoolcache/Python/2.7.18 -name Makefile | xargs dirname)
+        make && sudo make install && cd ..
+        /usr/local/bin/vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+        head -n 10 vim_*.log >> vim-${{ matrix.vim-version }}-$LOG
+        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on neovim
       run: |
@@ -122,8 +116,6 @@ jobs:
       run: |
         head -n 10 nvim_*.log > neovim-${{ matrix.nvim-version }}-$LOG
         awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' nvim_* | sort >> neovim-${{ matrix.nvim-version }}-$LOG
-        head -n 10 vim_*.log >> vim-${{ matrix.vim-version }}-$LOG
-        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> vim-${{ matrix.vim-version }}-$LOG
 
     - name: Save startup times
       uses: actions/upload-artifact@v2
