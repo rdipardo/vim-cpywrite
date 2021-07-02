@@ -214,3 +214,15 @@ Then(Eiffel file header mentions the EUDatagrid);
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual '-- Distributed under the terms of the EU DataGrid Software License.', getline(6)
   AssertEqual '--', getline(7)
+
+Execute(Prepend a standard license header to a Prolog file with a .pl extension);
+  new! standard.pl
+  b standard.pl
+  set syntax=prolog
+  CPYwrite MPL-2.0
+
+Then(Prolog file header quotes the MPL-2.0 license);
+  AssertEqual '%% standard.pl', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '%% This Source Code Form is subject to the terms of the Mozilla Public License,', getline(6)
+  AssertEqual '%%', getline(9)

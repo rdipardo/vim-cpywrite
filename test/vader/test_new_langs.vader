@@ -88,3 +88,16 @@ Then(Smalltalk file header quotes the Apache-2.0);
   AssertEqual ' Licensed under the Apache License, Version 2.0 (the ''License'');', getline(6)
   AssertEqual ' distributed under the License is distributed on an ''AS IS'' BASIS,', getline(13)
   AssertEqual '"', getline(17)
+
+Execute(Prepend a standard license header to an XML file);
+  new! ecl.xml
+  b ecl.xml
+  norm i<?xml version="1.0" encoding="UTF-8"?>
+  CPYwrite ECL-2.0
+
+Then(XML file header quotes the ECL-2.0);
+  AssertEqual '<?xml version="1.0" encoding="UTF-8"?>', getline(1), 'Preserve encoding declaration'
+  AssertEqual ' ecl.xml', getline(3)
+  AssertEqual ' Educational Community License, Version 2.0 (the "License"); you may', getline(6)
+  AssertEqual '     http://www.osedu.org/licenses/ECL-2.0', getline(10)
+  AssertEqual '-->', getline(17)

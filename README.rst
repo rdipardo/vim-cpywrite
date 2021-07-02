@@ -4,10 +4,15 @@ vim-cpywrite
 
 |gh-actions|  |current version|
 
+:WARNING: **This branch is for development purposes.**
+          **End users are advised to checkout a** `release`_ **package**
+
+.. _release: https://github.com/rdipardo/vim-cpywrite/releases
+
 Generate copyright headers for any open source license
 
-.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/rel/vim_8.2.2549.gif
-    :alt: vim-win-x64-demo
+.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/pre/nvim_043_ver_031.gif
+    :alt: nvim-043-linux-demo
     :align: center
     :width: 900
 
@@ -227,7 +232,7 @@ License
 
 Distributed under the terms of the MIT license.
 
-.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=master
+.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=pre-release
     :alt: Build Status
     :target: https://github.com/rdipardo/vim-cpywrite/actions
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim

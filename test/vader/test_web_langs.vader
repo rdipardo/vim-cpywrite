@@ -82,13 +82,15 @@ Then(TypeScript file header has brief license mention);
 Execute(Prepend a standard license header to HTML);
   new! standard.htm
   b standard.htm
+  norm i<!DOCTYPE html>
   CPYwrite GFDL-1.1-or-later
 
 Then(HTML comment block quotes the GFDL-1.1-or-later);
-  AssertEqual ' standard.htm', getline(2)
-  AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual ' GNU Free Documentation License, Version 1.1 or any later version', getline(6)
-  AssertEqual '-->', getline(11)
+  AssertEqual '<!DOCTYPE html>', getline(1), 'Preserve doctype declaration'
+  AssertEqual ' standard.htm', getline(3)
+  AssertEqual 0, len(getline(4)), 'Allow no trailing spaces'
+  AssertEqual ' GNU Free Documentation License, Version 1.1 or any later version', getline(7)
+  AssertEqual '-->', getline(12)
 
 " Tc #6
 Execute(Prepend a header-less license to Markdown);

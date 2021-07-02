@@ -20,20 +20,22 @@ def test_language_recognition():
         'file.cl', 'file.lSp', 'file.LisP', 'file.cLJ', 'file.CLJC',
         'file.CLjS', 'file.sS', 'file.sCM', 'deps.Edn', 'file.FNl']
     erlang_files = ['file.Erl', 'file.hRl']
+    prolog_files = ['file.pRO', 'file.P']
     pascal_files = ['file.PAs', 'file.pP', 'file.iNC']
     scala_files = ['file.sCaLa', 'file.SCala', 'file.sC']
     go_and_etc_files = [
         'file.gO', 'file.Rs', 'file.fs', 'file.fsi', 'file.fsx',
         'file.fsscript', 'file.sCsS']
     script_lang_files = [
-        'script', 'script.eX', 'script.ExS', 'script.Sh', 'script.pL',
-        'script.Py', 'script.PyW', 'script.R', 'script.rDA', 'script.RdAta',
-        'script.rdS', 'script.Rb', 'script.cMaKe', 'CMakeLists.tXt']
+        'script', 'script.eX', 'script.ExS', 'script.Sh', 'script.jL',
+        'script.pL', 'script.Py', 'script.PyW', 'script.R', 'script.rDA',
+        'script.RdAta', 'script.rdS', 'script.Rb', 'script.cMaKe',
+        'CMakeLists.tXt']
     coffeescript_files = ['file.coFFee', 'main.litcoffEe']
     elm_files = ['file.eLm', 'file.Elm', 'file.elM']
     ml_lang_files = ['file.mL', 'file.MlI']
     markup_files = ['file.hTmL', 'file.hTm', 'file.MaRkDoWn', 'file.MD',
-        'file.mKd']
+                    'file.mKd', 'file.XmL']
     vim_script_files = [
         'script.viM', '.VIMrC', 'config.VIMrC', '.gvim', 'config.gvim',
         '.ideavim', 'script.ideavim', '.exrc', 'config.exrc']
@@ -54,7 +56,7 @@ def test_language_recognition():
         _, _, tokens = _get_language_meta(src)
         assert tokens == (';;', ';; ')
 
-    for src in erlang_files:
+    for src in erlang_files + prolog_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('%%', '%% ')
 

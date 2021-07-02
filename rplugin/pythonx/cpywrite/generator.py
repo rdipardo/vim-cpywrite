@@ -256,12 +256,13 @@ def _get_source_author():
         if system() == 'Windows' \
         else environ.get('USER', 'unknown')
     email = 'domain.org'
+    git_username = ''
 
     try:
-        author = check_output(['git',
-                               'config',
-                               '--get',
-                               'user.name']).decode('utf-8').rstrip()
+        git_username = check_output(['git',
+                                     'config',
+                                     '--get',
+                                     'user.name']).decode('utf-8').rstrip()
 
     except (IOError, OSError, CalledProcessError, AttributeError):
         pass
@@ -282,14 +283,18 @@ def _get_source_author():
 
         except (IOError, OSError, CalledProcessError, AttributeError):
             pass
+        finally:
+            if bool(git_username):
+                author = git_username
 
     return (author, email)
 
 _SOURCE_META = {
-    ('', '.cmake', '.ex', '.exs', '.pl', '.py', '.pyw', '.r',
-     '.rb', '.rda', '.rdata', '.rds', '.sh'):
+    ('', '.cmake', '.ex', '.exs', '.jl', '.pl', '.py', '.pyw',
+     '.r', '.rb', '.rda', '.rdata', '.rds', '.sh'):
         [{
             ('.ex', '.exs'): 'Elixir',
+            ('.jl'): 'Julia',
             ('', '.sh'): 'shell script',
             ('.pl'): 'Perl',
             ('.py', '.pyw'): 'Python',
@@ -313,10 +318,11 @@ _SOURCE_META = {
             ('.fnl'): 'Fennel'
         },
          (';;', ';; ')],
-    ('.erl', '.hrl'):
+    ('.erl', '.hrl', '.p', '.pro'):
         [{
             ('.erl'): 'Erlang',
-            ('.hrl'): 'Erlang header'
+            ('.hrl'): 'Erlang header',
+            ('.p', '.pro'): 'Prolog'
         },
          ('%%', '%% ')],
     ('.pas', '.pp', '.inc'):
@@ -351,8 +357,9 @@ _SOURCE_META = {
         [{('.elm'): 'Elm'}, ('{-', ' ', ' ', '-}')],
     ('.ml', '.mli'):
         [{('.ml', '.mli'): 'OCaml'}, ('(*', ' ', ' ', '*)')],
-    ('.html', '.htm', '.markdown', '.md', '.mkd'):
+    ('.html', '.htm', '.markdown', '.md', '.mkd', '.xml'):
         [{('.html', '.htm'): 'HTML',
+          ('.xml'): 'XML',
           ('.markdown', '.md', '.mkd'): 'Markdown'
          },
          ('<!--', ' ', ' ', '-->')],

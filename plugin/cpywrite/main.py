@@ -17,10 +17,16 @@ def prepend():
     if vim.current.buffer:
         vim.command("let b:fn=expand('%:t')")
         filename = vim.eval('b:fn')
+        is_prolog = (filename.endswith('.pl') and vim.eval('&syntax') == 'prolog')
         license_name = vim.eval('l:license_name')
 
         try:
             generator = Generator(filename, license_name)
+
+            if is_prolog:
+                generator.set_file_props(filename.replace('.pl', '.p'))
+                generator.out_file = filename
+
             _write_header(generator, vim.current.buffer)
         except (ValueError, vim.error) as exc:
             print(str(exc))
@@ -54,17 +60,23 @@ def _write_header(writer, curr_buffer):
 
         if header:
             to_trim = 0
+            offset = 0
 
             for idx, _ in enumerate(curr_buffer):
                 # replace shebang lines and encoding declarations, if any
                 if curr_buffer[idx].startswith("#!", 0) or \
                         match(r"^#.+(coding).+$", curr_buffer[idx]):
                     to_trim += 1
+                # don't replace encoding or doctype declarations in [X|HT]ML,
+                # or existing PHP markup
+                elif match(r"^\<[\?!]\w*", curr_buffer[idx].lstrip()) or \
+                    match(r"\?*\>$", curr_buffer[idx].rstrip()):
+                    offset += 2
 
             if to_trim > 0:
                 del curr_buffer[0:to_trim]
 
-            curr_buffer[0:0] = header.split('\n')
+            curr_buffer[offset:offset] = header.split('\n')
 
     except (ValueError, vim.error) as exc:
         print(str(exc))

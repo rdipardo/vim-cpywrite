@@ -118,15 +118,17 @@ Then(Ruby file header has brief license mention);
 Execute(Prepend the default license header to a PHP file);
   new! default_header.php
   b default_header.php
+  norm i<? phpinfo();?>
   CPYwrite
 
 Then(PHP file quotes the GPL-3.0+);
-  AssertEqual '<?php', getline(1)
-  AssertEqual ' * default_header.php', getline(3)
-  AssertEqual 2, len(getline(4)), 'Allow no trailing spaces'
-  AssertEqual ' * modify it under the terms of the GNU General Public License', getline(8)
-  AssertEqual ' * 3 of the License, or (at your option) any later version.', getline(10)
-  AssertEqual '?>', getline(22), 'Ensure closing PHP tag'
+  AssertEqual '<? phpinfo();?>', getline(1), 'Preserve PHP markup'
+  AssertEqual '<?php', getline(2)
+  AssertEqual ' * default_header.php', getline(4)
+  AssertEqual 2, len(getline(5)), 'Allow no trailing spaces'
+  AssertEqual ' * modify it under the terms of the GNU General Public License', getline(9)
+  AssertEqual ' * 3 of the License, or (at your option) any later version.', getline(11)
+  AssertEqual '?>', getline(23), 'Ensure closing PHP tag'
 
 " Tc #9
 Execute(Prepend a header-less license to a PHP file);
@@ -216,3 +218,14 @@ Then(.exrc has brief license mention);
   AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual '"" Distributed under the terms of the XFree86 License Version 1.1.', getline(6)
   AssertEqual 2, len(getline(7)), 'Allow no trailing spaces'
+
+Execute(Prepend a standard license header to a Julia script);
+  new! standard.jl
+  b standard.jl
+  CPYwrite BitTorrent-1.1
+
+Then(Julia script header quotes the BitTorrent version 1.1 license);
+  AssertEqual '# standard.jl', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# Version 1.1 (the License). You may not copy or use this file, in either', getline(7)
+  AssertEqual '#', getline(14)
