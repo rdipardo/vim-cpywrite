@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        vim-version: [7.4.1689]
+        vim-version: [7.4.1689, 8.2.3082]
         nvim-version: [nightly]
         python-version: ['2.7.18', '3.4.10', '3.5', '3.6', '3.7', '3.8', '3.9']
     steps:
