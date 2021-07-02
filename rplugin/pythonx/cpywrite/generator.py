@@ -283,9 +283,9 @@ def _get_source_author():
 
         except (IOError, OSError, CalledProcessError, AttributeError):
             pass
-        finally:
-            if bool(git_username):
-                author = git_username
+
+    if bool(git_username):
+        author = git_username
 
     return (author, email)
 
