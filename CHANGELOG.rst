@@ -6,6 +6,27 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.5.0
+======
+**(2021-07-03)**
+
+Fixed
+-----
+- fallback to a system user name if no git email exists
+
+Changed
+-------
+- preserve existing markup, encoding and doctype declarations at the top of
+  XML, HTML or PHP files
+
+Added
+-----
+- support for these file types:
+
+  + Julia
+  + Prolog (detected by ``&syntax`` when the extension is ``*.pl``)
+  + XML
+
 0.4.0
 ======
 **(2021-05-24)**
@@ -16,6 +37,7 @@ Fixed
 
 Changed
 -------
+- the initial value of ``g:cpywrite#default_license`` is now ``'Apache-2.0'``
 - drop the `deprecated FreeBSD variant`_ of the BSD 2-Clause License
 - detect more styles of authorship template, like a generic range years
   (e.g. ``<yyyy, yyyy>``), or an actual year that's merely historical
