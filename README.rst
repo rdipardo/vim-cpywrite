@@ -4,10 +4,15 @@ vim-cpywrite
 
 |gh-actions|  |current version|
 
+:WARNING: **This branch is for development purposes.**
+          **End users are advised to checkout a** `release`_ **package**
+
+.. _release: https://github.com/rdipardo/vim-cpywrite/releases
+
 Generate copyright headers for any open source license
 
-.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/rel/vim_8.2.2549.gif
-    :alt: vim-win-x64-demo
+.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/pre/nvim_043_ver_031.gif
+    :alt: nvim-043-linux-demo
     :align: center
     :width: 900
 
@@ -227,13 +232,13 @@ License
 
 Distributed under the terms of the MIT license.
 
-.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=master
+.. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/workflows/(Neo)vim/badge.svg?branch=pre-release
     :alt: Build Status
     :target: https://github.com/rdipardo/vim-cpywrite/actions
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
     :alt: Vim Scripts version
 
-.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/324af8c1dbfd728ef2cff4f37f1623cc5a48c7f8/rplugin/pythonx/cpywrite/generator.py#L274
+.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/577eacfac36591252d15d0cc7cd3b2f0f41af324/rplugin/pythonx/cpywrite/generator.py#L292
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management
 .. _native package directory: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 .. _DIY plugin management: https://shapeshed.com/vim-packages
