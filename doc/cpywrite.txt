@@ -19,6 +19,7 @@ CONTENTS                                                 *cpywrite-contents*
     Options ............................................. |cpywrite-options|
     Commands ........................................... |cpywrite-commands|
     Mappings ............................................ |cpywrite-keymaps|
+    References ....................................... |cpywrite-references|
 
 =============================================================================
 INTRODUCTION                                         *cpywrite-introduction*
@@ -30,14 +31,17 @@ When |g:cpywrite#verbatim_mode| is off, licenses with no standard header will
 be acknowledged below your author line. Turn on |g:cpywrite#verbatim_mode| to
 use the full license text instead.
 
+When |g:cpywrite#machine_readable| is on, license and copyright are formatted
+for easier parsing by a validation tool like |reuse|.
+
 This plugin learns your name and email by invoking `git`; it falls back to
 your OS user and host names.
 
 =============================================================================
 REQUIREMENTS                                         *cpywrite-requirements*
 
-* Vim compiled with any one of the |+python|, |+python3|, |+python/dyn| or
-  |+python3/dyn| options
+* Vim compiled with any one of the `+python`, `+python3`, `+python/dyn` or
+  `+python3/dyn` options
 
 * Neovim with the `pynvim` module in your $PYTHONPATH:
 
@@ -68,6 +72,8 @@ the |:CPYwriteDefaultLicense| or |:CPYwrite| command for suggestions.
 
                                                   *g:cpywrite#verbatim_mode*
         `number` (default: 0)
+        WARNING this option has no effect when |g:cpywrite#machine_readable|
+                is on
 
 When set to a non-zero value, the full license text will be requested, whether
 or not a standard header exists. You should only choose this when the license
@@ -76,6 +82,50 @@ etc.)
 
 When set to 0, only standard headers are requested. Licenses with no standard
 header will be briefly mentioned below your copyright line.
+
+                                                  *g:cpywrite#no_anonymous*
+        `number` (default: 0)
+        WARNING this option has no effect when |g:cpywrite#machine_readable|
+                is on
+
+When set to a non-zero value, copyright information is never omitted, even if
+the license implies a Public Domain grant.
+
+When set to 0, a copyright will not appear above |Public-Domain-licenses|.
+
+                                               *g:cpywrite#machine_readable*
+        `number` (default: 0)
+        WARNING this option overrides |g:cpywrite#verbatim_mode| and
+                |g:cpywrite#no_anonymous|
+
+When set to a non-zero value, the license and copyright statement are
+formatted as tags, for example:
+>
+  #
+  # __main__.py
+  #
+  # SPDX-FileCopyrightText: 2020 Jane Doe <jane@example.com>
+  #
+  # SPDX-License-Identifier: GPL-3.0-or-later
+  #
+<
+
+In this mode, copyright information is never omitted, regardless of how
+|g:cpywrite#no_anonymous| has been set, e.g.
+>
+  /**
+   * main.js
+   *
+   * SPDX-FileCopyrightText: 2020 John Doe <john@example.com>
+   *
+   * SPDX-License-Identifier: Unlicense
+   */
+<
+
+When set to 0, the license format will be a standard header, or full text,
+depending on how |g:cpywrite#verbatim_mode| is set. A copyright statement
+may also be left out if |g:cpywrite#no_anonymous| is 0 and the chosen
+license is one of the |Public-Domain-licenses|.
 
                                                   *g:cpywrite#hide_filename*
         `number` (default: 0)
@@ -114,6 +164,15 @@ description of the current state:
     1 == "verbatim"
 <
 
+                                                      *:CPYwriteToggleStyle*
+        :CPYwriteToggleStyle
+
+Toggles the state of the |g:cpywrite#machine_readable| option and prints a
+description of the current state:
+>
+    0 == "descriptive"
+    1 == "machine readable"
+<
                                                    *:CPYwriteToggleFilename*
         :CPYwriteToggleFilename
 
@@ -123,6 +182,17 @@ description of the current state:
     0 == "showing"
     1 == "hidden"
 <
+
+                                                   *:CPYwriteAllowAnonymous*
+        :CPYwriteAllowAnonymous
+
+Toggles the state of the |g:cpywrite#no_anonymous| option and prints a
+description of the current state:
+>
+    0 == "Public Domain only"
+    1 == "never" // meaning, "always state the copyright holder"
+<
+
                                                           *<Plug>(cpywrite)*
 Quick action command for fetching the default license assigned to
 |g:cpywrite#default_license|.
@@ -134,6 +204,40 @@ KEYMAPS                                                   *cpywrite-keymaps*
         {Normal}LH
 
 Default mapping of the |<Plug>(cpywrite)| command.
+
+=============================================================================
+REFERENCES                                             *cpywrite-references*
+
+                                                                     *reuse*
+    See https://reuse.readthedocs.io/en/stable/readme.html
+
+                                                    *Public-Domain-licenses*
+
+    The following licenses are considered to imply a Public Domain grant:
+
++-------------------------------------------------------------+-------------------+
+| Name                                                        | SPDX id           |
++=============================================================+===================+
+| ANTLR Software Rights Notice                                | ANTLR-PD          |
++-------------------------------------------------------------+-------------------+
+| ANTLR Software Rights Notice with license fallback          | ANTLR-PD-fallback |
++-------------------------------------------------------------+-------------------+
+| Creative Commons Public Domain Dedication and Certification | CC-PDDC           |
++-------------------------------------------------------------+-------------------+
+| Creative Commons Zero v1.0 Universal                        | CC0-1.0           |
++-------------------------------------------------------------+-------------------+
+| libselinux public domain notice                             | libselinux-1.0    |
++-------------------------------------------------------------+-------------------+
+| NIST Public Domain Notice                                   | NIST-PD           |
++-------------------------------------------------------------+-------------------+
+| NIST Public Domain Notice with license fallback             | NIST-PD-fallback  |
++-------------------------------------------------------------+-------------------+
+| Open Data Commons Public Domain Dedication & License 1.0    | PDDL-1.0          |
++-------------------------------------------------------------+-------------------+
+| The Unlicense                                               | Unlicense         |
++-------------------------------------------------------------+-------------------+
+
+    Leave comments and suggestions at https://github.com/rdipardo/vim-cpywrite/issues
 
 =============================================================================
 vim:tw=78:noet:ft=help:norl:

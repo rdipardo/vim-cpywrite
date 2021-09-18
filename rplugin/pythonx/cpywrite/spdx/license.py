@@ -210,6 +210,11 @@ class License(object): # pylint: disable=R0205
                                '\n\n',
                                license_text)))).splitlines()
 
+    @property
+    def tag(self):
+        """Return the ID of this License as a machine readable string"""
+        return "SPDX-License-Identifier: %s" % self.spdx_code
+
     def __repr__(self):
         """Return a debug string representing this License"""
         return str((self.__class__.__name__, self.spdx_code))

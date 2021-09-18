@@ -36,27 +36,14 @@ def _write_header(writer, curr_buffer):
     """Write the license header"""
     try:
         old_row, old_col = vim.current.window.cursor
-        use_text_as_header = vim.eval('g:cpywrite#verbatim_mode')
-        exclude_file_name = vim.eval('g:cpywrite#hide_filename')
-
-        try:
-            use_text_as_header = bool(int(use_text_as_header, 10))
-        except ValueError:
-            print("'g:cpywrite#verbatim_mode' should be set to a number!",
-                  file=sys.stderr)
-            vim.command('let g:cpywrite#verbatim_mode=0')
-            use_text_as_header = False
-
-        try:
-            exclude_file_name = bool(int(exclude_file_name, 10))
-        except ValueError:
-            print("'g:cpywrite#hide_filename' should be set to a number!",
-                  file=sys.stderr)
-            vim.command('let g:cpywrite#hide_filename=0')
-            exclude_file_name = False
-
+        machine_readable = _get_option_value('g:cpywrite#machine_readable')
+        use_text_as_header = _get_option_value('g:cpywrite#verbatim_mode')
+        exclude_file_name = _get_option_value('g:cpywrite#hide_filename')
+        allow_anonymous = _get_option_value('g:cpywrite#no_anonymous')
         header = writer.fetch_license_header(use_text_as_header,
-                                             exclude_file_name)
+                                             machine_readable,
+                                             exclude_file_name,
+                                             allow_anonymous)
 
         if header:
             to_trim = 0
@@ -67,10 +54,13 @@ def _write_header(writer, curr_buffer):
                 if curr_buffer[idx].startswith("#!", 0) or \
                         match(r"^#.+(coding).+$", curr_buffer[idx]):
                     to_trim += 1
-                # don't replace encoding or doctype declarations in [X|HT]ML,
-                # or existing PHP markup
+                # don't replace:
+                # - Batch directives
+                # - encoding or doctype declarations in [X|HT]ML,or
+                #   existing PHP markup
                 elif match(r"^\<[\?!]\w*", curr_buffer[idx].lstrip()) or \
-                    match(r"\?*\>$", curr_buffer[idx].rstrip()):
+                    match(r"\?*\>$", curr_buffer[idx].rstrip()) or \
+                    match(r'^\@(echo )', curr_buffer[idx].lstrip()):
                     offset += 2
 
             if to_trim > 0:
@@ -82,6 +72,17 @@ def _write_header(writer, curr_buffer):
         print(str(exc))
         vim.current.window.cursor = (old_row, old_col)
         return
+
+def _get_option_value(vim_var):
+    try:
+        val = bool(int(vim.eval(vim_var), 10))
+    except ValueError:
+        print("'%s' should be set to a number!" % vim_var,
+              file=sys.stderr)
+        vim.command('let %s=0' % vim_var)
+        val = False
+
+    return val
 
 
 if __name__ == '__main__':

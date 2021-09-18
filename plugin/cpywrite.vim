@@ -15,12 +15,20 @@ if empty(get(g:, 'cpywrite#default_license', ''))
     let g:cpywrite#default_license = 'Apache-2.0'
 endif
 
+if !exists('g:cpywrite#machine_readable')
+    let g:cpywrite#machine_readable = 0
+endif
+
 if !exists('g:cpywrite#verbatim_mode')
     let g:cpywrite#verbatim_mode = 0
 endif
 
 if !exists('g:cpywrite#hide_filename')
     let g:cpywrite#hide_filename = 0
+endif
+
+if !exists('g:cpywrite#no_anonymous')
+    let g:cpywrite#no_anonymous = 0
 endif
 
 if !exists(':CPYwrite')
@@ -33,18 +41,28 @@ if !exists(':CPYwriteDefaultLicense')
       \ CPYwriteDefaultLicense :call cpywrite#licenses#SetDefaultLicense(<f-args>)
 endif
 
+if !exists(':CPYwriteToggleStyle')
+    com! CPYwriteToggleStyle
+    \ exe 'let g:cpywrite#machine_readable = !g:cpywrite#machine_readable |
+    \   echo (g:cpywrite#machine_readable) ? "machine readable" : "descriptive"'
+endif
+
 if !exists(':CPYwriteToggleMode')
     com! CPYwriteToggleMode
-    \ exe 'if(g:cpywrite#verbatim_mode) | let g:cpywrite#verbatim_mode = 0 |
-    \   else | let g:cpywrite#verbatim_mode = 1 | endif |
+    \ exe 'let g:cpywrite#verbatim_mode = !g:cpywrite#verbatim_mode |
     \   echo (g:cpywrite#verbatim_mode) ? "verbatim" : "standard header/brief"'
 endif
 
 if !exists(':CPYwriteToggleFilename')
     com! CPYwriteToggleFilename
-    \ exe 'if(g:cpywrite#hide_filename) | let g:cpywrite#hide_filename = 0 |
-    \   else | let g:cpywrite#hide_filename = 1 | endif |
+    \ exe 'let g:cpywrite#hide_filename = !g:cpywrite#hide_filename |
     \   echo (g:cpywrite#hide_filename) ? "hidden" : "showing"'
+endif
+
+if !exists(':CPYwriteAllowAnonymous')
+    com! CPYwriteAllowAnonymous
+    \ exe 'let g:cpywrite#no_anonymous = !g:cpywrite#no_anonymous |
+    \   echo (g:cpywrite#no_anonymous) ? "never" : "Public Domain only"'
 endif
 
 nnoremap <silent> <Plug>(cpywrite)

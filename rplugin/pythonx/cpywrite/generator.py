@@ -38,7 +38,8 @@ class Generator(object): # pylint: disable=R0205
         self.lang = lang
         self.tokens = tokens
 
-    def fetch_license_header(self, full_text=False, no_name=False):
+    def fetch_license_header(self, full_text=False, cpu_readable=False,
+                             no_name=False, no_anon=False):
         """Return a license header, with or without standard language"""
         def _continue_block_comment(dest):
             try:
@@ -105,17 +106,29 @@ class Generator(object): # pylint: disable=R0205
             year = str(datetime.now())[:4]
             author, email = _get_source_author()
             contact = ' <' + email + '>' if email else ''
+            # use the tag prefix specified by REUSE
+            # https://reuse.software/spec/#comment-headers
             copying = \
-                'Copyright (c) ' + year + ' ' + author + contact
-            terms = \
-                self.rights.header \
-                if not full_text \
-                else self.rights.license_text
+                'Copyright (c) ' \
+                if not cpu_readable \
+                else 'SPDX-FileCopyrightText: '
+            copying += year + ' ' + author + contact
+            copyrightable = \
+                no_anon or cpu_readable or \
+                not in_pub_domain(self.rights.spdx_code)
+
+            if full_text and not cpu_readable:
+                terms = self.rights.license_text
+            elif cpu_readable:
+                terms = [self.rights.tag]
+            else:
+                terms = self.rights.header
+
             author_date_re = \
                 r'(?!.*(http).*)[\<\(\[\s\d]((YEAR)|\d{3}|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+]' \
                 if not (self.rights.spdx_code.startswith('ECL') or \
                         self.rights.spdx_code.startswith('GFDL')) and \
-                   not self.rights.spdx_code in ['GD', 'X11'] \
+                   not self.rights.spdx_code in ['Apache-2.0', 'GD', 'X11'] \
                 else r'(?!.*(http).*)[\<\[\s]((YEAR)|[YX]+)[\>\]\s].+[\>\]]'
             author_date = re.compile(author_date_re, re.IGNORECASE)
 
@@ -150,7 +163,7 @@ class Generator(object): # pylint: disable=R0205
                 if not re.findall(r'(%s)' % author,
                                   terms,
                                   re.MULTILINE) \
-                   and not in_pub_domain(self.rights.spdx_code):
+                   and copyrightable:
                     # no authorship template, so use our own
                     print(self.tokens[1] + copying, file=out)
                     _continue_block_comment(out)
@@ -158,14 +171,14 @@ class Generator(object): # pylint: disable=R0205
                 print(terms, file=out)
 
             else:  # no standard header
-                if not in_pub_domain(self.rights.spdx_code):
+                if copyrightable:
                     print(self.tokens[1] + copying, file=out)
 
                 # License should return the name of any recognized license,
                 # even if there's no header; just be sure to call __str__
                 # explicitly
                 if str(self.rights):
-                    if not in_pub_domain(self.rights.spdx_code):
+                    if copyrightable:
                         _continue_block_comment(out)
                     print(self.tokens[1] + str(self.rights), file=out)
 
@@ -303,6 +316,8 @@ _SOURCE_META = {
             ('.cmake'): 'CMake'
         },
          ('#', '# ')],
+    ('.bat', '.btm', '.cmd'):
+        [{('.bat', '.btm', '.cmd'): 'Batch'}, ('::', ':: ')],
     ('.coffee', '.litcoffee'):
         [{('.coffee', '.litcoffee'): 'CoffeeScript'}, ('###', ' ', ' ', '###')],
     ('.asm', '.s'):
