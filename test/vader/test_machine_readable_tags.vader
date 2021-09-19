@@ -1,0 +1,56 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Execute(Activate machine readable output);
+  call vader#log('===== Calling :CPYwriteToggleStyle =====')
+  CPYwriteToggleStyle
+
+Then(Assert that :CPYwriteToggleStyle turns on machine readable output);
+  AssertEqual 1, g:cpywrite#machine_readable
+
+Execute(Prepend the LGPL-3.0+ id to a Smalltalk file);
+  new! schematic.st
+  b schematic.st
+  CPYwrite LGPL-3.0-or-later
+
+Then(Smalltalk file has two tags in comment heading);
+  AssertEqual ' schematic.st', getline(2)
+  AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' SPDX-FileCopyrightText:', getline(4)[:23]
+  AssertEqual ' SPDX-License-Identifier: LGPL-3.0-or-later', getline(6)
+
+Execute(Prepend the GFDL-1.3+ id to an HTML file);
+  new! index.html
+  b index.html
+  norm i<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  norm o    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  CPYwrite GFDL-1.3-or-later
+
+Then(HTML file has two tags in comment block);
+  AssertEqual '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"', getline(1), 'Preserve multiline doctype declaration'
+  AssertEqual '    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', getline(2), 'Preserve multiline doctype declaration'
+  AssertEqual ' SPDX-FileCopyrightText:', getline(6)[:23]
+  AssertEqual ' SPDX-License-Identifier: GFDL-1.3-or-later', getline(8)
+  AssertEqual '-->', getline(9)
+
+Execute(Prepend a Public Domain license id to an Erlang header);
+  new! free.hrl
+  b free.hrl
+  CPYwrite CC0-1.0
+
+Then(Erlang header has two tags in comment heading);
+  AssertEqual '%% free.hrl', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '%% SPDX-FileCopyrightText:', getline(4)[:25], 'Always name a copyright holder'
+  AssertEqual '%% SPDX-License-Identifier: CC0-1.0', getline(6)
+
+Execute(Use :CPYwriteToggleStyle to switch off machine readable output);
+  call vader#log('===== Calling :CPYwriteToggleStyle =====')
+  CPYwriteToggleStyle
+
+Then(Assert that :CPYwriteToggleStyle switches off machine readable output);
+  AssertEqual 0, g:cpywrite#machine_readable

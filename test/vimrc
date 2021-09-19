@@ -1,3 +1,4 @@
+set encoding=utf-8
 filetype off
 set rtp+=vader.vim
 set rtp+=.

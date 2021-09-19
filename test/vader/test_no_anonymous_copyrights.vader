@@ -1,0 +1,54 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Then(Assert that anonymous copyrights are allowed by default);
+  AssertEqual 0, g:cpywrite#no_anonymous
+
+Execute(Turn off anonymous copyrights);
+  call vader#log('===== Calling :CPYwriteAllowAnonymous =====')
+  CPYwriteAllowAnonymous
+
+Then(Assert that :CPYwriteAllowAnonymous changes copyrighting policy);
+  AssertEqual 1, g:cpywrite#no_anonymous
+
+Execute(Prepend the PDDL-1.0 to a C source file);
+  new! pd.c
+  b pd.c
+  CPYwrite PDDL-1.0
+
+Then(C source file names a copyright holder);
+  AssertEqual ' * Copyright (c)', getline(4)[:15], 'Always name a copyright holder'
+  AssertEqual ' * Distributed under the terms of the Open Data Commons Public Domain Dedication & License 1.0.', getline(6)
+
+Execute(Prepend the CC-PDDC to an HTML5 file);
+  new! index.htm
+  b index.htm
+  norm i<!DOCTYPE html>
+  CPYwrite CC-PDDC
+
+Then(HTML comment block names a copyright holder);
+  AssertEqual '<!DOCTYPE html>', getline(1), 'Preserve doctype declaration'
+  AssertEqual ' Copyright (c)', getline(5)[:13], 'Always name a copyright holder'
+  AssertEqual ' Distributed under the terms of the Creative Commons Public Domain Dedication and Certification.', getline(7)
+
+Execute(Prepend the CC0-1.0 to an XML file);
+  new! pd.xml
+  b pd.xml
+  norm i<?xml version="1.0" encoding="UTF-8"?>
+  CPYwrite CC0-1.0
+
+Then(XML file names a copyright holder);
+  AssertEqual '<?xml version="1.0" encoding="UTF-8"?>', getline(1), 'Preserve encoding declaration'
+  AssertEqual ' Copyright (c)', getline(5)[:13], 'Always name a copyright holder'
+  AssertEqual ' Distributed under the terms of the Creative Commons Zero v1.0 Universal.', getline(7)
+
+Execute(Use :CPYwriteAllowAnonymous to resume using anonymous copyrights);
+  call vader#log('===== Calling :CPYwriteAllowAnonymous =====')
+  CPYwriteAllowAnonymous
+
+Then(Assert that :CPYwriteAllowAnonymous reverts copyrighting policy);
+  AssertEqual 0, g:cpywrite#no_anonymous

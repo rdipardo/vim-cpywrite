@@ -79,7 +79,7 @@ Then(TypeScript file header has brief license mention);
   AssertEqual ' */', getline(7)
 
 " Tc #5
-Execute(Prepend a standard license header to HTML);
+Execute(Prepend a standard license header to an HTML5 file);
   new! standard.htm
   b standard.htm
   norm i<!DOCTYPE html>
@@ -98,7 +98,7 @@ Execute(Prepend a header-less license to Markdown);
   b brief.md
   CPYwrite Xerox
 
-Then(HTML comment block has brief license mention);
+Then(Markdown comment heading has brief license mention);
   AssertEqual ' brief.md', getline(2)
   AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
   AssertEqual ' Distributed under the terms of the Xerox License.', getline(6)

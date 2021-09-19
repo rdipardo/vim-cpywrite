@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 from pytest import raises
 from cpywrite.generator import Generator, _get_language_meta
+from cpywrite.spdx.license import in_pub_domain, _PD_LICENSE_IDS
 from cpywrite import licenses
 
 
@@ -106,6 +107,13 @@ def test_license_recognition():
     for lic in licenses():
         generator.set_file_props('file.rb', lic)
         assert generator.rights.spdx_code == lic
+
+def test_public_domain_license_recognition():
+    generator = Generator()
+
+    for lic in _PD_LICENSE_IDS:
+        generator.set_file_props('file.py', lic)
+        assert in_pub_domain(generator.rights.spdx_code)
 
 def test_file_name_validation():
     invalid_file_names = [

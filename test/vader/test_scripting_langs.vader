@@ -64,6 +64,19 @@ Then(Shell script header quotes the GFDL-1.1-only);
   AssertEqual '# in the section entitled "GNU Free Documentation License".', getline(12)
   AssertEqual 1, len(getline(13)), 'Allow no trailing spaces'
 
+Execute(Prepend a standard header to a Batch script);
+  new! standard.cmd
+  b standard.cmd
+  norm i@echo off
+  CPYwrite MPL-2.0
+
+Then(Batch script quotes the MPL-2.0);
+  AssertEqual '@echo off', getline(1)
+  AssertEqual 2, len(getline(2)), 'Allow no trailing spaces'
+  AssertEqual ':: standard.cmd', getline(3)
+  AssertEqual ':: This Source Code Form is subject to the terms of the Mozilla Public License,', getline(7)
+  AssertEqual ':: obtain one at http://mozilla.org/MPL/2.0/.', getline(9)
+
 " Tc #4
 Execute(Prepend the default license header to a Python file);
   new! default_header.py
