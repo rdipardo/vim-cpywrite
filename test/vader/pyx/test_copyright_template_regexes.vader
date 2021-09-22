@@ -1,0 +1,41 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Execute(Turn on verbatim output);
+  call vader#log('===== Switching to verbatim mode =====')
+  let g:cpywrite#verbatim_mode=1
+
+Execute(Prepend the Apache 2.0 verbatim to a Vim script);
+  new! verbatim.ideavim
+  b verbatim.ideavim
+  CPYwrite Apache-2.0
+
+Then(Vim script preserves license publication date);
+  AssertEqual '"" verbatim.ideavim', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '"" Apache License', getline(4)
+  AssertEqual '"" Version 2.0, January 2004', getline(5), 'Publication date is not a copyright!'
+  AssertEqual '"" http://www.apache.org/licenses/', getline(6)
+
+Execute(Prepend the X11 verbatim to an Assembly file);
+  new! verbatim.asm
+  b verbatim.asm
+  CPYwrite X11
+
+Then(Assembly file preserves original license copyright);
+  AssertEqual '; verbatim.asm', getline(2)
+  AssertEqual '; X11 License', getline(6)
+  AssertEqual 1, len(getline(7)), 'Allow no trailing spaces'
+  AssertEqual '; Copyright (C) 1996 X Consortium', getline(8)
+  AssertEqual '; X Window System is a trademark of X Consortium, Inc.', getline(31), 'Capital X is not a year template!'
+
+Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
+  call vader#log('===== Calling :CPYwriteToggleMode =====')
+  CPYwriteToggleMode
+
+Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
+  AssertEqual 0, g:cpywrite#verbatim_mode

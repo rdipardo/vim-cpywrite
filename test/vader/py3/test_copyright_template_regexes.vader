@@ -9,18 +9,6 @@ Execute(Turn on verbatim output);
   call vader#log('===== Switching to verbatim mode =====')
   let g:cpywrite#verbatim_mode=1
 
-Execute(Prepend the Apache 2.0 verbatim to a Vim script);
-  new! verbatim.ideavim
-  b verbatim.ideavim
-  CPYwrite Apache-2.0
-
-Then(Vim script preserves license publication date);
-  AssertEqual '"" verbatim.ideavim', getline(2)
-  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
-  AssertEqual '"" Apache License', getline(4)
-  AssertEqual '"" Version 2.0, January 2004', getline(5), 'Publication date is not a copyright!'
-  AssertEqual '"" http://www.apache.org/licenses/', getline(6)
-
 Execute(Prepend the GD license verbatim to a Julia script);
   new! verbatim.jl
   b verbatim.jl
@@ -32,18 +20,6 @@ Then(Julia script preserves original third-party copyrights);
   AssertEqual '# Credits and license terms', getline(6)
   AssertEqual "# \t\xe2\x80\xa2\tPortions copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 by Boutell.Com, Inc.", getline(11)
   AssertEqual "# \t\xe2\x80\xa2\tPortions relating to GIF animations copyright 2004 Jaakko Hyvätti (jaakko.hyvatti@iki.fi)", getline(21)
-
-Execute(Prepend the X11 verbatim to an Assembly file);
-  new! verbatim.asm
-  b verbatim.asm
-  CPYwrite X11
-
-Then(Assembly file preserves original license copyright);
-  AssertEqual '; verbatim.asm', getline(2)
-  AssertEqual '; X11 License', getline(6)
-  AssertEqual 1, len(getline(7)), 'Allow no trailing spaces'
-  AssertEqual '; Copyright (C) 1996 X Consortium', getline(8)
-  AssertEqual '; X Window System is a trademark of X Consortium, Inc.', getline(31), 'Capital X is not a year template!'
 
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')

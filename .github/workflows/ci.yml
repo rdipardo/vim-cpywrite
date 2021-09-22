@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         vim-version: [7.4.1689, 8.2.3082]
-        nvim-version: [nightly]
+        nvim-version: [stable]
         python-version: ['2.7.18', '3.4.10', '3.5', '3.6', '3.7', '3.8', '3.9']
     steps:
     - uses: actions/checkout@v2
@@ -102,13 +102,13 @@ jobs:
             --enable-pythoninterp=dynamic \
             --with-python-config-dir=$(find /opt/hostedtoolcache/Python/2.7.18 -name Makefile | xargs dirname)
         make && sudo make install && cd ..
-        /usr/local/bin/vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+        /usr/local/bin/vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
         head -n 10 vim_*.log >> vim-${{ matrix.vim-version }}-$LOG
         awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on neovim
       run: |
-        "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/*' > /dev/null
+        "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
 
     - name: Check startup times
       env:
