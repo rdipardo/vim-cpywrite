@@ -5,11 +5,13 @@ Module entry point, when invoked at the command line
 """
 from __future__ import print_function
 import sys
+import tempfile
+from os import path
 from argparse import ArgumentParser, ArgumentError
 from .generator import Generator, extensions
 
 def main():
-    """Create a new source file with a license header"""
+    """Prepend a license header to a new or existing source file"""
     parser = ArgumentParser(prog='cpywrite',
                             description="Generate copyright headers for any \
                             open source license")
@@ -19,17 +21,17 @@ def main():
     parser.add_argument('-m', '--machine', action="store_true",
                         dest='cpu_readable', default=False,
                         help="use a machine readable format")
+    parser.add_argument('-n', '--noname', action="store_true",
+                        dest='no_name', default=False,
+                        help="exclude file name from licence header")
+    parser.add_argument('-a', '--noanonymous', action="store_true",
+                        dest='no_anon', default=False,
+                        help="always include the copyright holder's name, even \
+                         if the license implies a Public Domain grant")
     parser.add_argument('-l', '--license', action="store", type=str,
                         dest='short_name', default='Apache-2.0',
                         help="SPDX identifier of an open source license \
-                         (default: %(default)s)")
-    parser.add_argument('-n', '--noname', action="store_true",
-                        dest='no_name', default=False,
-                        help="Exclude file name from licence header")
-    parser.add_argument('-a', '--noanonymous', action="store_true",
-                        dest='no_anon', default=False,
-                        help="Always include the copyright holder's name, even \
-                         if the license implies a Public Domain grant")
+                         [%(default)s]")
     parser.add_argument('files', nargs='*', metavar='FILES', type=str,
                         help='name(s) of output file(s) (supported extensions: \
                         %s)' % (', '.join(extensions())))
@@ -46,22 +48,39 @@ def main():
             generator = Generator()
             for fnm in map(str.strip, filenames):
                 generator.set_file_props(fnm, args.short_name)
-                source_file = \
+                source_file = ''
+                license_text = \
                     generator.fetch_license_header(args.verbatim_mode,
                                                    args.cpu_readable,
                                                    args.no_name,
                                                    args.no_anon)
-                if source_file:
-                    with open(generator.out_file, 'w') as source:
-                        source.write(source_file)
+                if license_text:
+                    if not path.exists(generator.out_file):
+                        with open(generator.out_file, 'w') as src:
+                            src.truncate(1024)
 
-                    print("Created new %s file: %s"
-                          % (generator.lang, generator.out_file))
+                        print("Created new %s file: %s"
+                              % (generator.lang, generator.out_file))
+
+                    with open(generator.out_file + '.bak', 'w') as bak:
+                        with open(generator.out_file, 'rt') as source:
+                            source_file = source.read()
+                            bak.write(source_file)
+
+                    _, tmp_source = tempfile.mkstemp(text=True)
+
+                    with open(tmp_source, 'w') as tmp:
+                        tmp.write("%s%s" % (license_text, source_file))
+
+                    with open(tmp_source, 'rt') as new_content:
+                        with open(generator.out_file, 'w') as source:
+                            source.write(new_content.read())
+
                 else:
                     raise IOError("Error writing file '%s'."
                                   % (generator.out_file))
 
-    except (ArgumentError, IOError, AttributeError, ValueError) as exc:
+    except (ArgumentError, UnicodeDecodeError, IOError, AttributeError, ValueError) as exc:
         print(str(exc))
         sys.exit(1)
 

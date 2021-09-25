@@ -50,17 +50,18 @@ def _write_header(writer, curr_buffer):
             offset = 0
 
             for idx, _ in enumerate(curr_buffer):
+                curr_line = curr_buffer[idx].lstrip()
                 # replace shebang lines and encoding declarations, if any
-                if curr_buffer[idx].startswith("#!", 0) or \
-                        match(r"^#.+(coding).+$", curr_buffer[idx]):
+                if curr_line.startswith("#!", 0) or \
+                        match(r"^#.+(coding).+$", curr_line):
                     to_trim += 1
                 # don't replace:
-                # - Batch directives
                 # - encoding or doctype declarations in [X|HT]ML,or
-                #   existing PHP markup
-                elif match(r"^\<[\?!]\w*", curr_buffer[idx].lstrip()) or \
+                # - existing PHP markup
+                # - Batch directives
+                elif match(r"^\<[\?!]\w*", curr_line) or \
                     match(r"\?*\>$", curr_buffer[idx].rstrip()) or \
-                    match(r'^\@(echo )', curr_buffer[idx].lstrip()):
+                    curr_line.startswith('@echo', 0):
                     offset += 2
 
             if to_trim > 0:
