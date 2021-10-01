@@ -6,6 +6,21 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.6.0
+======
+**(2021-10-01)**
+
+Fixed
+-----
+- prevent authorship regex from matching publication dates in the verbatim text
+  of the Apache 2.0, GD and X11 licenses
+
+Added
+-----
+- new ``g:cpywrite#no_anonymous`` option to always state the copyright holder
+  above Public Domain licenses
+- support for DOS Batch files
+
 0.5.0
 ======
 **(2021-07-03)**

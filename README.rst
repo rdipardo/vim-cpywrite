@@ -4,15 +4,10 @@ vim-cpywrite
 
 |gh-actions|  |current version|
 
-:WARNING: **This branch is for development purposes.**
-          **End users are advised to checkout a** `release`_ **package**
-
-.. _release: https://github.com/rdipardo/vim-cpywrite/releases
-
 Generate copyright headers for any open source license
 
-.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/pre/nvim_043_ver_031.gif
-    :alt: nvim-043-linux-demo
+.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/rel/vim_8.2.3452.gif
+    :alt: vim-win-x64-demo
     :align: center
     :width: 900
 
@@ -78,7 +73,13 @@ Commands
 |``:CPYwriteToggleMode``                         | Switches ``g:cpywrite#verbatim_mode`` on or |
 |                                                | off                                         |
 +------------------------------------------------+---------------------------------------------+
+|``:CPYwriteToggleStyle``                        | Switches ``g:cpywrite#machine_readable`` on |
+|                                                | or off                                      |
++------------------------------------------------+---------------------------------------------+
 |``:CPYwriteToggleFilename``                     | Switches ``g:cpywrite#hide_filename`` on or |
+|                                                | off                                         |
++------------------------------------------------+---------------------------------------------+
+|``:CPYwriteAllowAnonymous``                     | Switches ``g:cpywrite#no_anonymous`` on or  |
 |                                                | off                                         |
 +------------------------------------------------+---------------------------------------------+
 |``<Plug>(cpywrite)``                            | Does the same as calling ``:CPYwrite`` with |
@@ -104,6 +105,22 @@ Options
 |                               | longer than 3-4 paragraphs (e.g. Unlicense,  |
 |                               | MIT, BSD 1- 2- 3-Clause, etc.).              |
 |                               | Default: ``0``                               |
++-------------------------------+----------------------------------------------+
+|``g:cpywrite#no_anonymous``    | When set to a non-zero value, copyright      |
+|                               | information is never omitted, even if the    |
+|                               | license implies a Public Domain grant.       |
+|                               | Default: ``0``                               |
+|                               +----------------------------------------------+
+|                               | Has no effect when                           |
+|                               | ``g:cpywrite#machine_readable`` is on        |
++-------------------------------+----------------------------------------------+
+|``g:cpywrite#machine_readable``| When set to a non-zero value, the license    |
+|                               | and copyright statement are formatted as     |
+|                               | tags.                                        |
+|                               | Default: ``0``                               |
+|                               +----------------------------------------------+
+|                               | Overrides ``g:cpywrite#verbatim_mode`` and   |
+|                               | ``g:cpywrite#no_anonymous``                  |
 +-------------------------------+----------------------------------------------+
 |``g:cpywrite#hide_filename``   | When set to a non-zero value, hides the name |
 |                               | of the current buffer from the license       |
@@ -238,7 +255,7 @@ Distributed under the terms of the MIT license.
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
     :alt: Vim Scripts version
 
-.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/577eacfac36591252d15d0cc7cd3b2f0f41af324/rplugin/pythonx/cpywrite/generator.py#L292
+.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/3db79fd8b4d31c497442ac85bef21f9aac3e27f9/rplugin/pythonx/cpywrite/generator.py#L306
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management
 .. _native package directory: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 .. _DIY plugin management: https://shapeshed.com/vim-packages
