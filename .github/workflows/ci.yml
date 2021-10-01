@@ -1,8 +1,6 @@
 name: (Neo)vim
 on:
   push:
-    tags:
-      - '*'
     branches:
       - pre-release
   pull_request:
