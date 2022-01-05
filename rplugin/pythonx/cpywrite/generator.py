@@ -19,14 +19,14 @@ __all__ = ['Generator', 'extensions']
 
 class Generator(object): # pylint: disable=R0205
     """A source file generator"""
-    def __init__(self, filename='new.py', rights='Apache-2.0'):
-        self.set_file_props(filename, rights)
+    def __init__(self, filename='new.py', vim_filetype='python', rights='Apache-2.0'):
+        self.set_file_props(filename, vim_filetype, rights)
 
-    def set_file_props(self, filename, rights=''):
+    def set_file_props(self, filename, filetype='', rights=''):
         """
         Set this Generator's output file, along with all associated properties
         """
-        lang, ext, tokens = _get_language_meta(filename)
+        lang, ext, tokens = _get_language_meta(filename, filetype)
 
         if not lang:
             raise ValueError("Unrecognized source file extension: '%s'"
@@ -215,8 +215,8 @@ def extensions():
                              (lang.lower() for lang in _SOURCE_META
                               if lang[0] == '.')))))
 
-def _get_language_meta(filename):
-    """Identify programming language from file extension"""
+def _get_language_meta(filename, filetype=''):
+    """Identify programming language from file extension or Vim file type"""
     if not bool(filename.strip()) or \
         re.match(r'^.*[`<>:\"\'\|\?\*].*$', filename) or \
             re.match(r'^.+[\-`<>:\"\'\|\?\*\.]+$', filename):
@@ -225,14 +225,20 @@ def _get_language_meta(filename):
     fname, ext = path.splitext(filename)
 
     if not ext:
+        for _, ftype in _SOURCE_META.items():
+            for name in ftype[0].values():
+                if filetype == name.lower():
+                    return (name, ext, ftype[1])
+
         if fname.startswith('.'):
-            for ext in extensions():
-                if 'vim' in ext or ext.endswith('exrc'):
-                    return ('VimL', '', ('""', '"" '))
+            if 'vim' in fname.lower() or fname.lower().endswith('exrc'):
+                return ('VimL', '', ('""', '"" '))
 
             return ('dot', '', ('#', '# '))
 
-        print('No extension; assuming shell script')
+        if not filetype.endswith('sh'):
+            print('No extension; assuming shell script')
+
         return ('shell script', '', ('#', '# '))
 
     if ext.lower() == '.txt' and \
@@ -243,16 +249,16 @@ def _get_language_meta(filename):
     tokens = ()
     ext = ext.lower()
 
-    for k in _SOURCE_META:
+    for fexts, ftype in _SOURCE_META.items():
         # keys of only one element will get expanded into a char sequence
-        exts = [k] if k[0] == '.' else k
+        exts = [fexts] if fexts[0] == '.' else fexts
         if ext in exts:
             try:
-                for grp in _SOURCE_META[k][0]:
+                for grp in ftype[0]:
                     if (ext in grp and not grp[0] == '.') or \
                        (ext == grp and grp[0] == '.'):
-                        lang = _SOURCE_META[k][0][grp]
-                        tokens = _SOURCE_META[k][1]
+                        lang = ftype[0][grp]
+                        tokens = ftype[1]
                         break
 
             except (KeyError, IndexError):

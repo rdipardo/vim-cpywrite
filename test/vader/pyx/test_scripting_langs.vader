@@ -32,13 +32,22 @@ Then(Shell script header quotes the GPL-3.0+);
   AssertEqual '# 3 of the License, or (at your option) any later version.', getline(8)
 
 " Tc #2
+Execute(Use :CPYwriteKeepShebangs to replace shebang lines);
+  call vader#log('===== Toggling g:cpywrite#preserve_shebangs =====')
+  CPYwriteKeepShebangs
+
+Then(Assert that shebangs will be overwritten);
+  AssertEqual 0, g:cpywrite#preserve_shebangs
+
 Execute(Prepend a standard header to a Perl script);
   new! standard.pl
   b standard.pl
+  norm i#!C:\perl -w
   CPYwrite ECL-2.0
 
 Then(Perl script header quotes the ECL-2.0);
-  AssertEqual '#!/usr/bin/env perl', getline(1)
+  AssertEqual '#!/usr/bin/env perl', getline(1),
+              \ 'Replace shebangs when g:cpywrite#preserve_shebangs == 0'
   AssertEqual 1, len(getline(2)), 'Allow no trailing spaces'
   AssertEqual '# Educational Community License, Version 2.0 (the "License"); you may', getline(4)
   AssertEqual '# permissions and limitations under the License.', getline(14)
@@ -50,14 +59,24 @@ Execute(Use :CPYwriteToggleFilename to show buffer name);
 Then(Assert that file name is now showing);
   AssertEqual 0, g:cpywrite#hide_filename
 
+Execute(Use :CPYwriteKeepShebangs to preserve shebang lines);
+  call vader#log('===== Toggling g:cpywrite#preserve_shebangs =====')
+  CPYwriteKeepShebangs
+
+Then(Assert that shebangs will be preserved);
+  AssertEqual 1, g:cpywrite#preserve_shebangs
+
 " Tc #3
 Execute(Prepend a standard license header to a shell script);
   new! brief_header
   b brief_header
+  set syntax=zsh
+  norm i#!/usr/bin/zsh -euxo
   CPYwrite GFDL-1.1-only
 
 Then(Shell script header quotes the GFDL-1.1-only);
-  AssertEqual '#!/usr/bin/env bash', getline(1)
+  AssertEqual '#!/usr/bin/zsh -euxo', getline(1),
+              \ "Don't replace shebangs unless g:cpywrite#preserve_shebangs == 0"
   AssertEqual 1, len(getline(2)), 'Allow no trailing spaces'
   AssertEqual '# brief_header', getline(3)
   AssertEqual '# Permission is granted to copy, distribute and/or modify this', getline(7)
@@ -91,15 +110,19 @@ Then(Python file header quotes the GPL-3.0+);
   AssertEqual '# 3 of the License, or (at your option) any later version.', getline(12)
 
 " Tc #5
-Execute(Prepend a standard header to a Python file);
-  new! standard.py
-  b standard.py
+Execute(Prepend a standard header to a Python script);
+  new! standard
+  b standard
+  norm i#!/usr/bin/env python3.7 -wt
+  set syntax=python
   CPYwrite AFL-1.1
 
-Then(Python file header quotes the AFL-1.1);
+Then(Python script header quotes the AFL-1.1);
+  AssertEqual '#!/usr/bin/env python3.7 -wt', getline(1),
+              \ "Don't replace shebangs unless g:cpywrite#preserve_shebangs == 0"
   AssertEqual '# -*- coding: utf-8 -*-', getline(2)
   AssertEqual 1, len(getline(4)), 'Allow no trailing spaces'
-  AssertEqual '# standard.py', getline(5)
+  AssertEqual '# standard', getline(5)
   AssertEqual '# Licensed under the Academic Free License version 1.1.', getline(9)
 
 " Tc #6
@@ -116,16 +139,20 @@ Then(Ruby file header quotes the GPL-3.0+);
   AssertEqual '# 3 of the License, or (at your option) any later version.', getline(11)
 
 " Tc #7
-Execute(Prepend a header-less license to a Ruby file);
-  new! brief_header.rb
-  b brief_header.rb
+Execute(Prepend a header-less license to a Ruby script);
+  new! brief_header
+  b brief_header
+  set syntax=ruby
+  norm i#!/usr/bin/env ruby -wc
   CPYwrite MIT
 
-Then(Ruby file header has brief license mention);
-  AssertEqual '# frozen_string_literal: true', getline(1)
-  AssertEqual 0, len(getline(2)), 'One blank line after frozen_string_literal directive'
-  AssertEqual '# brief_header.rb', getline(4)
-  AssertEqual '# Distributed under the terms of the MIT License.', getline(8)
+Then(Ruby script header has brief license mention);
+  AssertEqual '#!/usr/bin/env ruby -wc', getline(1),
+              \ "Don't replace shebangs unless g:cpywrite#preserve_shebangs == 0"
+  AssertEqual '# frozen_string_literal: true', getline(2)
+  AssertEqual 0, len(getline(3)), 'One blank line after frozen_string_literal directive'
+  AssertEqual '# brief_header', getline(5)
+  AssertEqual '# Distributed under the terms of the MIT License.', getline(9)
 
 " Tc #8
 Execute(Prepend the default license header to a PHP file);

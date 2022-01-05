@@ -105,14 +105,14 @@ def test_license_recognition():
     generator = Generator()
 
     for lic in licenses():
-        generator.set_file_props('file.rb', lic)
+        generator.set_file_props('file.rb', rights=lic)
         assert generator.rights.spdx_code == lic
 
 def test_public_domain_license_recognition():
     generator = Generator()
 
     for lic in _PD_LICENSE_IDS:
-        generator.set_file_props('file.py', lic)
+        generator.set_file_props('file.py', rights=lic)
         assert in_pub_domain(generator.rights.spdx_code)
 
 def test_file_name_validation():

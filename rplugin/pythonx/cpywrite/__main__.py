@@ -47,7 +47,7 @@ def main():
         if filenames:
             generator = Generator()
             for fnm in map(str.strip, filenames):
-                generator.set_file_props(fnm, args.short_name)
+                generator.set_file_props(filename=fnm, rights=args.short_name)
                 source_file = ''
                 license_text = \
                     generator.fetch_license_header(args.verbatim_mode,

@@ -31,6 +31,10 @@ if !exists('g:cpywrite#no_anonymous')
     let g:cpywrite#no_anonymous = 0
 endif
 
+if !exists('g:cpywrite#preserve_shebangs')
+    let g:cpywrite#preserve_shebangs = 1
+endif
+
 if !exists(':CPYwrite')
     com! -nargs=* -complete=customlist,cpywrite#licenses#GetLicenseList
       \ CPYwrite :call cpywrite#PrependHeader(<f-args>)
@@ -63,6 +67,12 @@ if !exists(':CPYwriteAllowAnonymous')
     com! CPYwriteAllowAnonymous
     \ exe 'let g:cpywrite#no_anonymous = !g:cpywrite#no_anonymous |
     \   echo (g:cpywrite#no_anonymous) ? "never" : "Public Domain only"'
+endif
+
+if !exists(':CPYwriteKeepShebangs')
+    com! CPYwriteKeepShebangs
+    \ exe 'let g:cpywrite#preserve_shebangs = !g:cpywrite#preserve_shebangs |
+    \   echo (g:cpywrite#preserve_shebangs) ? "preserve existing" : "overwrite"'
 endif
 
 nnoremap <silent> <Plug>(cpywrite)

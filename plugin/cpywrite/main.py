@@ -17,22 +17,22 @@ def prepend():
     if vim.current.buffer:
         vim.command("let b:fn=expand('%:t')")
         filename = vim.eval('b:fn')
-        is_prolog = (filename.endswith('.pl') and vim.eval('&syntax') == 'prolog')
+        filetype = vim.eval('&syntax')
         license_name = vim.eval('l:license_name')
 
         try:
-            generator = Generator(filename, license_name)
+            generator = Generator(filename, filetype, license_name)
 
-            if is_prolog:
-                generator.set_file_props(filename.replace('.pl', '.p'))
+            if (filename.endswith('.pl') and filetype == 'prolog'):
+                generator.set_file_props(filename.replace('.pl', '.p'), filetype)
                 generator.out_file = filename
 
-            _write_header(generator, vim.current.buffer)
+            _write_header(generator, vim.current.buffer, filetype)
         except (ValueError, vim.error) as exc:
             print(str(exc))
             return
 
-def _write_header(writer, curr_buffer):
+def _write_header(writer, curr_buffer, filetype):
     """Write the license header"""
     try:
         old_row, old_col = vim.current.window.cursor
@@ -40,6 +40,7 @@ def _write_header(writer, curr_buffer):
         use_text_as_header = _get_option_value('g:cpywrite#verbatim_mode')
         exclude_file_name = _get_option_value('g:cpywrite#hide_filename')
         allow_anonymous = _get_option_value('g:cpywrite#no_anonymous')
+        preserve_shebangs = _get_option_value('g:cpywrite#preserve_shebangs')
         header = writer.fetch_license_header(use_text_as_header,
                                              machine_readable,
                                              exclude_file_name,
@@ -47,13 +48,15 @@ def _write_header(writer, curr_buffer):
 
         if header:
             to_trim = 0
+            to_skip = 0
             offset = 0
 
             for idx, _ in enumerate(curr_buffer):
                 curr_line = curr_buffer[idx].lstrip()
+                is_script = curr_line.startswith("#!", 0) or \
+                        match(r"^#.+(coding).+$", curr_line)
                 # replace shebang lines and encoding declarations, if any
-                if curr_line.startswith("#!", 0) or \
-                        match(r"^#.+(coding).+$", curr_line):
+                if not preserve_shebangs and is_script:
                     to_trim += 1
                 # don't replace:
                 # - encoding or doctype declarations in [X|HT]ML,or
@@ -61,13 +64,21 @@ def _write_header(writer, curr_buffer):
                 # - Batch directives
                 elif match(r"^\<[\?!]\w*", curr_line) or \
                     match(r"\?*\>$", curr_buffer[idx].rstrip()) or \
-                    curr_line.startswith('@echo', 0):
+                    (filetype == 'dosbatch' and curr_line.startswith('@', 0)):
                     offset += 2
+                elif preserve_shebangs and is_script:
+                    offset = (offset + 1) if len(curr_line) > 0 else offset
+                    # make an exception for Ruby because we don't insert a shebang,
+                    # and never will: it upsets rubocop if the exec perm flag is not
+                    # set; the `--safe-auto-correct` option will actually *make* the
+                    # file executable(!)
+                    # https://docs.rubocop.org/rubocop/cops_lint.html#lintscriptpermission
+                    to_skip = (to_skip + 1) if filetype != 'ruby' else to_skip
 
             if to_trim > 0:
                 del curr_buffer[0:to_trim]
 
-            curr_buffer[offset:offset] = header.split('\n')
+            curr_buffer[offset:offset] = header.splitlines()[to_skip:]
 
     except (ValueError, vim.error) as exc:
         print(str(exc))

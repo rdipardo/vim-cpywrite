@@ -105,7 +105,7 @@ class License(object): # pylint: disable=R0205
                     content = child.text if (child.text and \
                                 child.tag != alt_tag and \
                                 child.tag != opt_tag and \
-                                any([ch for ch in child.text if str.isalpha(ch)])) \
+                                any((ch for ch in child.text if ch.isalpha()))) \
                                else (child.tail or '')
 
                 line = sub(r'\n\s+', '\n', content.lstrip())
