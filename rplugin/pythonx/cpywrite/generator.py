@@ -234,7 +234,16 @@ def _get_language_meta(filename, filetype=''):
             if 'vim' in fname.lower() or fname.lower().endswith('exrc'):
                 return ('VimL', '', ('""', '"" '))
 
+            if filetype == 'xdefaults':
+                return (filetype.capitalize(), '', ('!', '! '))
+
             return ('dot', '', ('#', '# '))
+
+        if filetype in ['dockerfile', 'make']:
+            return (filetype.capitalize(), '', ('#', '# '))
+
+        if path.basename(fname).lower() in ['dockerfile', 'makefile']:
+            return (path.basename(fname).capitalize(), '', ('#', '# '))
 
         if not filetype.endswith('sh'):
             print('No extension; assuming shell script')
@@ -309,16 +318,21 @@ def _get_source_author():
     return (author, email)
 
 _SOURCE_META = {
-    ('', '.cmake', '.ex', '.exs', '.jl', '.pl', '.py', '.pyw',
-     '.r', '.rb', '.rda', '.rdata', '.rds', '.sh'):
+    ('', '.cmake', '.dockerfile', '.ex', '.exs', '.jl', '.mk', '.mak','.pl', '.py', '.pyw',
+     '.conf', '.properties', '.r', '.rb', '.rda', '.rdata', '.rds', '.sh', '.yml', '.yaml'):
         [{
+            ('.conf'): 'Config',
+            ('.dockerfile'): 'Dockerfile',
             ('.ex', '.exs'): 'Elixir',
             ('.jl'): 'Julia',
             ('', '.sh'): 'shell script',
             ('.pl'): 'Perl',
             ('.py', '.pyw'): 'Python',
+            ('.properties'): 'Properties',
             ('.r', '.rda', '.rdata', '.rds'): 'R',
             ('.rb'): 'Ruby',
+            ('.yml', '.yaml'): 'YAML',
+            ('.mk', '.mak'): 'Make',
             ('.cmake'): 'CMake'
         },
          ('#', '# ')],
@@ -326,8 +340,8 @@ _SOURCE_META = {
         [{('.bat', '.btm', '.cmd'): 'Batch'}, ('::', ':: ')],
     ('.coffee', '.litcoffee'):
         [{('.coffee', '.litcoffee'): 'CoffeeScript'}, ('###', ' ', ' ', '###')],
-    ('.asm', '.s'):
-        [{('.asm', '.s'): 'Assembly',}, (';', '; ')],
+    ('.asm', '.ini', '.s'):
+        [{('.asm', '.s'): 'Assembly', ('.ini'): 'INI'}, (';', '; ')],
     ('.lisp', '.lsp', '.cl', '.scm', '.ss', '.clj', '.cljc', '.cljs', '.edn', '.fnl'):
         [{
             ('.lisp', '.lsp'): 'Lisp',
@@ -384,6 +398,7 @@ _SOURCE_META = {
           ('.markdown', '.md', '.mkd'): 'Markdown'
          },
          ('<!--', ' ', ' ', '-->')],
+    ('.rst'): [{('.rst'): 'reStructuredText'}, ('..', '.. ')],
     ('.adb', '.ads', '.e', '.lua', '.sql', '.hs', '.lhs', '.purs'):
         [{
             ('.adb', '.ads'): 'Ada',

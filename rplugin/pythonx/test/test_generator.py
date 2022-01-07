@@ -31,12 +31,16 @@ def test_language_recognition():
         'script', 'script.eX', 'script.ExS', 'script.Sh', 'script.jL',
         'script.pL', 'script.Py', 'script.PyW', 'script.R', 'script.rDA',
         'script.RdAta', 'script.rdS', 'script.Rb', 'script.cMaKe',
-        'CMakeLists.tXt']
+        'CMakeLists.tXt', 'Makefile', 'mAKeFIle', 'build.Mk', 'build.mAk',
+        'Dockerfile', 'doCKerfILE', 'build.dockerFILE', 'file.YmL', 'file.yAmL',
+        'config.PROpertiES', 'Config.properTIEs', 'file.conF', 'file.CoNf']
+    ini_files = ['config.iNi', 'Config.InI']
     coffeescript_files = ['file.coFFee', 'main.litcoffEe']
     elm_files = ['file.eLm', 'file.Elm', 'file.elM']
     ml_lang_files = ['file.mL', 'file.MlI']
     markup_files = ['file.hTmL', 'file.hTm', 'file.MaRkDoWn', 'file.MD',
                     'file.mKd', 'file.XmL']
+    restructuredtext_files = ['file.RsT', 'file.rSt']
     vim_script_files = [
         'script.viM', '.VIMrC', 'config.VIMrC', '.gvim', 'config.gvim',
         '.ideavim', 'script.ideavim', '.exrc', 'config.exrc']
@@ -49,7 +53,7 @@ def test_language_recognition():
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('/**', ' * ', ' *', ' */')
 
-    for src in assembly_lang_files:
+    for src in assembly_lang_files + ini_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == (';', '; ')
 
@@ -88,6 +92,10 @@ def test_language_recognition():
     for src in markup_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('<!--', ' ', ' ', '-->')
+
+    for src in restructuredtext_files:
+        _, _, tokens = _get_language_meta(src)
+        assert tokens == ('..', '.. ')
 
     for src in vim_script_files:
         _, _, tokens = _get_language_meta(src)
