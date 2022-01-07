@@ -124,8 +124,14 @@ class Generator(object): # pylint: disable=R0205
             else:
                 terms = self.rights.header
 
+            # Replace historical copyrights only when deemed optional by the SPDX,
+            # e.g. https://spdx.org/licenses/0BSD.html
+            # This prevents faulty matches with the FSF ZIP code in the GPL v1 and 2
             author_date_re = \
-                r'(?!.*(http).*)[\<\(\[\s\d]((YEAR)|\d{3}|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+]' \
+                r'(?!.*(http).*)[\<\(\[\s%s]((YEAR)%s|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+]' \
+                % (('\d', '|\d{3}') \
+                   if self.rights.spdx_code == '0BSD' \
+                   else ('', '')) \
                 if not (self.rights.spdx_code.startswith('ECL') or \
                         self.rights.spdx_code.startswith('GFDL')) and \
                    not self.rights.spdx_code in ['Apache-2.0', 'GD', 'X11'] \

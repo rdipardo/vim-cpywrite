@@ -101,3 +101,31 @@ Then(XML file header quotes the ECL-2.0);
   AssertEqual ' Educational Community License, Version 2.0 (the "License"); you may', getline(6)
   AssertEqual '     http://www.osedu.org/licenses/ECL-2.0', getline(10)
   AssertEqual '-->', getline(17)
+
+Execute(Prepend a brief license mention to a config file);
+  new! x11.conf
+  b x11.conf
+  CPYwrite X11
+
+Then(Config file header mentions the X11);
+  AssertEqual '# x11.conf', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# Distributed under the terms of the X11 License.', getline(6)
+  AssertEqual '#', getline(7)
+
+Execute(Hide conventional file names);
+  let g:cpywrite#hide_filename = 1
+
+Execute(Prepend a standard license header to an .Xresources file);
+  new! ~/.Xresources
+  b ~/.Xresources
+  CPYwrite GPL-3.0-only
+
+Then(Xresources quotes the GPLv3);
+  AssertEqual '!', getline(1)
+  AssertEqual '! as published by the Free Software Foundation, version 3.', getline(6)
+  AssertEqual '! <https://www.gnu.org/licenses/>.', getline(15)
+  AssertEqual 1, len(getline(16)), 'Allow no trailing spaces'
+
+Execute(Revert to default file name visibility);
+  let g:cpywrite#hide_filename = 0

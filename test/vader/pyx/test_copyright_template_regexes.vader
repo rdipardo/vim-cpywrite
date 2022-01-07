@@ -5,6 +5,60 @@ Execute(Test that plugin was loaded);
   call vader#log('===== Pre-test environment check =====')
   Assert exists('g:loaded_cpywrite')
 
+Execute(Hide conventional file names);
+  let g:cpywrite#hide_filename = 1
+
+Execute(Prepend the GPLv1 license header to a makefile);
+  new! makefile
+  b makefile
+  CPYwrite GPL-1.0-only
+
+Then(Makefile declares author's copyright only once);
+  AssertEqual '#', getline(1), "Don't prepend shebangs to makefiles!'"
+  AssertEqual '# as published by the Free Software Foundation; version 1.', getline(7)
+  AssertEqual '# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.', getline(16),
+              \ 'Boston ZIP code is not a year!'
+  AssertEqual 1, len(getline(17)), 'Allow no trailing spaces'
+
+Execute(Prepend the GPLv1+ license header to a Dockerfile);
+  new! Dockerfile
+  b Dockerfile
+  CPYwrite GPL-1.0-or-later
+
+Then(Dockerfile declares author's copyright only once);
+  AssertEqual '#', getline(1), "Don't prepend shebangs to Dockerfiles!'"
+  AssertEqual 1, len(getline(4)), 'Allow no trailing spaces'
+  AssertEqual '# either version 1, or (at your option) any later version.', getline(8)
+  AssertEqual '# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.', getline(17),
+              \ 'Boston ZIP code is not a year!'
+
+Execute(Revert to default file name visibility);
+  let g:cpywrite#hide_filename = 0
+
+Execute(Prepend the GPLv2 license header to a reStructuredText file);
+  new! gpl2.rst
+  b gpl2.rst
+  CPYwrite GPL-2.0-only
+
+Then(reStructuredText file declares author's copyright only once);
+  AssertEqual '.. gpl2.rst', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '.. as published by the Free Software Foundation; version 2.', getline(9)
+  AssertEqual '.. Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.', getline(18),
+              \ 'Boston ZIP codes are not a range of years!'
+
+Execute(Prepend the GPLv2+ license header to a YAML file);
+  new! gpl2.yaml
+  b gpl2.yaml
+  CPYwrite GPL-2.0-or-later
+
+Then(YAML file declares author's copyright only once);
+  AssertEqual '# gpl2.yaml', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# 2 of the License, or (at your option) any later version.', getline(9)
+  AssertEqual '# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.', getline(18),
+              \ 'Boston ZIP codes are not a range of years!'
+
 Execute(Turn on verbatim output);
   call vader#log('===== Switching to verbatim mode =====')
   let g:cpywrite#verbatim_mode=1
@@ -32,6 +86,29 @@ Then(Assembly file preserves original license copyright);
   AssertEqual 1, len(getline(7)), 'Allow no trailing spaces'
   AssertEqual '; Copyright (C) 1996 X Consortium', getline(8)
   AssertEqual '; X Window System is a trademark of X Consortium, Inc.', getline(31), 'Capital X is not a year template!'
+
+Execute(Prepend the OpenSSL verbatim to a DOS INI file);
+  new! ~/.local/etc/odbcinst.ini
+  b ~/.local/etc/odbcinst.ini
+  CPYwrite OpenSSL
+
+Then(INI file preserves original license copyrights);
+  AssertEqual '; odbcinst.ini', getline(2)
+  AssertEqual '; Copyright (c) 1998-2008 The OpenSSL Project. All rights reserved.', getline(8)
+  AssertEqual '; Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com) All rights reserved.', getline(52)
+
+Execute(Prepend the 0BSD verbatim to a properties file);
+  new! ~/.SciTEUser.properties
+  b ~/.SciTEUser.properties
+  CPYwrite 0BSD
+
+Then(Properties quotes the entire 0BSD);
+  AssertEqual '# .SciTEUser.properties', getline(2)
+  AssertEqual '# Copyright (C) 2022 ', getline(4)[:20],
+              \ 'Historical 0BSD copyright should be regarded as a template: ' .
+              \ 'https://spdx.org/licenses/0BSD.html'
+  AssertEqual '# Permission to use, copy, modify, and/or distribute this software for any purpose', getline(6)
+  AssertEqual '# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH', getline(9)
 
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')
