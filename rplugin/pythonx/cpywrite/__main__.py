@@ -57,15 +57,15 @@ def main():
                 if license_text:
                     if not path.exists(generator.out_file):
                         with open(generator.out_file, 'w') as src:
-                            src.truncate(1024)
+                            src.truncate(8)
 
                         print("Created new %s file: %s"
                               % (generator.lang, generator.out_file))
-
-                    with open(generator.out_file + '.bak', 'w') as bak:
-                        with open(generator.out_file, 'rt') as source:
-                            source_file = source.read()
-                            bak.write(source_file)
+                    else:
+                        with open(generator.out_file + '.bak', 'w') as bak:
+                            with open(generator.out_file, 'rt') as source:
+                                source_file = source.read()
+                                bak.write(source_file)
 
                     _, tmp_source = tempfile.mkstemp(text=True)
 
