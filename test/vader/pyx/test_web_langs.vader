@@ -82,7 +82,7 @@ Then(TypeScript file header has brief license mention);
 Execute(Prepend a standard license header to an HTML5 file);
   new! standard.htm
   b standard.htm
-  norm i<!DOCTYPE html>
+  call setline(1, '<!DOCTYPE html>')
   CPYwrite GFDL-1.1-or-later
 
 Then(HTML comment block quotes the GFDL-1.1-or-later);

@@ -42,7 +42,7 @@ Then(Assert that shebangs will be overwritten);
 Execute(Prepend a standard header to a Perl script);
   new! standard.pl
   b standard.pl
-  norm i#!C:\perl -w
+  call setline(1, '#!C:\perl -w')
   CPYwrite ECL-2.0
 
 Then(Perl script header quotes the ECL-2.0);
@@ -71,7 +71,7 @@ Execute(Prepend a standard license header to a shell script);
   new! brief_header
   b brief_header
   set syntax=zsh
-  norm i#!/usr/bin/zsh -euxo
+  call setline(1, '#!/usr/bin/zsh -euxo')
   CPYwrite GFDL-1.1-only
 
 Then(Shell script header quotes the GFDL-1.1-only);
@@ -86,7 +86,7 @@ Then(Shell script header quotes the GFDL-1.1-only);
 Execute(Prepend a standard header to a Batch script);
   new! standard.cmd
   b standard.cmd
-  norm i@echo off
+  call setline(1, '@echo off')
   CPYwrite MPL-2.0
 
 Then(Batch script quotes the MPL-2.0);
@@ -113,7 +113,7 @@ Then(Python file header quotes the GPL-3.0+);
 Execute(Prepend a standard header to a Python script);
   new! standard
   b standard
-  norm i#!/usr/bin/env python3.7 -wt
+  call setline(1, '#!/usr/bin/env python3.7 -wt')
   set syntax=python
   CPYwrite AFL-1.1
 
@@ -143,7 +143,7 @@ Execute(Prepend a header-less license to a Ruby script);
   new! brief_header
   b brief_header
   set syntax=ruby
-  norm i#!/usr/bin/env ruby -wc
+  call setline(1, '#!/usr/bin/env ruby -wc')
   CPYwrite MIT
 
 Then(Ruby script header has brief license mention);
@@ -158,7 +158,7 @@ Then(Ruby script header has brief license mention);
 Execute(Prepend the default license header to a PHP file);
   new! default_header.php
   b default_header.php
-  norm i<? phpinfo();?>
+  call setline(1, '<? phpinfo();?>')
   CPYwrite
 
 Then(PHP file quotes the GPL-3.0+);

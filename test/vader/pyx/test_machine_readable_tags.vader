@@ -26,8 +26,8 @@ Then(Smalltalk file has two tags in comment heading);
 Execute(Prepend the GFDL-1.3+ id to an HTML file);
   new! index.html
   b index.html
-  norm i<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  norm o    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  call setline(1, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"')
+  call setline(2, '    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
   CPYwrite GFDL-1.3-or-later
 
 Then(HTML file has two tags in comment block);

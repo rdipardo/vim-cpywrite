@@ -27,7 +27,7 @@ Then(C source file names a copyright holder);
 Execute(Prepend the CC-PDDC to an HTML5 file);
   new! index.htm
   b index.htm
-  norm i<!DOCTYPE html>
+  call setline(1, '<!DOCTYPE html>')
   CPYwrite CC-PDDC
 
 Then(HTML comment block names a copyright holder);
@@ -38,7 +38,7 @@ Then(HTML comment block names a copyright holder);
 Execute(Prepend the CC0-1.0 to an XML file);
   new! pd.xml
   b pd.xml
-  norm i<?xml version="1.0" encoding="UTF-8"?>
+  call setline(1, '<?xml version="1.0" encoding="UTF-8"?>')
   CPYwrite CC0-1.0
 
 Then(XML file names a copyright holder);

@@ -92,7 +92,7 @@ Then(Smalltalk file header quotes the Apache-2.0);
 Execute(Prepend a standard license header to an XML file);
   new! ecl.xml
   b ecl.xml
-  norm i<?xml version="1.0" encoding="UTF-8"?>
+  call setline(1, '<?xml version="1.0" encoding="UTF-8"?>')
   CPYwrite ECL-2.0
 
 Then(XML file header quotes the ECL-2.0);
