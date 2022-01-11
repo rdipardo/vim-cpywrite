@@ -70,6 +70,15 @@ OPTIONS                                                   *cpywrite-options*
 Set this to the SPDX identifier of your favourite license. Press <tab> after
 the |:CPYwriteDefaultLicense| or |:CPYwrite| command for suggestions.
 
+                                              *g:cpywrite#preserve_shebangs*
+        `number` (default: 1)
+
+When set to a non-zero value, the license header is inserted after any shebang
+line: `#! . . .`, or encoding directive: `# -*- coding: . . . -*-`
+
+When set to 0, shebangs and encoding directives wil be overwritten. A template
+shebang line is inserted at the top of perl, python, and shell script files.
+
                                                   *g:cpywrite#verbatim_mode*
         `number` (default: 0)
         WARNING this option has no effect when |g:cpywrite#machine_readable|
@@ -131,8 +140,8 @@ license is one of the |Public-Domain-licenses|.
         `number` (default: 0)
 
 When set to a non-zero value, hides the name of the current buffer from the
-license header in all modes. Otherwise, the buffer's name will appear on the
-first line.
+license header in all modes. Otherwise, the buffer's name will appear above the
+license text.
 
 =============================================================================
 COMMANDS                                                 *cpywrite-commands*
@@ -153,6 +162,16 @@ Sets |g:cpywrite#default_license| to the given SPDX license identifier (without
 quotes) and prints the updated value. Use <tab> for name completion.
 
 Simply prints |g:cpywrite#default_license| when called with no argument.
+
+                                                     *:CPYwriteKeepShebangs*
+        :CPYwriteKeepShebangs
+
+Toggles the state of the |g:cpywrite#preserve_shebangs| option and prints a
+description of the current state:
+>
+    0 == "overwrite"
+    1 == "preserve existing"
+<
 
                                                        *:CPYwriteToggleMode*
         :CPYwriteToggleMode

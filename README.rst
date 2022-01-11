@@ -4,15 +4,10 @@ vim-cpywrite
 
 |gh-actions|  |current version|
 
-:WARNING: **This branch is for development purposes.**
-          **End users are advised to checkout a** `release`_ **package**
-
-.. _release: https://github.com/rdipardo/vim-cpywrite/releases
-
 Generate copyright headers for any open source license
 
-.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/pre/nvim_043_ver_031.gif
-    :alt: nvim-043-linux-demo
+.. figure:: https://raw.githubusercontent.com/rdipardo/vim-cpywrite/media/rel/vim_8.2.4046.gif
+    :alt: vim-win-x64-demo
     :align: center
     :width: 900
 
@@ -31,7 +26,7 @@ standard header, it's inserted at the top of the current buffer with your
 copyright info.
 
 When no standard header is provided, you can either insert a brief license
-acknowledgement, or the full license text. (See the ``g:cpywrite#verbatim_mode``
+acknowledgment, or the full license text. (See the ``g:cpywrite#verbatim_mode``
 option `below <#options>`_.)
 
 This plugin learns your name and email by invoking ``git``. If that fails, the
@@ -45,6 +40,10 @@ Features
 * Python bindings compatible with python 2.7.x or 3.4+, depending on your
   platform and (neo)vim version, of course
 
+:NOTE: Python 3.10 requires `neovim 0.6.0`_ or newer.
+       All vim versions from 7.4 and up should be compatible.
+       `Bug reports <https://github.com/rdipardo/vim-cpywrite/issues>`_ are welcome.
+
 * Choose from more than 420 licenses (press ``<tab>`` after the ``:CPYwriteDefaultLicense``
   or ``:CPYwrite`` command for suggestions)
 
@@ -55,6 +54,7 @@ Features
   licenses. Vim users may want to add ``set wildmenu`` to their ``.vimrc`` file
 
 .. _completeopt: https://neovim.io/doc/user/options.html#'completeopt'
+.. _`neovim 0.6.0`: https://github.com/neovim/neovim/commit/e65b724451ba5f65dfcaf8f8c16afdd508db7359
 
 Quick Reference
 ===============
@@ -74,6 +74,9 @@ Commands
 |                                                | (without quotes) -- prints the default      |
 |                                                | licence id when called with no argument --  |
 |                                                | supports ``<tab>`` completion               |
++------------------------------------------------+---------------------------------------------+
+|``:CPYwriteKeepShebangs``                       | Switches ``g:cpywrite#preserve_shebangs``   |
+|                                                | on or off                                   |
 +------------------------------------------------+---------------------------------------------+
 |``:CPYwriteToggleMode``                         | Switches ``g:cpywrite#verbatim_mode`` on or |
 |                                                | off                                         |
@@ -99,39 +102,46 @@ Default mappings
 
 Options
 -------
-+-------------------------------+----------------------------------------------+
-|``g:cpywrite#default_license`` | The SPDX identifier of the license to be     |
-|                               | fetched by the ``:CPYwrite`` command.        |
-|                               | Default: ``'Apache-2.0'``                    |
-+-------------------------------+----------------------------------------------+
-|``g:cpywrite#verbatim_mode``   | When set to a non-zero value, the full       |
-|                               | license text will be requested -- you should |
-|                               | only choose this when the license is no      |
-|                               | longer than 3-4 paragraphs (e.g. Unlicense,  |
-|                               | MIT, BSD 1- 2- 3-Clause, etc.).              |
-|                               | Default: ``0``                               |
-+-------------------------------+----------------------------------------------+
-|``g:cpywrite#no_anonymous``    | When set to a non-zero value, copyright      |
-|                               | information is never omitted, even if the    |
-|                               | license implies a Public Domain grant.       |
-|                               | Default: ``0``                               |
-|                               +----------------------------------------------+
-|                               | Has no effect when                           |
-|                               | ``g:cpywrite#machine_readable`` is on        |
-+-------------------------------+----------------------------------------------+
-|``g:cpywrite#machine_readable``| When set to a non-zero value, the license    |
-|                               | and copyright statement are formatted as     |
-|                               | tags.                                        |
-|                               | Default: ``0``                               |
-|                               +----------------------------------------------+
-|                               | Overrides ``g:cpywrite#verbatim_mode`` and   |
-|                               | ``g:cpywrite#no_anonymous``                  |
-+-------------------------------+----------------------------------------------+
-|``g:cpywrite#hide_filename``   | When set to a non-zero value, hides the name |
-|                               | of the current buffer from the license       |
-|                               | header in all modes.                         |
-|                               | Default: ``0``                               |
-+-------------------------------+----------------------------------------------+
++----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#default_license``   | The SPDX identifier of the license to be      |
+|                                  | fetched by the ``:CPYwrite`` command.         |
+|                                  | Default: ``'Apache-2.0'``                     |
++----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#preserve_shebangs`` | When set to a non-zero value, the license     |
+|                                  | header is inserted *after* any shebang or     |
+|                                  | encoding directive (since `0.7.0`_).          |
+|                                  | Default: ``1``                                |
++----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#verbatim_mode``     | When set to a non-zero value, the full        |
+|                                  | license text will be requested -- you should  |
+|                                  | only choose this when the license is no       |
+|                                  | longer than 3-4 paragraphs (e.g. Unlicense,   |
+|                                  | MIT, BSD 1- 2- 3-Clause, etc.).               |
+|                                  | Default: ``0``                                |
++----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#no_anonymous``      | When set to a non-zero value, copyright       |
+|                                  | information is never omitted, even if the     |
+|                                  | license implies a Public Domain grant.        |
+|                                  | Default: ``0``                                |
++----------------------------------+-----------------------------------------------+
+|                                  | Has no effect when                            |
+|                                  | ``g:cpywrite#machine_readable`` is on         |
++----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#machine_readable``  | When set to a non-zero value, the license     |
+|                                  | and copyright statement are formatted as      |
+|                                  | tags.                                         |
+|                                  | Default: ``0``                                |
++----------------------------------+-----------------------------------------------+
+|                                  | Overrides ``g:cpywrite#verbatim_mode`` and    |
+|                                  | ``g:cpywrite#no_anonymous``                   |
++----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#hide_filename``     | When set to a non-zero value, hides the name  |
+|                                  | of the current buffer from the license header |
+|                                  | in all modes.                                 |
+|                                  | Default: ``0``                                |
++----------------------------------+-----------------------------------------------+
+
+.. _`0.7.0`: https://github.com/rdipardo/vim-cpywrite/blob/master/CHANGELOG.rst#changes-in-070
 
 Requirements
 ============
@@ -217,11 +227,13 @@ Edit your ``~/.vimrc``, ``~/.vim/vimrc``, or ``~/.config/nvim/init.vim``:
 Projects like this one
 ======================
 
+* vim-copyright_ (*not* a fork)
 * vim-licenses_, formerly licenses_
 * vim-header_
 * license-to-vim_
 * `license loader`_
 
+.. _vim-copyright: https://github.com/nine2/vim-copyright
 .. _vim-licenses: https://github.com/antoyo/vim-licenses
 .. _licenses: https://github.com/vim-scripts/Licenses
 .. _vim-header: https://github.com/alpertuna/vim-header
@@ -260,7 +272,7 @@ Distributed under the terms of the MIT license.
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
     :alt: Vim Scripts version
 
-.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/3db79fd8b4d31c497442ac85bef21f9aac3e27f9/rplugin/pythonx/cpywrite/generator.py#L306
+.. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/4d99f7af6a54442055e2c17a3ee12258623b64e9/rplugin/pythonx/cpywrite/generator.py#L320
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management
 .. _native package directory: https://github.com/vim/vim/blob/03c3bd9fd094c1aede2e8fe3ad8fd25b9f033053/runtime/doc/repeat.txt#L515
 .. _DIY plugin management: https://shapeshed.com/vim-packages
