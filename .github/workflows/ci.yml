@@ -10,13 +10,13 @@ jobs:
   lint:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
     - name: Restore cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v3.0.4
       with:
         path: '~/.cache/pip'
         key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
@@ -38,9 +38,9 @@ jobs:
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -60,7 +60,7 @@ jobs:
         pip install --upgrade 'pip < 19.2' typing
 
     - name: Restore pip cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v3.0.4
       with:
         path: '~/.cache/pip'
         key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
@@ -70,7 +70,7 @@ jobs:
       run: pip install -r test/requirements.txt
 
     - name: Set up plugin test environment
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: junegunn/vader.vim
         path: vader.vim
@@ -114,7 +114,7 @@ jobs:
         awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' nvim_* | sort >> neovim-${{ matrix.nvim-version }}-$LOG
 
     - name: Save startup times
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: plugin-load-stats
         path: '**/*python*.log'
