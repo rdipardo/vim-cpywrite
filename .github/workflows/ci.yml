@@ -33,7 +33,6 @@ jobs:
     strategy:
       matrix:
         vim-version: [7.4.1689, 8.2.4049]
-        nvim-version: [stable]
         python-version: ['2.7.18', '3.4.10', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
@@ -76,12 +75,20 @@ jobs:
         path: vader.vim
         fetch-depth: 1
 
+    - name: Install neovim (current stable)
+      if: ${{ contains(matrix.python-version, '3.7') || contains(matrix.python-version, '3.8') || contains(matrix.python-version, '3.9') || contains(matrix.python-version, '3.10') }}
+      uses: rhysd/action-setup-vim@v1
+      id: neovim-stable
+      with:
+        neovim: true
+        version: stable
+
     - name: Install neovim
       uses: rhysd/action-setup-vim@v1
       id: neovim
       with:
         neovim: true
-        version: ${{ matrix.nvim-version }}
+        version: 'v0.6.1'
 
     - name: Run python tests
       # > platform linux -- Python 3.7.3, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- /usr/bin/python3
@@ -104,7 +111,13 @@ jobs:
         head -n 10 vim_*.log >> vim-${{ matrix.vim-version }}-$LOG
         awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> vim-${{ matrix.vim-version }}-$LOG
 
+    - name: Test plugin on current stable neovim
+      if: ${{ contains(matrix.python-version, '3.7') || contains(matrix.python-version, '3.8') || contains(matrix.python-version, '3.9') || contains(matrix.python-version, '3.10') }}
+      run: |
+        "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
+
     - name: Test plugin on neovim
+      if: ${{ !(contains(matrix.python-version, '3.7') || contains(matrix.python-version, '3.8') || contains(matrix.python-version, '3.9') || contains(matrix.python-version, '3.10')) }}
       run: |
         "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
 
