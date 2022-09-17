@@ -32,8 +32,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        vim-version: [7.4.1689, 8.2.4049]
-        python-version: ['2.7.18', '3.4.10', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
+        vim-version: [7.4.1689, 8.2.4049, 9.0.0304]
+        python-version: ['2.7.18', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
@@ -44,7 +44,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install latest pip
-      if: ${{ !(startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.4') || startsWith(matrix.python-version, '3.5')) }}
+      if: ${{ !(startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.5')) }}
       run: |
         pip install --upgrade pip
 
@@ -52,11 +52,6 @@ jobs:
       if: ${{ (startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.5')) }}
       run: |
         pip install --upgrade 'pip < 21.0'
-
-    - name: Install pip < 19.2
-      if: ${{ startsWith(matrix.python-version, '3.4') }}
-      run: |
-        pip install --upgrade 'pip < 19.2' typing
 
     - name: Restore pip cache
       uses: actions/cache@v3.0.8
@@ -108,23 +103,22 @@ jobs:
             --with-python-config-dir=$(find /opt/hostedtoolcache/Python/2.7.18 -name Makefile | xargs dirname)
         make && sudo make install && cd ..
         /usr/local/bin/vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
-        head -n 10 vim_*.log >> vim-${{ matrix.vim-version }}-$LOG
-        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' vim_* | sort >> vim-${{ matrix.vim-version }}-$LOG
+        .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on current stable neovim
-      if: ${{ contains(matrix.python-version, '3.7') || contains(matrix.python-version, '3.8') || contains(matrix.python-version, '3.9') || contains(matrix.python-version, '3.10') }}
+      if: ${{ !(startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
       run: |
         "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
 
-    - name: Test plugin on neovim
-      if: ${{ !(contains(matrix.python-version, '3.7') || contains(matrix.python-version, '3.8') || contains(matrix.python-version, '3.9') || contains(matrix.python-version, '3.10')) }}
+    - name: Test plugin on neovim's legacy python providers
+      if: ${{ (startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
       run: |
         "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
 
     - name: Check startup times
+      if: ${{ !startsWith(matrix.python-version, '2.7') }}
       run: |
-        head -n 10 nvim_*.log > neovim-${{ matrix.nvim-version }}-$LOG
-        awk '/.*\/cpywrite\.vim.*$/{print $2 " " $3 " " $5}' nvim_* | sort >> neovim-${{ matrix.nvim-version }}-$LOG
+        .github/scripts/collect_start_times nvim neovim-${{ matrix.nvim-version }}-$LOG
 
     - name: Save startup times
       uses: actions/upload-artifact@v3
