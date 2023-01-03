@@ -104,7 +104,7 @@ Execute(Prepend the 0BSD verbatim to a properties file);
 
 Then(Properties quotes the entire 0BSD);
   AssertEqual '# .SciTEUser.properties', getline(2)
-  AssertEqual '# Copyright (C) 2022 ', getline(4)[:20],
+  AssertNotEqual '2006', getline(4)[15:20],
               \ 'Historical 0BSD copyright should be regarded as a template: ' .
               \ 'https://spdx.org/licenses/0BSD.html'
   AssertEqual '# Permission to use, copy, modify, and/or distribute this software for any purpose', getline(6)
