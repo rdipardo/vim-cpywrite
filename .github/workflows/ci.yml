@@ -16,7 +16,7 @@ jobs:
       with:
         python-version: '3.9'
     - name: Restore cache
-      uses: actions/cache@v3.2.2
+      uses: actions/cache@v3.2.3
       with:
         path: '~/.cache/pip'
         key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
@@ -54,7 +54,7 @@ jobs:
         pip install --upgrade 'pip < 21.0'
 
     - name: Restore pip cache
-      uses: actions/cache@v3.2.2
+      uses: actions/cache@v3.2.3
       with:
         path: '~/.cache/pip'
         key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
