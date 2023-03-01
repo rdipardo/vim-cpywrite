@@ -14,9 +14,9 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.11'
     - name: Restore cache
-      uses: actions/cache@v3.2.2
+      uses: actions/cache@v3.2.6
       with:
         path: '~/.cache/pip'
         key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
@@ -33,12 +33,13 @@ jobs:
     strategy:
       matrix:
         vim-version: [7.4.1689, 8.2.4049, 9.0.0304]
-        python-version: ['2.7.18', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['2.7.18', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', 'ubuntu']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
     - uses: actions/checkout@v3
     - name: Set up python
+      if: ${{ !startswith(matrix.python-version, 'ubuntu') }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
@@ -54,7 +55,7 @@ jobs:
         pip install --upgrade 'pip < 21.0'
 
     - name: Restore pip cache
-      uses: actions/cache@v3.2.2
+      uses: actions/cache@v3.2.6
       with:
         path: '~/.cache/pip'
         key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
@@ -71,14 +72,14 @@ jobs:
         fetch-depth: 1
 
     - name: Install neovim (current stable)
-      if: ${{ contains(matrix.python-version, '3.7') || contains(matrix.python-version, '3.8') || contains(matrix.python-version, '3.9') || contains(matrix.python-version, '3.10') }}
+      if: ${{ !(startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
       uses: rhysd/action-setup-vim@v1
       id: neovim-stable
       with:
         neovim: true
         version: stable
 
-    - name: Install neovim
+    - name: Install neovim 0.6.1
       uses: rhysd/action-setup-vim@v1
       id: neovim
       with:
@@ -93,29 +94,37 @@ jobs:
       # >   from collections import Callable
       run: pytest -v -W ignore::DeprecationWarning
 
-    - name: Test plugin on vim
+    - name: Test plugin on vim with Python 3
+      if: ${{ startswith(matrix.python-version, 'ubuntu') }}
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -qqy install vim
+        vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
+        .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
+
+    - name: Test plugin on vim with Python 2
       if: ${{ startsWith(matrix.python-version, '2.7') }}
       run: |
         git clone --branch v${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
-        cd vim-src
+        pushd vim-src
         ./configure --prefix=/usr/local --with-features=normal \
             --enable-pythoninterp=dynamic \
-            --with-python-config-dir=$(find /opt/hostedtoolcache/Python/2.7.18 -name Makefile | xargs dirname)
-        make && sudo make install && cd ..
+            --with-python-config-dir=$(find $Python_ROOT_DIR -iname Makefile | xargs dirname)
+        make && sudo make install && popd
         /usr/local/bin/vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
         .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on current stable neovim
       if: ${{ !(startsWith(matrix.python-version, '2.7') || startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
       run: |
-        "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
+        "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
     - name: Test plugin on neovim's legacy python providers
       if: ${{ (startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
       run: |
-        "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/pyx/*' > /dev/null
+        "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
-    - name: Check startup times
+    - name: Check neovim startup times
       if: ${{ !startsWith(matrix.python-version, '2.7') }}
       run: |
         .github/scripts/collect_start_times nvim neovim-${{ matrix.nvim-version }}-$LOG
