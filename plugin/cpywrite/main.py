@@ -120,7 +120,7 @@ def _write_header(writer, curr_buffer, filetype, filename):
         return
 
 def _get_option_value(vim_var):
-    if not vim.vars.has_key(sub(r'[abglsv]:', '', vim_var)):
+    if vim.vars.get(sub(r'[abglsv]:', '', vim_var)) is None:
         return False
 
     try:
