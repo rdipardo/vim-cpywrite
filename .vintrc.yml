@@ -3,3 +3,5 @@ cmdargs:
 policies:
   ProhibitAbbreviationOption:
     enabled: false
+  ProhibitCommandRelyOnUser:
+    enabled: false

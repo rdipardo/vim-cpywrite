@@ -1,0 +1,77 @@
+After(Clear buffers);
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Given java (Class doc comment with blank line):
+
+  /**
+   *
+   */
+  public final class ClassDoc {}
+
+Execute(Activate Java filetype);
+  so ftplugin/java.vim
+  w! test/src/ClassDoc.java
+
+Then(Assert that JavaDoc mode has default setting);
+  Assert exists('g:cpywrite#java#add_class_doc')
+  AssertEqual 1, g:cpywrite#java#add_class_doc
+
+Execute(Hide file name);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now hidden);
+  AssertEqual 1, g:cpywrite#hide_filename
+
+Execute(Add short license to Java file);
+  e! test/src/ClassDoc.java
+  b ClassDoc.java
+  CPYwrite MIT
+
+Then(@author tag inserted where space allows):
+  AssertEqual ' * @author ', getline(9)[:10]
+
+Given java (A short class doc comment):
+
+  /**
+   */
+  public final class ShortDoc {}
+
+Execute(Activate Java filetype);
+  w! test/src/ShortDoc.java
+
+Execute(Add standard license header to Java file);
+  e! test/src/ShortDoc.java
+  b ShortDoc.java
+  CPYwrite MPL-2.0
+
+Then(@author tag *not* inserted):
+  AssertEqual '/**', getline(9)
+  AssertEqual ' */', getline(10)
+
+Given java (Missing class doc comment):
+
+  public final class NoDoc {}
+
+Execute(Activate Java filetype);
+  w! test/src/NoDoc.java
+
+Execute(Add standard license header to Java file);
+  e! test/src/NoDoc.java
+  b NoDoc.java
+  CPYwrite BitTorrent-1.1
+
+Then(@author tag *not* inserted):
+  AssertEqual 0, len(getline(13))
+  AssertEqual 'public final class NoDoc {}', getline(14)
+
+Execute(Restore file name);
+  call vader#log('===== Calling :CPYwriteToggleFilename =====')
+  CPYwriteToggleFilename
+
+Then(Assert that file name is now showing);
+  AssertEqual 0, g:cpywrite#hide_filename

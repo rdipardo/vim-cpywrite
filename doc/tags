@@ -19,6 +19,7 @@ cpywrite-requirements	cpywrite.txt	/*cpywrite-requirements*
 cpywrite.txt	cpywrite.txt	/*cpywrite.txt*
 g:cpywrite#default_license	cpywrite.txt	/*g:cpywrite#default_license*
 g:cpywrite#hide_filename	cpywrite.txt	/*g:cpywrite#hide_filename*
+g:cpywrite#java#add_class_doc	cpywrite.txt	/*g:cpywrite#java#add_class_doc*
 g:cpywrite#machine_readable	cpywrite.txt	/*g:cpywrite#machine_readable*
 g:cpywrite#no_anonymous	cpywrite.txt	/*g:cpywrite#no_anonymous*
 g:cpywrite#preserve_shebangs	cpywrite.txt	/*g:cpywrite#preserve_shebangs*

@@ -104,15 +104,14 @@ class Generator(object): # pylint: disable=R0205
         try:
             out = StringIO()
             year = str(datetime.now())[:4]
-            author, email = _get_source_author()
-            contact = ' <' + email + '>' if email else ''
+            author, contact = _get_source_author()
             # use the tag prefix specified by REUSE
             # https://reuse.software/spec/#comment-headers
             copying = \
                 'Copyright (c) ' \
                 if not cpu_readable \
                 else 'SPDX-FileCopyrightText: '
-            copying += year + ' ' + author + contact
+            copying += year + ' ' + author + ' ' + contact
             copyrightable = \
                 no_anon or cpu_readable or \
                 not in_pub_domain(self.rights.spdx_code)
@@ -129,7 +128,7 @@ class Generator(object): # pylint: disable=R0205
             # This prevents faulty matches with the FSF ZIP code in the GPL v1 and 2
             author_date_re = \
                 r'(?!.*(http).*)[\<\(\[\s%s]((YEAR)%s|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+]' \
-                % (('\d', '|\d{3}') \
+                % ((r'\d', r'|\d{3}') \
                    if self.rights.spdx_code == '0BSD' \
                    else ('', '')) \
                 if not (self.rights.spdx_code.startswith('ECL') or \
@@ -320,6 +319,7 @@ def _get_source_author():
 
     if bool(git_username):
         author = git_username
+        email = '<' + email + '>' if email else ''
 
     return (author, email)
 

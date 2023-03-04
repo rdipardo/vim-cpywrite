@@ -5,11 +5,12 @@ Buffer manipulation functions
 """
 from __future__ import print_function
 import sys
+import os
 import vim
-from re import match
+from re import match, sub
 for path in vim.eval('globpath(&rtp,"rplugin/pythonx",1)').split('\n'):
     sys.path.append(path)
-from cpywrite import Generator
+from cpywrite.generator import Generator, _get_source_author
 
 
 def prepend():
@@ -27,12 +28,12 @@ def prepend():
                 generator.set_file_props(filename.replace('.pl', '.p'), filetype)
                 generator.out_file = filename
 
-            _write_header(generator, vim.current.buffer, filetype)
+            _write_header(generator, vim.current.buffer, filetype, filename)
         except (ValueError, vim.error) as exc:
             print(str(exc))
             return
 
-def _write_header(writer, curr_buffer, filetype):
+def _write_header(writer, curr_buffer, filetype, filename):
     """Write the license header"""
     try:
         old_row, old_col = vim.current.window.cursor
@@ -41,6 +42,7 @@ def _write_header(writer, curr_buffer, filetype):
         exclude_file_name = _get_option_value('g:cpywrite#hide_filename')
         allow_anonymous = _get_option_value('g:cpywrite#no_anonymous')
         preserve_shebangs = _get_option_value('g:cpywrite#preserve_shebangs')
+        include_javadoc = _get_option_value('g:cpywrite#java#add_class_doc')
         header = writer.fetch_license_header(use_text_as_header,
                                              machine_readable,
                                              exclude_file_name,
@@ -75,6 +77,38 @@ def _write_header(writer, curr_buffer, filetype):
                     # https://docs.rubocop.org/rubocop/cops_lint.html#lintscriptpermission
                     to_skip = (to_skip + 1) if filetype != 'ruby' else to_skip
 
+                if include_javadoc:
+                    class_name, _ = os.path.splitext(filename)
+
+                    if curr_line.find(class_name) > -1:
+                        class_doc = idx
+                        docline = curr_buffer[class_doc]
+
+                        while class_doc > 0 and docline.find('/**') == -1:
+                            class_doc -= 1
+                            docline = curr_buffer[class_doc]
+
+                        # insert tag into existing doc comment only
+                        if docline.find('/**') > -1:
+                            class_doc += 1
+                            docline = curr_buffer[class_doc]
+
+                            while class_doc < len(curr_buffer) and \
+                                    not match(r'^\s*.*\*\/', docline):
+                                # doc line must be blank
+                                if match(r'^\s*\*+\s*$', docline):
+                                    author, email = _get_source_author()
+                                    email = sub(r'\<', '&lt;', sub(r'\>', '&gt;', email))
+                                    curr_buffer[class_doc:class_doc] = \
+                                        [docline, '%s @author %s %s' % (docline, author, email)]
+
+                                    break
+                                else:
+                                    class_doc += 1
+                                    docline = curr_buffer[class_doc]
+
+                        break
+
             if to_trim > 0:
                 del curr_buffer[0:to_trim]
 
@@ -86,6 +120,9 @@ def _write_header(writer, curr_buffer, filetype):
         return
 
 def _get_option_value(vim_var):
+    if not vim.vars.has_key(sub(r'[abglsv]:', '', vim_var)):
+        return False
+
     try:
         val = bool(int(vim.eval(vim_var), 10))
     except ValueError:

@@ -76,7 +76,7 @@ the |:CPYwriteDefaultLicense| or |:CPYwrite| command for suggestions.
 When set to a non-zero value, the license header is inserted after any shebang
 line: `#! . . .`, or encoding directive: `# -*- coding: . . . -*-`
 
-When set to 0, shebangs and encoding directives wil be overwritten. A template
+When set to 0, shebangs and encoding directives will be overwritten. A template
 shebang line is inserted at the top of perl, python, and shell script files.
 
                                                   *g:cpywrite#verbatim_mode*
@@ -143,6 +143,21 @@ When set to a non-zero value, hides the name of the current buffer from the
 license header in all modes. Otherwise, the buffer's name will appear above the
 license text.
 
+                                             *g:cpywrite#java#add_class_doc*
+        `number` (default: 1)
+        NOTE this option is enabled automatically when |filetype| is 'java'
+
+When set to a non-zero value, adds a JavaDoc '@author' tag to the main class
+definition of the current Java file, if:
+
+    1. the class already has a doc comment of >= 3 lines; and
+    2. at least one line is blank, e.g.
+>
+  /**
+   *
+   */
+  public class Main {}
+<
 =============================================================================
 COMMANDS                                                 *cpywrite-commands*
 

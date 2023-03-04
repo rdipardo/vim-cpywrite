@@ -26,7 +26,7 @@ jobs:
         pip install --upgrade pip
         pip install vim-vint
     - name: Lint
-      run: vint autoload plugin -wt
+      run: vint autoload ftplugin plugin -wt
   build:
     needs: lint
     runs-on: ubuntu-20.04
@@ -67,7 +67,8 @@ jobs:
     - name: Set up plugin test environment
       uses: actions/checkout@v3
       with:
-        repository: junegunn/vader.vim
+        repository: blueyed/vader.vim
+        ref: display-source-with-exceptions
         path: vader.vim
         fetch-depth: 1
 
