@@ -67,7 +67,7 @@ def test_language_recognition():
 
     for src in pascal_files:
         _, _, tokens = _get_language_meta(src)
-        assert tokens == ('{', ' ', ' ', '}')
+        assert tokens == ('(*', ' ', ' ', '*)')
 
     for src in go_and_etc_files:
         _, _, tokens = _get_language_meta(src)

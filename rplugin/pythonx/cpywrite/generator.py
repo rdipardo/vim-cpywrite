@@ -366,8 +366,6 @@ _SOURCE_META = {
             ('.p', '.pro'): 'Prolog'
         },
          ('%%', '%% ')],
-    ('.pas', '.pp', '.inc'):
-        [{('.pas', '.pp', '.inc'): 'Pascal'}, ('{', ' ', ' ', '}')],
     ('.c', '.cc', '.c++', '.cpp', '.cxx', '.cs', '.css', '.d', '.h', '.hh',
      '.h++', '.hpp', '.hxx', '.java', '.js', '.jsx', '.mjs', '.kt', '.kts',
      '.ktm', '.m', '.mm', '.php', '.php4', '.php5', '.phtml', '.re', '.rei',
@@ -396,8 +394,12 @@ _SOURCE_META = {
          ('/**', ' * ', ' *', ' */')],
     ('.elm'):
         [{('.elm'): 'Elm'}, ('{-', ' ', ' ', '-}')],
-    ('.ml', '.mli'):
-        [{('.ml', '.mli'): 'OCaml'}, ('(*', ' ', ' ', '*)')],
+    ('.ml', '.mli', '.pas', '.pp', '.inc'):
+        [{
+          ('.pas', '.pp', '.inc'): 'Pascal',
+          ('.ml', '.mli'): 'OCaml'
+         },
+         ('(*', ' ', ' ', '*)')],
     ('.html', '.htm', '.markdown', '.md', '.mkd', '.xml'):
         [{('.html', '.htm'): 'HTML',
           ('.xml'): 'XML',
