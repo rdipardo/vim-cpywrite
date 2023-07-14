@@ -3,12 +3,11 @@
 """
 Module entry point, when invoked at the command line
 """
-from __future__ import print_function
 import sys
 import tempfile
 from os import path
 from argparse import ArgumentParser, ArgumentError
-from .generator import Generator, extensions
+from cpywrite.generator import Generator, extensions
 
 def main():
     """Prepend a license header to a new or existing source file"""
@@ -56,24 +55,24 @@ def main():
                                                    args.no_anon)
                 if license_text:
                     if not path.exists(generator.out_file):
-                        with open(generator.out_file, 'w') as src:
+                        with open(generator.out_file, 'w', encoding='utf-8') as src:
                             src.truncate(8)
 
                         print("Created new %s file: %s"
                               % (generator.lang, generator.out_file))
                     else:
-                        with open(generator.out_file + '.bak', 'w') as bak:
-                            with open(generator.out_file, 'rt') as source:
+                        with open(generator.out_file + '.bak', 'w', encoding='utf-8') as bak:
+                            with open(generator.out_file, 'rt', encoding='utf-8') as source:
                                 source_file = source.read()
                                 bak.write(source_file)
 
                     _, tmp_source = tempfile.mkstemp(text=True)
 
-                    with open(tmp_source, 'w') as tmp:
+                    with open(tmp_source, 'w', encoding='utf-8') as tmp:
                         tmp.write("%s%s" % (license_text, source_file))
 
-                    with open(tmp_source, 'rt') as new_content:
-                        with open(generator.out_file, 'w') as source:
+                    with open(tmp_source, 'rt', encoding='utf-8') as new_content:
+                        with open(generator.out_file, 'w', encoding='utf-8') as source:
                             source.write(new_content.read())
 
                 else:

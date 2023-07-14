@@ -110,6 +110,18 @@ Then(Properties quotes the entire 0BSD);
   AssertEqual '# Permission to use, copy, modify, and/or distribute this software for any purpose', getline(6)
   AssertEqual '# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH', getline(9)
 
+Execute(Prepend the GD license verbatim to a Julia script);
+  new! verbatim.jl
+  b verbatim.jl
+  CPYwrite GD
+
+Then(Julia script preserves original third-party copyrights);
+  AssertEqual '# verbatim.jl', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '# Credits and license terms', getline(6)
+  AssertEqual "# \t\xe2\x80\xa2\tPortions copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 by Boutell.Com, Inc.", getline(11)
+  AssertEqual "# \t\xe2\x80\xa2\tPortions relating to GIF animations copyright 2004 Jaakko Hyvätti (jaakko.hyvatti@iki.fi)", getline(21)
+
 Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
   call vader#log('===== Calling :CPYwriteToggleMode =====')
   CPYwriteToggleMode

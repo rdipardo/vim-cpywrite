@@ -8,7 +8,7 @@ import sys
 import os
 import vim
 from re import match, sub
-for path in vim.eval('globpath(&rtp,"rplugin/pythonx",1)').split('\n'):
+for path in vim.eval('globpath(&rtp,"rplugin/python3",1)').split('\n'):
     sys.path.append(path)
 from cpywrite.generator import Generator, _get_source_author
 

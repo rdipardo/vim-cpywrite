@@ -17,8 +17,7 @@ func! cpywrite#error#NoPython() abort
   else
       echohl WarningMsg |
           echom
-          \ 'Sorry: vim-cpywrite requires one of the following features:
-          \ +python, +python3, +python/dyn, or +python3/dyn.
+          \ 'Sorry: vim-cpywrite requires +python3 or +python3/dyn.
           \ Enter ":help python" for more information.'
           \ | echohl None
   endif

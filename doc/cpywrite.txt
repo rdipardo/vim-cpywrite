@@ -40,18 +40,13 @@ your OS user and host names.
 =============================================================================
 REQUIREMENTS                                         *cpywrite-requirements*
 
-* Vim compiled with any one of the `+python`, `+python3`, `+python/dyn` or
-  `+python3/dyn` options
+* Vim compiled with the |+python3| or |+python3/dyn| option
 
 * Neovim with the `pynvim` module in your $PYTHONPATH:
 
     https://github.com/neovim/pynvim
 
   Enter |:help| |provider-python| in your command prompt for more information.
-
-* The `requests` module in your $PYTHONPATH:
-
-    https://pypi.org/project/requests
 
 =============================================================================
 ATTRIBUTES                                             *cpywrite-attributes*

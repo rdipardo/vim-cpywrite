@@ -3,25 +3,21 @@
 """
 Utilities for fetching and printing open source license information
 """
-from __future__ import print_function, unicode_literals
 import os
 import tempfile
+import http.client as client
 import xml.etree.ElementTree as parser
 from itertools import dropwhile
 from re import search, sub
 from sys import stderr
 from textwrap import TextWrapper
-import requests
-
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import quote
+from urllib import request, error as urllib_error
+from urllib.parse import quote
 
 __all__ = ['License', 'licenses']
 
 
-class License(object): # pylint: disable=R0205
+class License():
     """Encapsulates the details of a license on the SPDX index"""
     def __init__(self, code):
         self.spdx_code = None
@@ -30,9 +26,9 @@ class License(object): # pylint: disable=R0205
 
         try:
             self.spdx_code = _SPDX_IDS[_SPDX_IDS.index(code)]
-        except ValueError:
+        except ValueError as error:
             raise ValueError("No such license '%s' on the SPDX index!"
-                             % (code))
+                             % (code)) from error
 
     @property
     def header(self):
@@ -40,10 +36,6 @@ class License(object): # pylint: disable=R0205
         if not self.spdx_code:
             return ''
 
-        # https://bugs.python.org/issue11033
-        # ElementTree still has this problem in python 2.7.13 and
-        # probably later versions, too
-        strict_ascii = lambda c: ord(c) > 0 and ord(c) < 128
         xml_resource = 'https://raw.githubusercontent.com/' \
                        'spdx/license-list-XML/master/src/%s.xml'
         resource = quote(xml_resource % self.spdx_code, safe='/:')
@@ -54,13 +46,13 @@ class License(object): # pylint: disable=R0205
 
         if cache:
             try:
-                with open(cache, 'r') as tmp:
+                with open(cache, 'r', encoding='utf-8') as tmp:
                     license_data = parser.fromstring(tmp.read())
             except (parser.ParseError, IOError):
                 pass
 
         if license_data is None:
-            license_data = _fetch_license(resource, self.spdx_code, strict_ascii)
+            license_data = _fetch_license(resource, self.spdx_code)
 
         if license_data is None:
             return ''
@@ -82,21 +74,18 @@ class License(object): # pylint: disable=R0205
                 if child.attrib.get('name') == 'copyright':
                     content = child.text
                     if self.spdx_code.startswith('GFDL') and \
-                       child.tail and \
-                       any(filter(strict_ascii, child.tail)):
+                       child.tail:
                         content += child.tail.strip() + ' '
                 elif child.attrib.get('name') == 'version':
                     content = child.text
-                    if child.tail and \
-                       any(filter(strict_ascii, child.tail)):
+                    if child.tail:
                         content += child.tail or ''
                 elif self.spdx_code.startswith('GFDL') and \
                     (child.attrib.get('name') == 'invariantSections' or \
                      child.attrib.get('name') == 'frontCoverTexts' or \
                      child.attrib.get('name') == 'backCoverTexts'):
                     content = child.text
-                    if child.tail and \
-                       any(filter(strict_ascii, child.tail)):
+                    if child.tail:
                         content += child.tail.strip() + ' '
                 elif child.tag == opt_tag and \
                         child.attrib.get('spacing') == 'after':
@@ -185,7 +174,7 @@ class License(object): # pylint: disable=R0205
 
         if cache:
             try:
-                with open(cache, 'r') as tmp:
+                with open(cache, 'r', encoding='utf-8') as tmp:
                     license_text = tmp.read()
             except IOError:
                 pass
@@ -278,27 +267,23 @@ def _find_cached_license(short_name, ext='.xml'):
 
     return None
 
-def _fetch_license(resource, spdx_id, validator=None):
+def _fetch_license(resource, spdx_id):
     license_data = None
-    cached_content = None
-    ext = '.xml' if validator else '.txt'
+    _, ext = os.path.splitext(resource)
 
     try:
-        response = requests.get(resource)
+        response = request.urlopen(request.Request(resource))
 
-        if response.status_code == 200:
-            if validator:
+        if response.status == 200:
+            response_text = response.read().decode('utf8')
+            if ext.lower() == '.xml':
                 try:
-                    safe_xml = \
-                        ''.join([ch for ch in response.text if validator(ch)])
-                    license_data = parser.fromstring(safe_xml)
-                    cached_content = safe_xml
-                except (parser.ParseError, TypeError):
+                    license_data = parser.fromstring(response_text)
+                except (client.IncompleteRead, parser.ParseError, TypeError):
                     print("Got invalid licence data from %s." % (resource),
                           file=stderr)
             else:
-                license_data = response.text
-                cached_content = license_data
+                license_data = response_text
 
             try:
                 _, temp_file = \
@@ -307,8 +292,8 @@ def _fetch_license(resource, spdx_id, validator=None):
                                      text=True)
                 if temp_file:
                     try:
-                        with open(temp_file, 'w') as tmp:
-                            tmp.write(cached_content)
+                        with open(temp_file, 'w', encoding='utf-8') as tmp:
+                            tmp.write(response_text)
                     except IOError:
                         pass
 
@@ -319,8 +304,8 @@ def _fetch_license(resource, spdx_id, validator=None):
                   % (response.status_code, resource),
                   file=stderr)
 
-    except (requests.exceptions.MissingSchema,
-            requests.exceptions.ConnectionError):
+    except (urllib_error.HTTPError,
+            urllib_error.URLError):
         print("Error requesting %s." % (resource), file=stderr)
 
     return license_data

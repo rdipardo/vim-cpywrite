@@ -3,7 +3,6 @@
 """
 Module providing a file writer
 """
-from __future__ import print_function, unicode_literals
 import re
 import sys
 from datetime import datetime
@@ -17,7 +16,7 @@ from cpywrite.spdx.license import License, in_pub_domain
 __all__ = ['Generator', 'extensions']
 
 
-class Generator(object): # pylint: disable=R0205
+class Generator():
     """A source file generator"""
     def __init__(self, filename='new.py', vim_filetype='python', rights='Apache-2.0'):
         self.set_file_props(filename, vim_filetype, rights)

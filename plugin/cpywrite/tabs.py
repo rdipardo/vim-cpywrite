@@ -6,7 +6,7 @@ Tab completion
 import sys
 import vim
 from re import match, IGNORECASE
-for path in vim.eval('globpath(&rtp, "rplugin/pythonx", 1)').split('\n'):
+for path in vim.eval('globpath(&rtp, "rplugin/python3", 1)').split('\n'):
     sys.path.append(path)
 from cpywrite import licenses
 

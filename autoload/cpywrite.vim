@@ -9,7 +9,7 @@
 if get(g:, 'autoloaded_cpywrite') | finish | endif
 let g:autoloaded_cpywrite = 1
 
-if has('python3') || has('python')
+if has('python3')
     if empty(get(s:, 'cpywrite_python_cmd', ''))
         let s:cpywrite_python_cmd = (has('python3') ? 'py3' : 'py') . 'file'
     endif

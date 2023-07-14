@@ -37,7 +37,7 @@ copyright line will contain your OS user and host names.
 Features
 ========
 
-* Python bindings compatible with python 2.7.x or 3.4+, depending on your
+* Python bindings compatible with python 3.7+, depending on your
   platform and (neo)vim version, of course
 
 :NOTE: Python 3.10 requires `neovim 0.6.0`_ or newer.
@@ -146,23 +146,20 @@ Options
 Requirements
 ============
 
-* Vim compiled with any one of the *+python[3]* or *+python[3]/dyn* options.
-  See if you're supported by entering ``vim --version | grep +python`` at your
+* Vim compiled with any one of the *+python3* or *+python3/dyn* options.
+  See if you're supported by entering ``vim --version | grep +python3`` at your
   terminal, or start ``vim`` and enter the ``:version`` command
 
 * Neovim with the `pynvim`_ module in your ``$PYTHONPATH``. Start ``nvim``
   and enter ``:help provider-python`` for more information
 
 .. _pynvim: https://github.com/neovim/pynvim
-.. _requests: https://pypi.org/project/requests
 
 Installation
 ============
 
-If `requests`_ and (optionally) `pynvim`_ are not already in your ``$PYTHONPATH``,
-install them::
+If `pynvim`_ is not already in your ``$PYTHONPATH``, install it::
 
-    pip install --user -U requests
     pip install --user -U pynvim
 
 

@@ -4,3 +4,4 @@
 .pytest_cache/
 test/src/
 vader.vim/
+!test/src/.gitkeep
