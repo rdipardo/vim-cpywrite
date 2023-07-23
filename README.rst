@@ -140,6 +140,12 @@ Options
 |                                  | in all modes.                                 |
 |                                  | Default: ``0``                                |
 +----------------------------------+-----------------------------------------------+
+| ``g:cpywrite#java#add_class_doc``| When set to a non-zero value, ``:CPYwrite``   |
+|                                  | will try to insert an appropriate ``@author`` |
+|                                  | tag into an existing JavaDoc comment above    |
+|                                  | the main class definition.                    |
+|                                  | Default: ``1`` (file type must be ``java``)   |
++----------------------------------+-----------------------------------------------+
 
 .. _`0.7.0`: https://github.com/rdipardo/vim-cpywrite/blob/master/CHANGELOG.rst#changes-in-070
 

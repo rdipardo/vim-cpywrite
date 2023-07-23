@@ -6,6 +6,25 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.8.0
+======
+**(2023-07-23)**
+
+Breaking Change
+----------------
+Python 2 hosts are no longer supported. For NeoVim, 3.7 or later is required.
+
+Changed
+-------
+- the ``:CPYwrite`` command will try to add an ``@author`` tag to
+  existing JavaDoc comments above the main class in Java files
+- comment headers in Pascal files are now enclosed by ``(*...*)``
+
+Added
+-----
+- new option, ``g:cpywrite#java#add_class_doc``, to (dis/en)able adding
+  the ``@author`` tag to JavaDoc comments
+
 0.7.0
 ======
 **(2022-01-10)**
