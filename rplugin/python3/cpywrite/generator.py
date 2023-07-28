@@ -110,7 +110,7 @@ class Generator():
                 'Copyright (c) ' \
                 if not cpu_readable \
                 else 'SPDX-FileCopyrightText: '
-            copying += year + ' ' + author + ' ' + contact
+            copying += year + ' ' + author + contact
             copyrightable = \
                 no_anon or cpu_readable or \
                 not in_pub_domain(self.rights.spdx_code)
@@ -318,7 +318,7 @@ def _get_source_author():
 
     if bool(git_username):
         author = git_username
-        email = '<' + email + '>' if email else ''
+        email = ' <' + email + '>' if email else ''
 
     return (author, email)
 
