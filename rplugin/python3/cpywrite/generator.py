@@ -126,7 +126,7 @@ class Generator():
             # e.g. https://spdx.org/licenses/0BSD.html
             # This prevents faulty matches with the FSF ZIP code in the GPL v1 and 2
             author_date_re = \
-                r'(?!.*(http).*)[\<\(\[\s%s]((YEAR)%s|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+]' \
+                r'(?!.*(http).*)(\.{3,}|[\<\(\[\s%s]((YEAR)%s|[YX]+)[\>\)\]\s,-].+[\>\)\]\w+])' \
                 % ((r'\d', r'|\d{3}') \
                    if self.rights.spdx_code == '0BSD' \
                    else ('', '')) \

@@ -5,8 +5,8 @@ Utilities for fetching and printing open source license information
 """
 import os
 import tempfile
-import http.client as client
 import xml.etree.ElementTree as parser
+from http import client
 from itertools import dropwhile
 from re import search, sub
 from sys import stderr
@@ -37,7 +37,7 @@ class License():
             return ''
 
         xml_resource = 'https://raw.githubusercontent.com/' \
-                       'spdx/license-list-XML/master/src/%s.xml'
+                       'spdx/license-list-XML/main/src/%s.xml'
         resource = quote(xml_resource % self.spdx_code, safe='/:')
         license_data = None
         cache = _find_cached_license(self.spdx_code)
@@ -139,8 +139,8 @@ class License():
             return ''
 
         # TODO: find a more reliable license generator: # pylint: disable=W0511
-        # https://github.com/spdx/license-list-data/blob/master/text/MIT.txt
-        # https://github.com/spdx/license-list-data/blob/master/text/0BSD.txt
+        # https://github.com/spdx/license-list-data/blob/main/text/MIT.txt
+        # https://github.com/spdx/license-list-data/blob/main/text/0BSD.txt
         # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/Unlicense.txt#L10
         # https://github.com/spdx/license-list-data/blob/2e20899c0504ff6c0acfcc1b0994d7163ce46939/text/BSD-1-Clause.txt#L9
         #
@@ -148,16 +148,38 @@ class License():
         # the HEAD of spdx/license-list-data; USE THEM AT YOUR OWN RISK
         spdx_revision = '2e20899c0504ff6c0acfcc1b0994d7163ce46939' \
             if not self.spdx_code in [
+                'AdaCore-doc',
+                'ASWF-Digital-Assets-1.0',
+                'ASWF-Digital-Assets-1.1',
+                'Boehm-GC',
                 'BSD-3-Clause-Modification',
                 'BSD-3-Clause-No-Military-License',
                 'BSD-4-Clause-Shortened',
                 'C-UDA-1.0',
+                'CC-BY-SA-3.0-IGO',
                 'DRL-1.0',
+                'dtoa',
                 'FreeBSD-DOC',
                 'GD',
+                'Inner-Net-2.0',
+                'Latex2e-translated-notice',
+                'Linux-man-pages-1-para',
+                'Linux-man-pages-copyleft-2-para',
+                'Linux-man-pages-copyleft-var',
+                'metamail',
                 'MIT-Modern-Variant',
-                'OGDL-Taiwan-1.0'] \
-            else 'master'
+                'MIT-Festival',
+                'NIST-Software',
+                'OGDL-Taiwan-1.0',
+                'OLFL-1.3',
+                'OPL-UK-3.0',
+                'SGP4',
+                'TermReadKey',
+                'UnixCrypt',
+                'Widget-Workshop',
+                'Xdebug-1.03',
+                'Xfig'] \
+            else 'main'
 
         text_resource = 'https://raw.githubusercontent.com/' \
                        'spdx/license-list-data/' + spdx_revision + \
@@ -272,37 +294,36 @@ def _fetch_license(resource, spdx_id):
     _, ext = os.path.splitext(resource)
 
     try:
-        response = request.urlopen(request.Request(resource))
-
-        if response.status == 200:
-            response_text = response.read().decode('utf8')
-            if ext.lower() == '.xml':
-                try:
-                    license_data = parser.fromstring(response_text)
-                except (client.IncompleteRead, parser.ParseError, TypeError):
-                    print("Got invalid licence data from %s." % (resource),
-                          file=stderr)
-            else:
-                license_data = response_text
-
-            try:
-                _, temp_file = \
-                    tempfile.mkstemp(prefix=spdx_id + '_',
-                                     suffix=ext,
-                                     text=True)
-                if temp_file:
+        with request.urlopen(request.Request(resource)) as response:
+            if response.status == 200:
+                response_text = response.read().decode('utf8')
+                if ext.lower() == '.xml':
                     try:
-                        with open(temp_file, 'w', encoding='utf-8') as tmp:
-                            tmp.write(response_text)
-                    except IOError:
-                        pass
+                        license_data = parser.fromstring(response_text)
+                    except (client.IncompleteRead, parser.ParseError, TypeError):
+                        print("Got invalid licence data from %s." % (resource),
+                              file=stderr)
+                else:
+                    license_data = response_text
 
-            except IOError:
-                pass
-        else:
-            print("Unexpected response [%d] from %s.\n"
-                  % (response.status_code, resource),
-                  file=stderr)
+                try:
+                    _, temp_file = \
+                        tempfile.mkstemp(prefix=spdx_id + '_',
+                                         suffix=ext,
+                                         text=True)
+                    if temp_file:
+                        try:
+                            with open(temp_file, 'w', encoding='utf-8') as tmp:
+                                tmp.write(response_text)
+                        except IOError:
+                            pass
+
+                except IOError:
+                    pass
+            else:
+                print("Unexpected response [%d] from %s.\n"
+                      % (response.status_code, resource),
+                      file=stderr)
 
     except (urllib_error.HTTPError,
             urllib_error.URLError):
@@ -314,6 +335,7 @@ _SPDX_IDS = [
     '0BSD',
     'AAL',
     'Abstyles',
+    'AdaCore-doc',
     'Adobe-2006',
     'Adobe-Glyph',
     'ADSL',
@@ -346,6 +368,8 @@ _SPDX_IDS = [
     'Artistic-1.0-cl8',
     'Artistic-1.0-Perl',
     'Artistic-2.0',
+    'ASWF-Digital-Assets-1.0',
+    'ASWF-Digital-Assets-1.1',
     'Bahyph',
     'Barr',
     'Beerware',
@@ -353,6 +377,7 @@ _SPDX_IDS = [
     'BitTorrent-1.1',
     'blessing',
     'BlueOak-1.0.0',
+    'Boehm-GC',
     'Borceux',
     'BSD-1-Clause',
     'BSD-2-Clause',
@@ -377,11 +402,11 @@ _SPDX_IDS = [
     'BUSL-1.1',
     'bzip2-1.0.5',
     'bzip2-1.0.6',
-    'C-UDA-1.0',
     'CAL-1.0',
     'CAL-1.0-Combined-Work-Exception',
     'Caldera',
     'CATOSL-1.1',
+    'CC0-1.0',
     'CC-BY-1.0',
     'CC-BY-2.0',
     'CC-BY-2.5',
@@ -416,9 +441,9 @@ _SPDX_IDS = [
     'CC-BY-SA-2.5',
     'CC-BY-SA-3.0',
     'CC-BY-SA-3.0-AT',
+    'CC-BY-SA-3.0-IGO',
     'CC-BY-SA-4.0',
     'CC-PDDC',
-    'CC0-1.0',
     'CDDL-1.0',
     'CDDL-1.1',
     'CDLA-Permissive-1.0',
@@ -448,6 +473,7 @@ _SPDX_IDS = [
     'CrystalStacker',
     'CUA-OPL-1.0',
     'Cube',
+    'C-UDA-1.0',
     'curl',
     'D-FSL-1.0',
     'diffmark',
@@ -455,6 +481,7 @@ _SPDX_IDS = [
     'Dotseqn',
     'DRL-1.0',
     'DSDP',
+    'dtoa',
     'dvipdfm',
     'ECL-1.0',
     'ECL-2.0',
@@ -523,6 +550,7 @@ _SPDX_IDS = [
     'iMatix',
     'Imlib2',
     'Info-ZIP',
+    'Inner-Net-2.0',
     'Intel',
     'Intel-ACPI',
     'Interbase-1.0',
@@ -535,6 +563,7 @@ _SPDX_IDS = [
     'LAL-1.2',
     'LAL-1.3',
     'Latex2e',
+    'Latex2e-translated-notice',
     'Leptonica',
     'LGPL-2.0-only',
     'LGPL-2.0-or-later',
@@ -550,6 +579,9 @@ _SPDX_IDS = [
     'LiLiQ-P-1.1',
     'LiLiQ-R-1.1',
     'LiLiQ-Rplus-1.1',
+    'Linux-man-pages-1-para',
+    'Linux-man-pages-copyleft-2-para',
+    'Linux-man-pages-copyleft-var',
     'Linux-OpenIB',
     'LPL-1.0',
     'LPL-1.02',
@@ -559,6 +591,7 @@ _SPDX_IDS = [
     'LPPL-1.3a',
     'LPPL-1.3c',
     'MakeIndex',
+    'metamail',
     'MirOS',
     'MIT',
     'MIT-0',
@@ -566,9 +599,10 @@ _SPDX_IDS = [
     'MIT-CMU',
     'MIT-enna',
     'MIT-feh',
+    'MIT-Festival',
     'MIT-Modern-Variant',
-    'MIT-open-group',
     'MITNFA',
+    'MIT-open-group',
     'Motosoto',
     'mpich2',
     'MPL-1.0',
@@ -587,12 +621,13 @@ _SPDX_IDS = [
     'NBPL-1.0',
     'NCGL-UK-2.0',
     'NCSA',
-    'Net-SNMP',
     'NetCDF',
+    'Net-SNMP',
     'Newsletr',
     'NGPL',
     'NIST-PD',
     'NIST-PD-fallback',
+    'NIST-Software',
     'NLOD-1.0',
     'NLPL',
     'Nokia',
@@ -604,7 +639,6 @@ _SPDX_IDS = [
     'NRL',
     'NTP',
     'NTP-0',
-    'O-UDA-1.0',
     'OCCT-PL',
     'OCLC-2.0',
     'ODbL-1.0',
@@ -638,15 +672,18 @@ _SPDX_IDS = [
     'OLDAP-2.6',
     'OLDAP-2.7',
     'OLDAP-2.8',
+    'OLFL-1.3',
     'OML',
     'OpenSSL',
     'OPL-1.0',
+    'OPL-UK-3.0',
     'OSET-PL-2.1',
     'OSL-1.0',
     'OSL-1.1',
     'OSL-2.0',
     'OSL-2.1',
     'OSL-3.0',
+    'O-UDA-1.0',
     'Parity-6.0.0',
     'Parity-7.0.0',
     'PDDL-1.0',
@@ -670,14 +707,15 @@ _SPDX_IDS = [
     'RSA-MD',
     'RSCPL',
     'Ruby',
-    'SAX-PD',
     'Saxpath',
+    'SAX-PD',
     'SCEA',
     'Sendmail',
     'Sendmail-8.23',
     'SGI-B-1.0',
     'SGI-B-1.1',
     'SGI-B-2.0',
+    'SGP4',
     'SHL-0.5',
     'SHL-0.51',
     'SimPL-2.0',
@@ -699,6 +737,7 @@ _SPDX_IDS = [
     'TAPR-OHL-1.0',
     'TCL',
     'TCP-wrappers',
+    'TermReadKey',
     'TMate',
     'TORQUE-1.1',
     'TOSL',
@@ -708,6 +747,7 @@ _SPDX_IDS = [
     'Unicode-DFS-2015',
     'Unicode-DFS-2016',
     'Unicode-TOU',
+    'UnixCrypt',
     'Unlicense',
     'UPL-1.0',
     'Vim',
@@ -717,10 +757,13 @@ _SPDX_IDS = [
     'W3C-19980720',
     'W3C-20150513',
     'Watcom-1.0',
+    'Widget-Workshop',
     'Wsuipa',
     'WTFPL',
     'X11',
+    'Xdebug-1.03',
     'Xerox',
+    'Xfig',
     'XFree86-1.1',
     'xinetd',
     'Xnet',
@@ -744,7 +787,7 @@ List of SPDX License Identifiers: https://spdx.org/licenses/
 _PD_LICENSE_IDS = [
     'ANTLR-PD', 'ANTLR-PD-fallback', 'CC-PDDC', 'CC0-1.0',
     'libselinux-1.0', 'NIST-PD', 'NIST-PD-fallback', 'PDDL-1.0',
-    'SAX-PD', 'Unlicense']
+    'SAX-PD', 'SGP4', 'Unlicense']
 """
 Licenses with no copyright requirement
 """
