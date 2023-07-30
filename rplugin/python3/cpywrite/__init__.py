@@ -28,7 +28,7 @@ cpywrite
                      ```````
 """
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 __authors__ = ['Robert Di Pardo']
 __url__ = 'https://github.com/rdipardo/vim-cpywrite'
 __license__ = 'MIT'

@@ -6,6 +6,21 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.8.1
+======
+**(2023-07-30)**
+
+Fixed
+-----
+- a regression that spoiled generated copyright lines was rolled back;
+  author name and email will be separated by a space like before
+
+Added
+-----
+- many new additions from the `latest version`_ of the SPDX License List
+
+.. _latest version: https://github.com/spdx/license-list-XML/releases/tag/v3.21
+
 0.8.0
 ======
 **(2023-07-23)**
