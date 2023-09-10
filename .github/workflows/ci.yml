@@ -10,7 +10,7 @@ jobs:
   lint:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up python
       uses: actions/setup-python@v4
       with:
@@ -37,7 +37,7 @@ jobs:
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up python
       if: ${{ matrix.python-version != 'ubuntu' }}
       uses: actions/setup-python@v4
@@ -65,7 +65,7 @@ jobs:
       run: pip install -r test/requirements.txt
 
     - name: Set up plugin test environment
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: blueyed/vader.vim
         ref: display-source-with-exceptions
