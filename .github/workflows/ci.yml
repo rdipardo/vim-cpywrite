@@ -10,13 +10,13 @@ jobs:
   lint:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     - name: Restore cache
-      uses: actions/cache@v3.3.1
+      uses: actions/cache@v3
       with:
         path: '~/.cache/pip'
         key: ${{ runner.os }}-pip-${{ hashFiles('.vintrc.yml') }}
@@ -37,7 +37,7 @@ jobs:
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up python
       if: ${{ matrix.python-version != 'ubuntu' }}
       uses: actions/setup-python@v4
@@ -55,7 +55,7 @@ jobs:
         pip install --upgrade 'pip < 21.0'
 
     - name: Restore pip cache
-      uses: actions/cache@v3.3.1
+      uses: actions/cache@v3
       with:
         path: '~/.cache/pip'
         key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/test/requirements.txt') }}
@@ -65,7 +65,7 @@ jobs:
       run: pip install -r test/requirements.txt
 
     - name: Set up plugin test environment
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: blueyed/vader.vim
         ref: display-source-with-exceptions
