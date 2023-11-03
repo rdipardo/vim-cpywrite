@@ -1,2 +1,2 @@
-pynvim
+pynvim@git+https://github.com/neovim/pynvim
 pytest
