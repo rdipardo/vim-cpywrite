@@ -22,7 +22,8 @@ def test_language_recognition():
         'file.CLjS', 'file.sS', 'file.sCM', 'deps.Edn', 'file.FNl']
     erlang_files = ['file.Erl', 'file.hRl']
     prolog_files = ['file.pRO', 'file.P']
-    pascal_files = ['file.PAs', 'file.pP', 'file.iNC']
+    pascal_files = ['file.PAs', 'file.pP', 'file.iNC', 'pkg.DpK',
+        'project.dPr', 'project.LPr']
     scala_files = ['file.sCaLa', 'file.SCala', 'file.sC']
     go_and_etc_files = [
         'file.gO', 'file.Rs', 'file.fs', 'file.fsi', 'file.fsx',

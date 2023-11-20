@@ -77,6 +77,28 @@ Execute(Use :CPYwriteToggleMode to switch off verbatim mode);
 Then(Assert that :CPYwriteToggleMode changes verbatim mode setting);
   AssertEqual 0, g:cpywrite#verbatim_mode
 
+Execute(Prepend a license verbatim to a Delphi package file);
+  new! mpl.dpk
+  b mpl.dpk
+  CPYwrite MPL-1.1
+
+Then(Package file header quotes the MPL-1.1 license);
+  AssertEqual ' mpl.dpk', getline(2)
+  AssertEqual ' The contents of this file are subject to the Mozilla Public License Version 1.1', getline(6)[:79]
+  AssertEqual ' Software distributed under the License is distributed on an "AS IS" basis', getline(10)[:73]
+  AssertEqual 2, len(getline(27)), 'Allow no trailing spaces'
+
+Execute(Prepend a standard license header to a Lazarus project file);
+  new! lgpl.lpr
+  b lgpl.lpr
+  CPYwrite LGPL-2.1-only
+
+Then(Project file header mentions to LGPL-2.1);
+  AssertEqual ' lgpl.lpr', getline(2)
+  AssertEqual ' License as published by the Free Software Foundation; version 2.1.', getline(8)
+  AssertEqual ' You should have received a copy of the GNU Lesser General Public License', getline(15)
+  AssertEqual 2, len(getline(18)), 'Allow no trailing spaces'
+
 Execute(Prepend a standard license header to a Smalltalk file);
   new! apache20.st
   b apache20.st

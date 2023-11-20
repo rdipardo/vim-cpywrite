@@ -393,9 +393,9 @@ _SOURCE_META = {
          ('/**', ' * ', ' *', ' */')],
     ('.elm'):
         [{('.elm'): 'Elm'}, ('{-', ' ', ' ', '-}')],
-    ('.ml', '.mli', '.pas', '.pp', '.inc'):
+    ('.dpk', '.dpr', '.lpr', '.ml', '.mli', '.pas', '.pp', '.inc'):
         [{
-          ('.pas', '.pp', '.inc'): 'Pascal',
+          ('.dpk', '.dpr', '.lpr', '.pas', '.pp', '.inc'): 'Pascal',
           ('.ml', '.mli'): 'OCaml'
          },
          ('(*', ' ', ' ', '*)')],
