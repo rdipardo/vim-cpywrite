@@ -55,11 +55,6 @@ jobs:
     - name: Install python modules
       run: pip install -r test/requirements.txt
 
-    - name: Install pynvim from git
-      # https://github.com/neovim/pynvim/issues/538
-      if: ${{ matrix.python-version == '3.12' }}
-      run: pip install -U pynvim@git+https://github.com/neovim/pynvim
-
     - name: Set up plugin test environment
       uses: actions/checkout@v4
       with:
