@@ -127,7 +127,7 @@ jobs:
         .github/scripts/collect_start_times nvim neovim-${{ matrix.nvim-version }}-$LOG
 
     - name: Save startup times
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: plugin-load-stats
         path: '**/*python*.log'
