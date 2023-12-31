@@ -124,5 +124,5 @@ jobs:
     - name: Save startup times
       uses: actions/upload-artifact@v4
       with:
-        name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.vim-version }}
+        name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.python-version }}
         path: '**/*python*.log'
