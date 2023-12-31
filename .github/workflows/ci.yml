@@ -55,11 +55,6 @@ jobs:
     - name: Install python modules
       run: pip install -r test/requirements.txt
 
-    - name: Install pynvim from git
-      # https://github.com/neovim/pynvim/issues/538
-      if: ${{ matrix.python-version == '3.12' }}
-      run: pip install -U pynvim@git+https://github.com/neovim/pynvim
-
     - name: Set up plugin test environment
       uses: actions/checkout@v4
       with:
@@ -124,10 +119,10 @@ jobs:
 
     - name: Check neovim startup times
       run: |
-        .github/scripts/collect_start_times nvim neovim-${{ matrix.nvim-version }}-$LOG
+        .github/scripts/collect_start_times nvim neovim-$LOG
 
     - name: Save startup times
       uses: actions/upload-artifact@v4
       with:
-        name: plugin-load-stats
+        name: format('plugin-load-stats@vim-{0}-py-{1}', ${{ matrix.vim-version }}, ${{ matrix.python-version }})
         path: '**/*python*.log'
