@@ -126,3 +126,13 @@ jobs:
       with:
         name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.python-version }}
         path: '**/*python*.log'
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Merge artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: plugin-load-stats
+          delete-merged: true
