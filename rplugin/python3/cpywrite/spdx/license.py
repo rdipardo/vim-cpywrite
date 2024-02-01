@@ -36,9 +36,13 @@ class License():
         if not self.spdx_code:
             return ''
 
+        # compensate for the deletion of 'Inc.' from the FSF's address:
+        # https://github.com/spdx/license-list-XML/commit/fcb4c75#diff-792e39536c2b3cf11dcd8358d7304b1dbb1fea0735c8c8ea98a4882bc6ca8c95
+        spdx_revision = 'a7220b6da21b37279659abed0e1b009610931824' \
+            if self.spdx_code == 'GPL-2.0-or-later' else 'main'
         xml_resource = 'https://raw.githubusercontent.com/' \
-                       'spdx/license-list-XML/main/src/%s.xml'
-        resource = quote(xml_resource % self.spdx_code, safe='/:')
+                       'spdx/license-list-XML/%s/src/%s.xml'
+        resource = quote(xml_resource % (spdx_revision, self.spdx_code), safe='/:')
         license_data = None
         cache = _find_cached_license(self.spdx_code)
         header_text = []
@@ -90,6 +94,8 @@ class License():
                 elif child.tag == opt_tag and \
                         child.attrib.get('spacing') == 'after':
                     content = ', ' + child.tail.strip()
+                elif self.spdx_code.startswith('GPL-2.0') and child.tag == alt_tag:
+                    content = sub(r'\s{2,}', ' ', child.text) + (child.tail or '')
                 else:
                     content = child.text if (child.text and \
                                 child.tag != alt_tag and \
