@@ -2,7 +2,7 @@
 vim-cpywrite
 ############
 
-|gh-actions|  |current version|
+|gh-actions|  |coverage|  |current version|
 
 Generate copyright headers for any open source license
 
@@ -274,6 +274,9 @@ Distributed under the terms of the MIT license.
     :target: https://github.com/rdipardo/vim-cpywrite/actions
 .. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim
     :alt: Vim Scripts version
+.. |coverage| image:: https://codecov.io/gh/rdipardo/vim-cpywrite/graph/badge.svg
+    :alt: Coverage stats
+    :target: https://codecov.io/gh/rdipardo/vim-cpywrite
 
 .. _supported programming languages: https://github.com/rdipardo/vim-cpywrite/blob/4d99f7af6a54442055e2c17a3ee12258623b64e9/rplugin/pythonx/cpywrite/generator.py#L320
 .. _vim-pathogen: https://github.com/tpope/vim-pathogen#native-vim-package-management

@@ -1,11 +1,17 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: "pip"
+    directory: "/test"
+    group:
+      unit-tests:
+        patterns:
+          - "*"
     schedule:
       interval: "weekly"
       day: "sunday"
-      time: "00:00"
-      timezone: "America/Toronto"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
     commit-message:
       prefix: gh-actions

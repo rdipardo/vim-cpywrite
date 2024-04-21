@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
 from pytest import raises
-from cpywrite.generator import Generator, _get_language_meta
+from cpywrite.generator import Generator, extensions, _get_language_meta
 from cpywrite.spdx.license import in_pub_domain, _PD_LICENSE_IDS
 from cpywrite import licenses
 
@@ -35,6 +34,7 @@ def test_language_recognition():
         'CMakeLists.tXt', 'Makefile', 'mAKeFIle', 'build.Mk', 'build.mAk',
         'Dockerfile', 'doCKerfILE', 'build.dockerFILE', 'file.YmL', 'file.yAmL',
         'config.PROpertiES', 'Config.properTIEs', 'file.conF', 'file.CoNf']
+    dot_files = ['.gitattributes', '.dockerignore', '.xinitrc']
     ini_files = ['config.iNi', 'Config.InI']
     coffeescript_files = ['file.coFFee', 'main.litcoffEe']
     elm_files = ['file.eLm', 'file.Elm', 'file.elM']
@@ -74,7 +74,7 @@ def test_language_recognition():
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('//', '// ')
 
-    for src in script_lang_files:
+    for src in script_lang_files + dot_files:
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('#', '# ')
 
@@ -110,6 +110,11 @@ def test_language_recognition():
         _, _, tokens = _get_language_meta(src)
         assert tokens == ('"', ' ', ' ', '"')
 
+def test_xconfig_recognition():
+    ftype, _, tokens = _get_language_meta('.Xresources', 'xdefaults')
+    assert ftype == 'Xdefaults'
+    assert tokens == ('!', '! ')
+
 def test_license_recognition():
     generator = Generator()
 
@@ -124,6 +129,23 @@ def test_public_domain_license_recognition():
         generator.set_file_props('file.py', rights=lic)
         assert in_pub_domain(generator.rights.spdx_code)
 
+def test_license_text_generation():
+    file_names = [ 'new.py', 'new.php', '.vimrc', 'Makefile' ]
+    generator = Generator()
+
+    def generate(verbose=False, tags=False):
+        _ = generator.fetch_license_header(
+                full_text=verbose,
+                cpu_readable=(tags and (not verbose)),
+                no_anon=tags)
+
+    for fname in file_names:
+        for lic in licenses() + _PD_LICENSE_IDS:
+            generator.set_file_props(fname, rights=lic)
+            generate()
+            generate(verbose=True)
+            generate(tags=True)
+
 def test_file_name_validation():
     invalid_file_names = [
         " ", "\t", " \t ", "\n", " \n", "wrong.", "wrong......", "w`rong.rb",
@@ -131,6 +153,19 @@ def test_file_name_validation():
         "'wrong.h", "*wrong.hpp", "wrong-", "wrong--", "wron*g.pl"]
     generator = Generator()
 
+    for ext in extensions():
+        generator.set_file_props(f'new{ext[1:]}')
+        print(repr(generator))
+        print(repr(generator.rights))
+
     for fname in invalid_file_names:
         with raises(ValueError):
             generator.set_file_props(fname)
+
+def test_file_extension_validation():
+    with raises(ValueError):
+        Generator('new.bad')
+
+def test_license_id_validation():
+    with raises(ValueError):
+        Generator(rights='¡Licencia-Nada!')

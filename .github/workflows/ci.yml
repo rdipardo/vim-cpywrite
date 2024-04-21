@@ -1,30 +1,40 @@
 name: (Neo)vim
 on:
   push:
-    branches:
-      - pre-release
+    branches-ignore:
+      - master
   pull_request:
     branches:
       - master
 jobs:
-  lint:
-    runs-on: ubuntu-20.04
+  coverage:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         cache: 'pip'
         cache-dependency-path: 'test/requirements.txt'
     - name: Install
       run: |
-        pip install --upgrade pip
+        # https://github.com/actions/setup-python/issues/842
+        pip install --upgrade --force pip setuptools
+        pip install -r test/requirements.txt
         pip install vim-vint
     - name: Lint
       run: vint autoload ftplugin plugin -wt
+    - name: Run python tests
+      run: coverage run -m pytest -v && coverage xml -o pytest.xml
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./pytest.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
+
   build:
-    needs: lint
+    needs: coverage
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -77,14 +87,6 @@ jobs:
       with:
         neovim: true
         version: 'v0.6.1'
-
-    - name: Run python tests
-      # > platform linux -- Python 3.7.3, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- /usr/bin/python3
-      # > ...
-      # > /usr/lib/python3/dist-packages/socks.py:58: DeprecationWarning: Using or importing the ABCs from 'collections'
-      # > instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
-      # >   from collections import Callable
-      run: pytest -v -W ignore::DeprecationWarning
 
     - name: Test plugin on Ubuntu vim
       if: ${{ matrix.python-version == 'ubuntu' }}

@@ -1,0 +1,6 @@
+[run]
+include =
+    */cpywrite/**/*.py
+omit =
+    __init__.py
+    __main__.py

@@ -1,5 +1,7 @@
 *.pyc
 *.log
+*.xml
+.coverage
 /__pycache__/
 .pytest_cache/
 test/src/
