@@ -11,7 +11,7 @@ def test_language_recognition():
         'file.c', 'file.h', 'file.cc', 'file.CpP', 'file.c++', 'file.CxX',
         'filed.D', 'file.hh', 'file.H++', 'file.hPp', 'file.cs', 'file.CsS',
         'file.java', 'file.KT', 'file.kTs', 'file.Ktm', 'file.M', 'file.mM',
-        'file.sWiFt', 'file.VAlA', 'file.vAPi']
+        'file.sWiFt', 'file.VAlA', 'file.vAPi', 'file.cpp2', 'file.h2']
     web_lang_files = [
         'file.JS', 'file.jSx', 'module.MjS', 'file.ts', 'file.pHp',
         'file.phP4', 'file.Php5', 'file.Phtml', 'file.Re', 'file.Rei']

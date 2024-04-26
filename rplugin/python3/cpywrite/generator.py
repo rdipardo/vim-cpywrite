@@ -368,13 +368,15 @@ _SOURCE_META = {
     ('.c', '.cc', '.c++', '.cpp', '.cxx', '.cs', '.css', '.d', '.h', '.hh',
      '.h++', '.hpp', '.hxx', '.java', '.js', '.jsx', '.mjs', '.kt', '.kts',
      '.ktm', '.m', '.mm', '.php', '.php4', '.php5', '.phtml', '.re', '.rei',
-     '.scala', '.sc', '.swift', '.ts', '.vala', '.vapi'):
+     '.scala', '.sc', '.swift', '.ts', '.vala', '.vapi', '.cpp2', '.h2'):
         [{
             ('.c'): 'C source',
             ('.d'): 'D source',
             ('.h'): 'C header',
             ('.cc', '.c++', '.cpp', '.cxx'): 'C++ source',
             ('.hh', '.h++', '.hpp', '.hxx'): 'C++ header',
+            ('.cpp2'): 'Cppfront source',
+            ('.h2'): 'Cppfront header',
             ('.cs'): 'C-sharp',
             ('.css'): 'CSS',
             ('.java'): 'Java',
