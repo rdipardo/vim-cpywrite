@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - master
+      - 'dependabot/**'
   pull_request:
     branches:
       - master
@@ -44,25 +45,37 @@ jobs:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
     - uses: actions/checkout@v4
-    - name: Set up python
-      if: ${{ matrix.python-version != 'ubuntu' }}
+    - name: Set up python ${{ matrix.python-version }}
+      if: ${{ matrix.python-version != 'ubuntu' && !startsWith(matrix.python-version, '3.5') }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
         cache-dependency-path: 'test/requirements.txt'
+    # https://github.com/actions/setup-python/issues/866#issuecomment-2109784318
+    - name: Set up python 3.5
+      if: ${{ startsWith(matrix.python-version, '3.5') }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+      env:
+        PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
 
     - name: Install latest pip
       if: ${{ !startsWith(matrix.python-version, '3.5') }}
       run: |
         pip install --upgrade pip
 
-    - name: Install pip < 21.0
+    - name: Install python modules (without cert validation)
       if: ${{ startsWith(matrix.python-version, '3.5') }}
       run: |
         pip install --upgrade 'pip < 21.0'
+        pip install -r test/requirements.txt
+      env:
+        PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
 
     - name: Install python modules
+      if: ${{ !startsWith(matrix.python-version, '3.5') }}
       run: pip install -r test/requirements.txt
 
     - name: Set up plugin test environment
