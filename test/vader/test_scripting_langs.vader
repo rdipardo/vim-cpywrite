@@ -94,7 +94,7 @@ Then(Batch script quotes the MPL-2.0);
   AssertEqual 2, len(getline(2)), 'Allow no trailing spaces'
   AssertEqual ':: standard.cmd', getline(3)
   AssertEqual ':: This Source Code Form is subject to the terms of the Mozilla Public License,', getline(7)
-  AssertEqual ':: obtain one at http://mozilla.org/MPL/2.0/.', getline(9)
+  AssertEqual ':: obtain one at https://mozilla.org/MPL/2.0/.', getline(9)
 
 " Tc #4
 Execute(Prepend the default license header to a Python file);
