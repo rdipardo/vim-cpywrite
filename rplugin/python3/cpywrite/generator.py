@@ -288,7 +288,7 @@ def _get_source_author():
         if system() == 'Windows' \
         else environ.get('USER', 'unknown')
     email = 'domain.org'
-    git_username = ''
+    git_username = author
 
     try:
         git_username = check_output(['git',
