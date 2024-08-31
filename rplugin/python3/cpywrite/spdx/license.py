@@ -153,7 +153,7 @@ class License():
         # full text of new licenses added since v3.11 are fetched from
         # the HEAD of spdx/license-list-data; USE THEM AT YOUR OWN RISK
         spdx_revision = '2e20899c0504ff6c0acfcc1b0994d7163ce46939' \
-            if not self.spdx_code.startswith('CC-BY') or self.spdx_code in [
+            if not (self.spdx_code.startswith('CC-BY') or self.spdx_code in [
                 'AdaCore-doc',
                 'ASWF-Digital-Assets-1.0',
                 'ASWF-Digital-Assets-1.1',
@@ -183,7 +183,7 @@ class License():
                 'UnixCrypt',
                 'Widget-Workshop',
                 'Xdebug-1.03',
-                'Xfig'] \
+                'Xfig']) \
             else 'main'
 
         text_resource = 'https://raw.githubusercontent.com/' \
