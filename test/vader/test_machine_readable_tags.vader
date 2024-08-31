@@ -54,3 +54,14 @@ Execute(Use :CPYwriteToggleStyle to switch off machine readable output);
 
 Then(Assert that :CPYwriteToggleStyle switches off machine readable output);
   AssertEqual 0, g:cpywrite#machine_readable
+
+Execute(Prepend an Intl. Creative Commons license to a Cppfront header);
+  new! cc.h2
+  b cc.h2
+  CPYwrite CC-BY-SA-2.1-JP
+
+Then(Cppfront header fully identifies the CC-BY-SA-2.1-JP);
+  AssertEqual ' * cc.h2', getline(2)
+  AssertEqual 2, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual 'Creative Commons Attribution Share Alike 2.1 Japan.', getline(6)[38:], 'Fully identify Creative Commons licenses'
+  AssertEqual ' */', getline(7)

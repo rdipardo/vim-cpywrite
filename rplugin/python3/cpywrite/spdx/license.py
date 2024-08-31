@@ -153,7 +153,7 @@ class License():
         # full text of new licenses added since v3.11 are fetched from
         # the HEAD of spdx/license-list-data; USE THEM AT YOUR OWN RISK
         spdx_revision = '2e20899c0504ff6c0acfcc1b0994d7163ce46939' \
-            if not self.spdx_code in [
+            if not self.spdx_code.startswith('CC-BY') or self.spdx_code in [
                 'AdaCore-doc',
                 'ASWF-Digital-Assets-1.0',
                 'ASWF-Digital-Assets-1.1',
@@ -162,7 +162,6 @@ class License():
                 'BSD-3-Clause-No-Military-License',
                 'BSD-4-Clause-Shortened',
                 'C-UDA-1.0',
-                'CC-BY-SA-3.0-IGO',
                 'DRL-1.0',
                 'dtoa',
                 'FreeBSD-DOC',
@@ -243,18 +242,19 @@ class License():
 
         if self.license_name:
             name = self.license_name
-            full_name = search(r'[tT]he.+[lL]icense.*$', self.license_name)
 
-            if full_name:
-                name = ''.join(full_name.group().split()[1:])
-            if in_pub_domain(self.spdx_code):
+            if self.spdx_code.startswith('CC-BY') or in_pub_domain(self.spdx_code):
                 return template % name + '.'
 
-            name = search(r'.+[lL]icense(.*[vV]ariant)?', name)
+            full_name = search(r'[tT]he.+[lL]icense.*$', self.license_name)
+            if full_name:
+                name = ''.join(full_name.group().split()[1:])
+
+            pretty_name = search(r'.+[lL]icense(.*[vV]ariant)?', name)
             version = search(r'\d\.\d.*$', self.license_name)
 
             if name:
-                return (template % name.group()) + \
+                return (template % pretty_name.group()) + \
                        (' Version ' + version.group() if version else '') + \
                        '.'
 
@@ -416,37 +416,52 @@ _SPDX_IDS = [
     'CC-BY-1.0',
     'CC-BY-2.0',
     'CC-BY-2.5',
+    'CC-BY-2.5-AU',
     'CC-BY-3.0',
     'CC-BY-3.0-AT',
+    'CC-BY-3.0-AU',
+    'CC-BY-3.0-DE',
+    'CC-BY-3.0-IGO',
+    'CC-BY-3.0-NL',
     'CC-BY-3.0-US',
     'CC-BY-4.0',
     'CC-BY-NC-1.0',
     'CC-BY-NC-2.0',
     'CC-BY-NC-2.5',
     'CC-BY-NC-3.0',
+    'CC-BY-NC-3.0-DE',
     'CC-BY-NC-4.0',
     'CC-BY-NC-ND-1.0',
     'CC-BY-NC-ND-2.0',
     'CC-BY-NC-ND-2.5',
     'CC-BY-NC-ND-3.0',
+    'CC-BY-NC-ND-3.0-DE',
     'CC-BY-NC-ND-3.0-IGO',
     'CC-BY-NC-ND-4.0',
     'CC-BY-NC-SA-1.0',
     'CC-BY-NC-SA-2.0',
+    'CC-BY-NC-SA-2.0-DE',
+    'CC-BY-NC-SA-2.0-FR',
+    'CC-BY-NC-SA-2.0-UK',
     'CC-BY-NC-SA-2.5',
     'CC-BY-NC-SA-3.0',
+    'CC-BY-NC-SA-3.0-DE',
+    'CC-BY-NC-SA-3.0-IGO',
     'CC-BY-NC-SA-4.0',
     'CC-BY-ND-1.0',
     'CC-BY-ND-2.0',
     'CC-BY-ND-2.5',
     'CC-BY-ND-3.0',
+    'CC-BY-ND-3.0-DE',
     'CC-BY-ND-4.0',
     'CC-BY-SA-1.0',
     'CC-BY-SA-2.0',
     'CC-BY-SA-2.0-UK',
+    'CC-BY-SA-2.1-JP',
     'CC-BY-SA-2.5',
     'CC-BY-SA-3.0',
     'CC-BY-SA-3.0-AT',
+    'CC-BY-SA-3.0-DE',
     'CC-BY-SA-3.0-IGO',
     'CC-BY-SA-4.0',
     'CC-PDDC',
