@@ -6,6 +6,30 @@ CHANGELOG
    :depth: 1
    :backlinks: top
 
+0.8.2
+======
+**(2024-09-01)**
+
+Fixed
+-------
+- add a space between author and email when falling back to OS user name and host
+- Neovim error messages no longer throw errors of their own
+
+Changed
+-------
+- standard headers now identify Creative Commons licenses by full name, not SPDX id;
+  machine readable format will print the id as before
+
+Added
+-----
+- new supported file type: Cpp2/cppfront `#43 <https://github.com/rdipardo/vim-cpywrite/pull/43>`_
+- new file extension mappings for Pascal: ``*.dpk``, ``*.dpr`` and ``*.lpr``
+- several new internationalized Creative Commons variants
+
+New contributors
+-----------------
+- `@matgla <https://github.com/matgla>`_
+
 0.8.1
 ======
 **(2023-07-30)**

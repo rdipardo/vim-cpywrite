@@ -2,7 +2,7 @@
 vim-cpywrite
 ############
 
-|gh-actions|  |coverage|  |current version|
+|gh-actions| |coverage| |current version|
 
 Generate copyright headers for any open source license
 
