@@ -156,10 +156,11 @@ Requirements
   See if you're supported by entering ``vim --version | grep +python3`` at your
   terminal, or start ``vim`` and enter the ``:version`` command
 
-* Neovim with the `pynvim`_ module in your ``$PYTHONPATH``. Start ``nvim``
+* Neovim with the `pynvim`_ and `typing-extensions`_ modules in your ``$PYTHONPATH``. Start ``nvim``
   and enter ``:help provider-python`` for more information
 
 .. _pynvim: https://github.com/neovim/pynvim
+.. _typing-extensions: https://pypi.org/project/typing-extensions
 
 Installation
 ============
