@@ -12,7 +12,6 @@ assignees: ''
 - [ ] Plugin version (`vim -V1 -i NONE -ENsu ~/.vimrc -c ":echo g:cpywrite#version \"\n\"" +q`):
 
 *If applicable, include  one of the following:*
-- [ ] Output of `pip list | grep requests`:
 - [ ] Output of `pip list | grep pynvim` :
 - [ ] Output of `gvim --version`:
 - [ ] Output of `vim --version`:
