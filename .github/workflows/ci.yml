@@ -29,9 +29,10 @@ jobs:
     - name: Run python tests
       run: coverage run -m pytest -v && coverage xml -o pytest.xml
     - name: Upload coverage report
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
-        file: ./pytest.xml
+        files: ./pytest.xml
+        disable_search: true
         token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
