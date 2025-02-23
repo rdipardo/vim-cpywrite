@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        vim-version: [7.4.1689, 8.2.4049, 9.0.0304, master]
+        vim-version: [v7.4.1689, v8.2.4049, v9.0.0304, master]
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
@@ -79,7 +79,7 @@ jobs:
     - name: Test plugin on vim ${{ matrix.vim-version }}
       if: ${{ startsWith(matrix.python-version, '3.7') }}
       run: |
-        git clone --branch v${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
+        git clone --branch ${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
         pushd vim-src
         git grep -l '# undef _POSIX_THREADS' | xargs -I% sed -i '/# undef _POSIX_THREADS/d' %
         CFLAGS=-D_POSIX_THREADS ./configure --prefix=/usr/local --with-features=normal \
