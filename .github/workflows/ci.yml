@@ -37,11 +37,11 @@ jobs:
 
   build:
     needs: coverage
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        vim-version: [7.4.1689, 8.2.4049, 9.0.0304]
-        python-version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12', 'ubuntu']
+        vim-version: [7.4.1689, 8.2.4049, 9.0.0304, master]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
@@ -53,30 +53,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
         cache-dependency-path: 'test/requirements.txt'
-    # https://github.com/actions/setup-python/issues/866#issuecomment-2109784318
-    - name: Set up python 3.5
-      if: ${{ startsWith(matrix.python-version, '3.5') }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-      env:
-        PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
 
     - name: Install latest pip
-      if: ${{ !startsWith(matrix.python-version, '3.5') }}
       run: |
         pip install --upgrade pip
 
-    - name: Install python modules (without cert validation)
-      if: ${{ startsWith(matrix.python-version, '3.5') }}
-      run: |
-        pip install --upgrade 'pip < 21.0'
-        pip install -r test/requirements.txt
-      env:
-        PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
-
     - name: Install python modules
-      if: ${{ !startsWith(matrix.python-version, '3.5') }}
       run: pip install -r test/requirements.txt
 
     - name: Set up plugin test environment
@@ -88,7 +70,7 @@ jobs:
         fetch-depth: 1
 
     - name: Install neovim (current stable)
-      if: ${{ !(startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
+      if: ${{ !startsWith(matrix.python-version, '3.6') }}
       uses: rhysd/action-setup-vim@v1
       id: neovim-stable
       with:
@@ -102,16 +84,8 @@ jobs:
         neovim: true
         version: 'v0.6.1'
 
-    - name: Test plugin on Ubuntu vim
-      if: ${{ matrix.python-version == 'ubuntu' }}
-      run: |
-        sudo apt-get -qq update
-        sudo apt-get -qqy install vim
-        vim --startuptime vim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
-        .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
-
     - name: Test plugin on vim ${{ matrix.vim-version }}
-      if: ${{ (startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
+      if: ${{ startsWith(matrix.python-version, '3.6') }}
       run: |
         git clone --branch v${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
         pushd vim-src
@@ -124,12 +98,12 @@ jobs:
         .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on current stable neovim
-      if: ${{ !(startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
+      if: ${{ !startsWith(matrix.python-version, '3.6') }}
       run: |
         "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
     - name: Test plugin on neovim's legacy python providers
-      if: ${{ (startsWith(matrix.python-version, '3.5') || startsWith(matrix.python-version, '3.6')) }}
+      if: ${{ startsWith(matrix.python-version, '3.6') }}
       run: |
         "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
