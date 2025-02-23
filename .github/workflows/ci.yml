@@ -15,7 +15,7 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.13'
         cache: 'pip'
         cache-dependency-path: 'test/requirements.txt'
     - name: Install
@@ -37,11 +37,11 @@ jobs:
 
   build:
     needs: coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         vim-version: [7.4.1689, 8.2.4049, 9.0.0304, master]
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
@@ -70,22 +70,14 @@ jobs:
         fetch-depth: 1
 
     - name: Install neovim (current stable)
-      if: ${{ !startsWith(matrix.python-version, '3.6') }}
       uses: rhysd/action-setup-vim@v1
       id: neovim-stable
       with:
         neovim: true
         version: stable
 
-    - name: Install neovim 0.6.1
-      uses: rhysd/action-setup-vim@v1
-      id: neovim
-      with:
-        neovim: true
-        version: 'v0.6.1'
-
     - name: Test plugin on vim ${{ matrix.vim-version }}
-      if: ${{ startsWith(matrix.python-version, '3.6') }}
+      if: ${{ startsWith(matrix.python-version, '3.7') }}
       run: |
         git clone --branch v${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
         pushd vim-src
@@ -98,14 +90,8 @@ jobs:
         .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on current stable neovim
-      if: ${{ !startsWith(matrix.python-version, '3.6') }}
       run: |
         "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
-
-    - name: Test plugin on neovim's legacy python providers
-      if: ${{ startsWith(matrix.python-version, '3.6') }}
-      run: |
-        "${{ steps.neovim.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
     - name: Check neovim startup times
       run: |
