@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        vim-version: [v7.4.1689, v8.2.4049, v9.0.0304, master]
+        vim-version: [v8.1.2269, v8.2.4049, v9.0.0304, master]
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
@@ -77,7 +77,7 @@ jobs:
         version: stable
 
     - name: Test plugin on vim ${{ matrix.vim-version }}
-      if: ${{ startsWith(matrix.python-version, '3.7') }}
+      if: ${{ startsWith(matrix.python-version, '3.8') }}
       run: |
         git clone --branch ${{ matrix.vim-version }} https://github.com/vim/vim.git vim-src
         pushd vim-src

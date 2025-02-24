@@ -41,7 +41,7 @@ Features
   platform and (neo)vim version, of course
 
 :NOTE: Python 3.10 requires `neovim 0.6.0`_ or newer.
-       All vim versions from 7.4 and up should be compatible.
+       All vim versions from 8.1 and up should be compatible.
        `Bug reports <https://github.com/rdipardo/vim-cpywrite/issues>`_ are welcome.
 
 * Choose from more than 420 licenses (press ``<tab>`` after the ``:CPYwriteDefaultLicense``
