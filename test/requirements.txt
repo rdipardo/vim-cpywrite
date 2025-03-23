@@ -1,4 +1,4 @@
 pynvim==0.5.2 ; python_version >= '3.7'
 pytest==8.3.5 ; python_version >= '3.12'
-coverage==7.6.12 ; python_version >= '3.12'
+coverage==7.7.1 ; python_version >= '3.12'
 typing-extensions ; python_version < '3.8'
