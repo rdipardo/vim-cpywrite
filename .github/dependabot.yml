@@ -11,7 +11,9 @@ updates:
       day: "sunday"
   - package-ecosystem: "github-actions"
     directory: "/"
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
     schedule:
       interval: "monthly"
-    commit-message:
-      prefix: gh-actions
