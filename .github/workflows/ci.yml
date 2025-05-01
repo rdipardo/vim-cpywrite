@@ -102,8 +102,14 @@ jobs:
         .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on current stable neovim
+      if: ${{ !(endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8')) }}
       run: |
         "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
+
+    - name: Test plugin on neovim's legacy python providers
+      if: ${{ endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8') }}
+      run: |
+        "${{ steps.neovim-oldstable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
     - name: Check neovim startup times
       run: |
