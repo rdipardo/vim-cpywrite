@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     - name: Set up python
-      uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
       with:
         python-version: '3.13'
         cache: 'pip'
@@ -33,7 +33,7 @@ jobs:
     - name: Run python tests
       run: coverage run -m pytest -v && coverage xml -o pytest.xml
     - name: Upload coverage report
-      uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 #v5.4.0
+      uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d #v5.4.2
       with:
         files: ./pytest.xml
         disable_search: true
@@ -51,7 +51,7 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     - name: Set up python ${{ matrix.python-version }}
-      uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
@@ -73,11 +73,20 @@ jobs:
         fetch-depth: 1
 
     - name: Install neovim (current stable)
-      uses: rhysd/action-setup-vim@47493751bcbf7a4b12bc9e0c2ddce7aa1e3b69e5 # v1.4.1
+      if: ${{ !(endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8')) }}
+      uses: rhysd/action-setup-vim@8e931b9954b19d4203d5caa5ff5521f3bc21dcc7 # v1.4.2
       id: neovim-stable
       with:
         neovim: true
         version: stable
+
+    - name: Install a neovim version supporting Python < 3.9
+      if: ${{ endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8') }}
+      uses: rhysd/action-setup-vim@8e931b9954b19d4203d5caa5ff5521f3bc21dcc7 # v1.4.2
+      id: neovim-oldstable
+      with:
+        neovim: true
+        version: 'v0.11.0'
 
     - name: Test plugin on vim ${{ matrix.vim-version }}
       if: ${{ startsWith(matrix.python-version, '3.8') }}
@@ -93,15 +102,21 @@ jobs:
         .github/scripts/collect_start_times vim vim-${{ matrix.vim-version }}-$LOG
 
     - name: Test plugin on current stable neovim
+      if: ${{ !(endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8')) }}
       run: |
         "${{ steps.neovim-stable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
+
+    - name: Test plugin on neovim's legacy python providers
+      if: ${{ endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8') }}
+      run: |
+        "${{ steps.neovim-oldstable.outputs.executable }}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
 
     - name: Check neovim startup times
       run: |
         .github/scripts/collect_start_times nvim neovim-$LOG
 
     - name: Save startup times
-      uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.python-version }}
         path: '**/*python*.log'
@@ -111,7 +126,7 @@ jobs:
     needs: build
     steps:
       - name: Merge artifacts
-        uses: actions/upload-artifact/merge@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        uses: actions/upload-artifact/merge@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: plugin-load-stats
           delete-merged: true
