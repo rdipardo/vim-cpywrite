@@ -187,6 +187,27 @@ Users of older vim versions can simulate native package loading with `vim-pathog
 As a remote plugin
 ------------------
 
+Using `lazy.nvim <https://lazy.folke.io>`_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In ``~/.config/nvim/lua/config/lazy.lua``, or, `optionally <https://lazy.folke.io/installation>`_,
+in ``~/.config/nvim/init.lua``:
+
+.. code-block:: lua
+
+    require("lazy").setup({
+       -- ...
+       {
+          "rdipardo/vim-cpywrite",
+          config = function()
+             -- https://github.com/rdipardo/vim-cpywrite#options
+             -- for example:
+             vim.g["cpywrite#default_license"] = "MIT"
+          end
+       },
+       -- ...
+    })
+
 Using `plug.vim <https://github.com/junegunn/vim-plug>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -230,12 +251,16 @@ Edit your ``~/.vimrc``, ``~/.vim/vimrc``, or ``~/.config/nvim/init.vim``:
 Projects like this one
 ======================
 
+* header.nvim_
+* 42header_
 * vim-copyright_ (*not* a fork)
 * vim-licenses_, formerly licenses_
 * vim-header_
 * license-to-vim_
 * `license loader`_
 
+.. _header.nvim: https://github.com/attilarepka/header.nvim
+.. _42header: https://github.com/42Paris/42header
 .. _vim-copyright: https://github.com/nine2/vim-copyright
 .. _vim-licenses: https://github.com/antoyo/vim-licenses
 .. _licenses: https://github.com/vim-scripts/Licenses
