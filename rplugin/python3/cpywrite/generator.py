@@ -228,31 +228,18 @@ def _get_language_meta(filename, filetype=''):
 
     fname, ext = path.splitext(filename)
 
-    if not ext:
-        for _, ftype in _SOURCE_META.items():
-            for name in ftype[0].values():
-                if filetype == name.lower():
-                    return (name, ext, ftype[1])
+    if fname.startswith('.'):
+        if 'vim' in fname.lower() or fname.lower().endswith('exrc'):
+            return ('VimL', '', ('""', '"" '))
 
-        if fname.startswith('.'):
-            if 'vim' in fname.lower() or fname.lower().endswith('exrc'):
-                return ('VimL', '', ('""', '"" '))
+        if filetype == 'xdefaults':
+            return (filetype.capitalize(), '', ('!', '! '))
 
-            if filetype == 'xdefaults':
-                return (filetype.capitalize(), '', ('!', '! '))
-
+        if not filetype:
             return ('dot', '', ('#', '# '))
 
-        if filetype in ['dockerfile', 'make']:
-            return (filetype.capitalize(), '', ('#', '# '))
-
-        if path.basename(fname).lower() in ['dockerfile', 'makefile']:
-            return (path.basename(fname).capitalize(), '', ('#', '# '))
-
-        if not filetype.endswith('sh'):
-            print('No extension; assuming shell script')
-
-        return ('shell script', '', ('#', '# '))
+    if path.basename(fname).lower() in ['dockerfile', 'make', 'makefile', 'gnumakefile']:
+        return (path.basename(fname).capitalize(), '', ('#', '# '))
 
     if ext.lower() == '.txt' and \
        path.basename(fname).lower().startswith('cmake'):
@@ -263,6 +250,13 @@ def _get_language_meta(filename, filetype=''):
     ext = ext.lower()
 
     for fexts, ftype in _SOURCE_META.items():
+        if not ext and filetype:
+            meta = list(filter(lambda attrs: attrs.get(filetype.lower()),
+                        ({ name.lower() : ftype[1] } for _, name in ftype[0].items())))
+            if meta:
+                lang, tokens = list(*meta[0].items())
+                return (lang, ext, tokens)
+
         # keys of only one element will get expanded into a char sequence
         exts = [fexts] if fexts[0] == '.' else fexts
         if ext in exts:

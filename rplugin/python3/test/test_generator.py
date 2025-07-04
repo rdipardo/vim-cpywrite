@@ -30,7 +30,7 @@ def test_language_recognition():
     script_lang_files = [
         'script', 'script.eX', 'script.ExS', 'script.Sh', 'script.jL',
         'script.pL', 'script.Py', 'script.PyW', 'script.R', 'script.rDA',
-        'script.RdAta', 'script.rdS', 'script.Rb', 'script.cMaKe',
+        'script.RdAta', 'script.rdS', 'script.Rb', 'script.cMaKe', 'GNUMakefile',
         'CMakeLists.tXt', 'Makefile', 'mAKeFIle', 'build.Mk', 'build.mAk',
         'Dockerfile', 'doCKerfILE', 'build.dockerFILE', 'file.YmL', 'file.yAmL',
         'config.PROpertiES', 'Config.properTIEs', 'file.conF', 'file.CoNf']
@@ -130,7 +130,7 @@ def test_public_domain_license_recognition():
         assert in_pub_domain(generator.rights.spdx_code)
 
 def test_license_text_generation():
-    file_names = [ 'new.py', 'new.php', '.vimrc', 'Makefile' ]
+    files = [ {'': 'new.py'}, {'': 'new.php'}, {'yaml': '.clangd'}, {'': '.vimrc'}, {'': 'Makefile'} ]
     generator = Generator()
 
     def generate(verbose=False, tags=False):
@@ -139,9 +139,10 @@ def test_license_text_generation():
                 cpu_readable=(tags and (not verbose)),
                 no_anon=tags)
 
-    for fname in file_names:
+    for file_attrs in files:
+        ftype, fname = list(*file_attrs.items())
         for lic in licenses() + _PD_LICENSE_IDS:
-            generator.set_file_props(fname, rights=lic)
+            generator.set_file_props(fname, filetype=ftype, rights=lic)
             generate()
             generate(verbose=True)
             generate(tags=True)
