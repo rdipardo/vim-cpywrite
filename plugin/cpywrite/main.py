@@ -3,13 +3,13 @@
 """
 Buffer manipulation functions
 """
-from __future__ import print_function
 import sys
 import os
 import vim
 from re import match, sub
 for path in vim.eval('globpath(&rtp,"rplugin/python3",1)').split('\n'):
     sys.path.append(path)
+from cpywrite.spdx.license import License
 from cpywrite.generator import Generator, _get_source_author
 
 
@@ -29,7 +29,23 @@ def prepend():
                 generator.out_file = filename
 
             _write_header(generator, vim.current.buffer, filetype, filename)
-        except (ValueError, vim.error) as exc:
+        except ValueError: # try falling back to buffer's file type attributes
+            tokens = list(map(str.strip, vim.eval('&commentstring').split('%s')))
+            if not tokens or not tokens[0]:
+                return
+            try:
+                generator = Generator(os.path.splitext(filename)[0])
+                if len(tokens) == 1 or not tokens[1]:
+                    generator.tokens = (tokens[0], tokens[0] + '\x20')
+                else:
+                    generator.tokens = (tokens[0], '\x20', '\x20', tokens[1])
+                generator.rights = License(license_name)
+                generator.lang = filetype
+                generator.out_file = filename
+                _write_header(generator, vim.current.buffer, filetype, filename)
+            except ValueError as exc:
+                raise vim.error from exc
+        except vim.error as exc:
             print(str(exc))
             return
 

@@ -1,0 +1,74 @@
+Before(Setup);
+  au FileType forth setl commentstring=\\\ %s
+  au FileType xml setl commentstring=<!--%s-->
+  let g:cpywrite#default_license = '0BSD'
+  let g:cpywrite#machine_readable = 0
+  let g:cpywrite#hide_filename = 0
+  let g:cpywrite#verbatim_mode = 1
+
+After(Clear buffers);
+  if exists('g:test_buf_content') | unlet g:test_buf_content | endif
+  %bd!
+
+Execute(Test that plugin was loaded);
+  call vader#log('===== Pre-test environment check =====')
+  Assert exists('g:loaded_cpywrite')
+
+Execute(Create a new FORTH buffer);
+  new! untitled.fth
+
+Then(Assert file type is FORTH);
+  AssertEqual 'forth', &ft
+
+Execute(Add 0BSD license to a FORTH script);
+  b untitled.fth
+  CPYwrite
+
+Then(FORTH script quotes the complete 0BSD License);
+  AssertEqual '\', getline(1), '&commentstring follows local setting'
+  AssertEqual '\ untitled.fth', getline(2)
+  AssertEqual 1, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual '\ Permission to use, copy, modify, and/or distribute this software for any purpose', getline(6)
+  AssertEqual '\', getline(16)
+
+Execute(Create a new .NET project file);
+  new! project.csproj
+  setf xml
+
+Then(Assert file type is XML);
+  AssertEqual 'xml', &ft
+
+Execute(Add 0BSD license to .NET project file);
+  b project.csproj
+  CPYwrite
+
+Then(.NET project file quotes the complete 0BSD License);
+  AssertEqual '<!--', getline(1), '&commentstring follows local setting'
+  AssertEqual ' project.csproj', getline(2)
+  AssertEqual 0, len(getline(3)), 'Allow no trailing spaces'
+  AssertEqual ' Permission to use, copy, modify, and/or distribute this software for any purpose', getline(6)
+  AssertEqual '-->', getline(16)
+
+Execute(Add 0BSD license to a buffer with no extension);
+  new! untitled
+  CPYwrite
+
+Then(Buffer quotes the complete 0BSD License);
+  AssertEqual '#!', getline(1)[:1], 'Buffers with no extension should default to shell'
+  AssertEqual '# untitled', getline(3)
+  AssertEqual 1, len(getline(4)), 'Allow no trailing spaces'
+  AssertEqual '# Permission to use, copy, modify, and/or distribute this software for any purpose', getline(7)
+  AssertEqual '#', getline(17)
+
+Execute(Try to license a buffer with no file type and empty &commentstring);
+  let g:test_buf_content = '# DO NOT EDIT'
+  new! untitled.xyz
+  setl commentstring=
+  call setline(1, g:test_buf_content)
+  CPYwrite
+
+Then(Buffer remains unchanged);
+  AssertEqual g:test_buf_content, getline(1), 'Write no header when &commentstring is empty'
+
+Execute(Restore short license mode);
+  let g:cpywrite#verbatim_mode = 0
