@@ -74,7 +74,7 @@ jobs:
 
     - name: Install neovim (current stable)
       if: ${{ !(endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8')) }}
-      uses: rhysd/action-setup-vim@89f3345bcde053529463583418779d83ee6dfb33 # v1.4.3
+      uses: rhysd/action-setup-vim@387ddb86526bf67490a750c5e481fdecdf3ef4f6 # v1.5.0
       id: neovim-stable
       with:
         neovim: true
@@ -82,7 +82,7 @@ jobs:
 
     - name: Install a neovim version supporting Python < 3.9
       if: ${{ endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8') }}
-      uses: rhysd/action-setup-vim@89f3345bcde053529463583418779d83ee6dfb33 # v1.4.3
+      uses: rhysd/action-setup-vim@387ddb86526bf67490a750c5e481fdecdf3ef4f6 # v1.5.0
       id: neovim-oldstable
       with:
         neovim: true
@@ -116,7 +116,7 @@ jobs:
         .github/scripts/collect_start_times nvim neovim-$LOG
 
     - name: Save startup times
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       with:
         name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.python-version }}
         path: '**/*python*.log'
@@ -126,7 +126,7 @@ jobs:
     needs: build
     steps:
       - name: Merge artifacts
-        uses: actions/upload-artifact/merge@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact/merge@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: plugin-load-stats
           delete-merged: true
