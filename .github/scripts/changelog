@@ -2,4 +2,5 @@
 HEAD=$(git describe --tags)
 PREV_REF=$(git describe --tags $HEAD)^
 PREV=$(git describe --tags --abbrev=0 ${PREV_REF})
-git log --oneline ${PREV}..${HEAD} | awk '{printf("%s\\n",$0)}'
+git log --oneline --no-merges -P -i --invert-grep --grep='(?|action|fixup|workflow)' \
+  ${PREV}..${HEAD} | awk '{printf("%s\\n",$0)}'
