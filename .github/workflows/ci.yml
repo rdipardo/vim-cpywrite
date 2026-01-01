@@ -15,9 +15,9 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Set up python
-      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
       with:
         python-version: '3.13'
         cache: 'pip'
@@ -33,7 +33,7 @@ jobs:
     - name: Run python tests
       run: coverage run -m pytest -v && coverage xml -o pytest.xml
     - name: Upload coverage report
-      uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 #v5.5.1
+      uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
       with:
         files: ./pytest.xml
         disable_search: true
@@ -49,9 +49,9 @@ jobs:
     env:
       LOG: python-${{ matrix.python-version }}-bench.log
     steps:
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Set up python ${{ matrix.python-version }}
-      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
@@ -65,7 +65,7 @@ jobs:
       run: pip install -r test/requirements.txt
 
     - name: Set up plugin test environment
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       with:
         repository: blueyed/vader.vim
         ref: display-source-with-exceptions
@@ -74,7 +74,7 @@ jobs:
 
     - name: Install neovim (current stable)
       if: ${{ !(endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8')) }}
-      uses: rhysd/action-setup-vim@89f3345bcde053529463583418779d83ee6dfb33 # v1.4.3
+      uses: rhysd/action-setup-vim@19e3dd31a84dbc2c5445d65e9b363f616cab96c1 # v1.6.0
       id: neovim-stable
       with:
         neovim: true
@@ -82,7 +82,7 @@ jobs:
 
     - name: Install a neovim version supporting Python < 3.9
       if: ${{ endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8') }}
-      uses: rhysd/action-setup-vim@89f3345bcde053529463583418779d83ee6dfb33 # v1.4.3
+      uses: rhysd/action-setup-vim@19e3dd31a84dbc2c5445d65e9b363f616cab96c1 # v1.6.0
       id: neovim-oldstable
       with:
         neovim: true
@@ -116,7 +116,7 @@ jobs:
         .github/scripts/collect_start_times nvim neovim-$LOG
 
     - name: Save startup times
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.python-version }}
         path: '**/*python*.log'
@@ -126,7 +126,7 @@ jobs:
     needs: build
     steps:
       - name: Merge artifacts
-        uses: actions/upload-artifact/merge@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact/merge@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: plugin-load-stats
           delete-merged: true
