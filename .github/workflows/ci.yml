@@ -120,7 +120,7 @@ jobs:
       run: |
         "${NVIM}" --startuptime nvim_bench.log -ENsu test/vimrc -c '+Vader! test/vader/**/*.vader' > /dev/null
       env:
-        NVIM: ${{ steps.neovim-stable.outputs.executable }}
+        NVIM: ${{ steps.neovim-oldstable.outputs.executable }}
 
     - name: Check neovim startup times
       run: |
