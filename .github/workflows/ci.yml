@@ -27,11 +27,13 @@ jobs:
     - name: Install
       run: |
         # https://github.com/actions/setup-python/issues/842
-        pip install --upgrade --force pip setuptools
+        pip install --upgrade --force pip 'setuptools<81'
         pip install -r test/requirements.txt
         pip install vim-vint
     - name: Lint
       run: vint autoload ftplugin plugin -wt
+      env:
+        PYTHONWARNINGS: ignore
     - name: Run python tests
       run: coverage run -m pytest -v && coverage xml -o pytest.xml
     - name: Upload coverage report
