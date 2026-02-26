@@ -297,7 +297,7 @@ Distributed under the terms of the MIT license.
 .. |gh-actions| image:: https://github.com/rdipardo/vim-cpywrite/actions/workflows/ci.yml/badge.svg?branch=pre-release
     :alt: Build Status
     :target: https://github.com/rdipardo/vim-cpywrite/actions/workflows/ci.yml
-.. |current version| image:: https://img.shields.io/github/v/release/rdipardo/vim-cpywrite?logo=vim&labelColor=009933&color=ffffe0
+.. |current version| image:: https://img.shields.io/github/v/tag/rdipardo/vim-cpywrite?logo=vim&labelColor=009933&color=ffffe0&label=release
     :alt: Vim Scripts version
 .. |coverage| image:: https://codecov.io/gh/rdipardo/vim-cpywrite/graph/badge.svg
     :alt: Coverage stats
