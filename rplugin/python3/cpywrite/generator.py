@@ -62,7 +62,7 @@ class Generator():
             text = \
                 pattern.sub(authorship,
                             re.sub(r'(%s).+[19]*[xy]{2,} .*\n' % self.tokens[1],
-                                   '', text, re.IGNORECASE))
+                                   '', text, flags=re.IGNORECASE))
             # fix up copyright format and insert punctuation
             if self.rights.spdx_code.startswith('GFDL'):
                 text = re.sub(r'\)%s' % year,
