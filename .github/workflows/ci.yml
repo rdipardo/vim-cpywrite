@@ -37,7 +37,7 @@ jobs:
     - name: Run python tests
       run: coverage run -m pytest -v && coverage xml -o pytest.xml
     - name: Upload coverage report
-      uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de #v5.5.2
+      uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 #v6.0.0
       with:
         files: ./pytest.xml
         disable_search: true
@@ -81,7 +81,7 @@ jobs:
 
     - name: Install neovim (current stable)
       if: ${{ !(endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8')) }}
-      uses: rhysd/action-setup-vim@19e3dd31a84dbc2c5445d65e9b363f616cab96c1 # v1.6.0
+      uses: rhysd/action-setup-vim@febef33995d6649302e9d88dda81e071b68f16a7 # v1.6.1
       id: neovim-stable
       with:
         neovim: true
@@ -89,7 +89,7 @@ jobs:
 
     - name: Install a neovim version supporting Python < 3.9
       if: ${{ endsWith(matrix.python-version, '7') || endsWith(matrix.python-version, '8') }}
-      uses: rhysd/action-setup-vim@19e3dd31a84dbc2c5445d65e9b363f616cab96c1 # v1.6.0
+      uses: rhysd/action-setup-vim@febef33995d6649302e9d88dda81e071b68f16a7 # v1.6.1
       id: neovim-oldstable
       with:
         neovim: true
@@ -129,7 +129,7 @@ jobs:
         .github/scripts/collect_start_times nvim neovim-$LOG
 
     - name: Save startup times
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: plugin-load-stats@vim-${{ matrix.vim-version }}-py-${{ matrix.python-version }}
         path: '**/*python*.log'
@@ -139,7 +139,7 @@ jobs:
     needs: build
     steps:
       - name: Merge artifacts
-        uses: actions/upload-artifact/merge@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact/merge@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: plugin-load-stats
           delete-merged: true
